@@ -1,4 +1,4 @@
-package ua.edu.ukma.supermarket.persistence;
+package ua.edu.ukma.supermarket.persistence.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,9 +9,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Category {
+public class Product {
 
+    private int productId;
+    private String productName;
+    private String characteristics;
     private int categoryNumber;
-    private String categoryName;
 
 }

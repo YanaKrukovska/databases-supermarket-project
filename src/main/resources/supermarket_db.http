@@ -1,0 +1,78 @@
+### Get category with id
+GET http://localhost:8080/category/1
+
+###  Create category
+POST http://localhost:8080/category/Medication
+
+Content-Type: application/json
+{
+  "categoryName": "Medication"
+}
+
+###  Update category
+POST http://localhost:8080/category/1/Cats
+
+###  Delete category
+
+DELETE http://localhost:8080/category/4
+
+### Get all categories sorted by name
+GET http://localhost:8080/category/all
+
+
+
+### Find employee by id
+GET http://localhost:8080/employee/0000000001
+
+###  Create employee
+POST http://localhost:8080/employee
+Content-Type: application/json
+
+{
+  "employeeId": "0000000003",
+  "surname": "Yushchenko",
+  "name": "Viktor",
+  "patronymic": "Andriyovych",
+  "role": "Cashier",
+  "salary": 5500,
+  "birthDate": "1954-02-23T00:00:00.000+0000",
+  "startDate": "2018-05-12T00:00:00.000+0000",
+  "phoneNumber": "+380677149882",
+  "city": "Khoruzhivka",
+  "street": "Medova St. 14",
+  "zipCode": "1234-5679"
+}
+
+###  Update employee
+POST http://localhost:8080/employee/update
+Content-Type: application/json
+
+{
+  "employeeId": "0000000003",
+  "surname": "Yushchenko",
+  "name": "Viktor",
+  "patronymic": "Andriyovych",
+  "role": "Manager",
+  "salary": 14000,
+  "birthDate": "1954-02-23T00:00:00.000+0000",
+  "startDate": "2018-05-12T00:00:00.000+0000",
+  "phoneNumber": "+380677149882",
+  "city": "Khoruzhivka",
+  "street": "Medova St. 25",
+  "zipCode": "1234-5679"
+}
+
+###  Delete employee
+DELETE http://localhost:8080/employee/0000000003
+
+### Get all cashiers sorted by surname
+GET http://localhost:8080/employee/cashiers
+
+### Get phone number and address of employee by surname
+GET http://localhost:8080/employee/contacts/Vynnyk
+
+
+
+
+
+
