@@ -4,10 +4,9 @@ import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import ua.edu.ukma.supermarket.persistence.model.Category;
-import ua.edu.ukma.supermarket.persistence.model.Employee;
-import ua.edu.ukma.supermarket.persistence.model.Response;
+import ua.edu.ukma.supermarket.persistence.model.*;
 import ua.edu.ukma.supermarket.persistence.service.CategoryService;
+import ua.edu.ukma.supermarket.persistence.service.CustomerService;
 import ua.edu.ukma.supermarket.persistence.service.EmployeeService;
 import ua.edu.ukma.supermarket.persistence.service.ProductService;
 
@@ -23,11 +22,16 @@ public class ApplicationController {
     private final EmployeeService employeeService;
 
     @Autowired
+    private final CustomerService customerService;
+
+
+    @Autowired
     private final ProductService productService;
 
-    public ApplicationController(CategoryService categoryService, EmployeeService employeeService, ProductService productService) {
+    public ApplicationController(CategoryService categoryService, EmployeeService employeeService, CustomerService customerService, ProductService productService) {
         this.categoryService = categoryService;
         this.employeeService = employeeService;
+        this.customerService = customerService;
         this.productService = productService;
     }
 
@@ -110,4 +114,23 @@ public class ApplicationController {
     public Response<List<Employee>> findEmployeeNumberAddressBySurname(@PathVariable("surname") String surname) {
         return employeeService.findPhoneNumberAndAddressBySurname(surname);
     }
+
+    // artem
+
+    //клієнт, що витратив найбільше грошей в нашому магазині
+    @SneakyThrows
+    @GetMapping("/customer/most_valuable")
+    @ResponseBody
+    public Response<List<CustomerCard>> findMostValuableCustomer() {
+        return customerService.findMostValuableCustomer();
+    }
+
+    //всі продукти які купував ПЕВНИЙ клієнт
+    @SneakyThrows
+    @GetMapping("/product/of_customer/{id}")
+    @ResponseBody
+    public Response<List<Product>> productsByCustomer(@PathVariable("id") int cardId) {
+        return productService.productsByCustomer(cardId);
+    }
+
 }

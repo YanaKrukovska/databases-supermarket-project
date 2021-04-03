@@ -15,6 +15,7 @@ public class CustomerCard {
     private String customerSurname;
     private String customerName;
     private String customerPatronymic;
+    private String phone;
     private String city;
     private String street;
     private String zipcode;
