@@ -142,6 +142,14 @@ public class ApplicationController {
     }
     // end artem
 
+    //Voldemar: касир, що за весь час роботи оформив товару на найбільшу суму
+    @SneakyThrows
+    @GetMapping("/employee/cashiers/most_valuable")
+    @ResponseBody
+    public Response<List<Employee>> findMostValuableCashier() {
+        return employeeService.findMostValuableCashier();
+    }
+
     @SneakyThrows
     @GetMapping("/employee/stats")
     @ResponseBody

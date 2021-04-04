@@ -128,6 +128,38 @@ public class EmployeeService {
         }
     }
 
+    public Response<List<Employee>> findMostValuableCashier() {
+        String query = "SELECT * " +
+                "FROM employee " +
+                "WHERE id_employee IN ( " +
+                "SELECT id_employee " +
+                "FROM receipt " +
+                "GROUP BY id_employee " +
+                "HAVING SUM(sum_total) = ( " +
+                "SELECT MAX(stats.total) " +
+                "FROM ( " +
+                "SELECT SUM(sum_total) AS total " +
+                "FROM receipt " +
+                "GROUP BY id_employee) AS stats " +
+                ")" +
+                ")";
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
+            List<Employee> employeeList = new LinkedList<>();
+
+            while (resultSet.next()) {
+                Employee employee = employeeFromResultSet(resultSet);
+                employeeList.add(employee);
+            }
+
+            return new Response<>(employeeList, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
     public Response<List<Employee>> getCashiersSortedBySurname() {
 
         PreparedStatement statement;
@@ -140,21 +172,7 @@ public class EmployeeService {
             List<Employee> employeeList = new LinkedList<>();
 
             while (resultSet.next()) {
-                String id = resultSet.getString("id_employee");
-                String surname = resultSet.getString("empl_surname");
-                String name = resultSet.getString("empl_name");
-                String patronymic = resultSet.getString("empl_patronymic");
-                String role = resultSet.getString("empl_role");
-                double salary = resultSet.getDouble("salary");
-                Date birthDate = resultSet.getDate("date_of_birth");
-                Date startDate = resultSet.getDate("date_of_start");
-                String phoneNumber = resultSet.getString("phone_number");
-                String city = resultSet.getString("city");
-                String street = resultSet.getString("street");
-                String zipCode = resultSet.getString("zip_code");
-
-                Employee employee = new Employee(id, surname, name, patronymic, role, salary, birthDate, startDate, phoneNumber, city, street, zipCode);
-
+                Employee employee = employeeFromResultSet(resultSet);
                 employeeList.add(employee);
             }
 
@@ -237,7 +255,7 @@ public class EmployeeService {
                     "LEFT JOIN Employee e ON r.id_employee = e.id_employee WHERE r.sum_total > ? GROUP BY print_date, e.empl_surname;";
 
             statement = connection.prepareStatement(query);
-           statement.setDouble(1, sum);
+            statement.setDouble(1, sum);
             ResultSet resultSet = statement.executeQuery();
 
             List<EmployeeStatistic> employeeStatistics = new LinkedList<>();
@@ -299,4 +317,23 @@ public class EmployeeService {
         }
         return errors;
     }
+
+    private Employee employeeFromResultSet(ResultSet resultSet) throws SQLException {
+        String id = resultSet.getString("id_employee");
+        String surname = resultSet.getString("empl_surname");
+        String name = resultSet.getString("empl_name");
+        String patronymic = resultSet.getString("empl_patronymic");
+        String role = resultSet.getString("empl_role");
+        double salary = resultSet.getDouble("salary");
+        Date birthDate = resultSet.getDate("date_of_birth");
+        Date startDate = resultSet.getDate("date_of_start");
+        String phoneNumber = resultSet.getString("phone_number");
+        String city = resultSet.getString("city");
+        String street = resultSet.getString("street");
+        String zipCode = resultSet.getString("zip_code");
+
+        Employee employee = new Employee(id, surname, name, patronymic, role, salary, birthDate, startDate, phoneNumber, city, street, zipCode);
+        return employee;
+    }
+
 }
