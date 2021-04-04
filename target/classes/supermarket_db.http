@@ -84,10 +84,15 @@ GET http://localhost:8080/employee/cashiers/most_valuable
 GET http://localhost:8080/customer/only_products_as?id=1
 
 ### Get amount of receipts with total sum over certain per date per employee
-GET http://localhost:8080/employee/stats?sum=50
+GET http://localhost:8080/employee/stats?sum=200
 
-###
+### Find all store products that do not belong to certain category
+GET http://localhost:8080/store-product/all/except?category=Pet Food
 
+### Get amount of people (employees and customers) from each city
+GET http://localhost:8080/city/stats
 
+### Get all customers who went to the supermarkest only on those days as customer with certain id
+GET http://localhost:8080/customer/same-days?id=5
 
 
