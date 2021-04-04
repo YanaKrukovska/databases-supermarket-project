@@ -3,6 +3,7 @@ package ua.edu.ukma.supermarket.persistence.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.edu.ukma.supermarket.persistence.model.Employee;
+import ua.edu.ukma.supermarket.persistence.model.EmployeeStatistic;
 import ua.edu.ukma.supermarket.persistence.model.Response;
 
 import java.sql.Connection;
@@ -227,6 +228,35 @@ public class EmployeeService {
             return new Response<>(null, Collections.singletonList(e.getMessage()));
         }
     }
+
+
+    public Response<List<EmployeeStatistic>> getEmployeeReceiptSumStats(double sum) {
+        PreparedStatement statement;
+        try {
+            String query = "SELECT e.id_employee, e.empl_surname, print_date AS date, COUNT(*) AS receipt_amount FROM Receipt r " +
+                    "LEFT JOIN Employee e ON r.id_employee = e.id_employee WHERE r.sum_total > ? GROUP BY print_date, e.empl_surname;";
+
+            statement = connection.prepareStatement(query);
+           statement.setDouble(1, sum);
+            ResultSet resultSet = statement.executeQuery();
+
+            List<EmployeeStatistic> employeeStatistics = new LinkedList<>();
+
+            while (resultSet.next()) {
+                String id = resultSet.getString("id_employee");
+                String surname = resultSet.getString("empl_surname");
+                Date date = resultSet.getDate("date");
+                int receiptAmount = resultSet.getInt("receipt_amount");
+
+                employeeStatistics.add(new EmployeeStatistic(id, surname, date, receiptAmount));
+            }
+
+            return new Response<>(employeeStatistics, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
 
     private List<String> validateEmployee(Employee employee) {
         List<String> errors = new LinkedList<>();

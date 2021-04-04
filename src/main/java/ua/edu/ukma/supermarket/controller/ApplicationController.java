@@ -133,4 +133,11 @@ public class ApplicationController {
         return productService.productsByCustomer(cardId);
     }
 
+    @SneakyThrows
+    @GetMapping("/employee/stats")
+    @ResponseBody
+    public Response<List<EmployeeStatistic>> getEmployeeReceiptsStats(@RequestParam("sum") double sum) {
+        return employeeService.getEmployeeReceiptSumStats(sum);
+    }
+
 }
