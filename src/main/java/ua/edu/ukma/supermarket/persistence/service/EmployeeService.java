@@ -10,10 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class EmployeeService {
@@ -275,6 +272,30 @@ public class EmployeeService {
         }
     }
 
+    public Response<Map<String, Integer>> getCityPeopleCount() {
+        PreparedStatement statement;
+        try {
+            String query = "SELECT city, COUNT(*) AS people_amount FROM (SELECT city FROM Employee UNION ALL " +
+                    "SELECT city FROM Customer_card WHERE city IS NOT NULL) GROUP BY city";
+
+            statement = connection.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
+
+            Map<String, Integer> result = new HashMap<>();
+
+            while (resultSet.next()) {
+                String city = resultSet.getString("city");
+                int amount = resultSet.getInt("people_amount");
+                result.put(city, amount);
+            }
+
+            return new Response<>(result, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+
+    }
+
 
     private List<String> validateEmployee(Employee employee) {
         List<String> errors = new LinkedList<>();
@@ -335,5 +356,6 @@ public class EmployeeService {
         Employee employee = new Employee(id, surname, name, patronymic, role, salary, birthDate, startDate, phoneNumber, city, street, zipCode);
         return employee;
     }
+
 
 }

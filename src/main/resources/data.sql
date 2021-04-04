@@ -10,18 +10,23 @@ VALUES (1, 'Whiskas', 'Pink thing', 1),
 
 INSERT INTO employee(id_employee, empl_surname, empl_name, empl_patronymic, empl_role, salary, date_of_birth,
                      date_of_start, phone_number, city, street, zip_code)
-VALUES ('0000000001', 'Vynnyk', 'Oleh', 'Anatoliyovych', 'Manager', 30000, '1973-07-31', '2020-01-01', '+380980123456', 'Verbibka',
+VALUES ('0000000001', 'Vynnyk', 'Oleh', 'Anatoliyovych', 'Manager', 30000, '1973-07-31', '2020-01-01', '+380980123456',
+        'Verbibka',
         'Varbova St. 1', '1234-3111'),
-       ('0000000002', 'Poplavskyi', 'Mykhailo', 'Mykhailovych', 'Cashier', 5000, '1949-11-28', '2021-04-01', '+380980623656',
-        'Mechyslavka', 'Tiktokova St. 13', '1234-0189');
+       ('0000000002', 'Poplavskyi', 'Mykhailo', 'Mykhailovych', 'Cashier', 5000, '1949-11-28', '2021-04-01',
+        '+380980623656',
+        'Mechyslavka', 'Tiktokova St. 13', '1234-0189'),
+       ('0000000003', 'Zibrov', 'Pavlo', 'Mykolayovych', 'Cashier', 6000, '1957-06-22', '2020-12-15', '+380980222626',
+        'Kyiv', 'Medova St. 16', '1234-0187');
 
 INSERT INTO customer_card(card_number, card_surname, card_name, card_patronymic, phone_number, city, street, zip_code,
                           percent)
 VALUES (1, 'Bieber', 'Justin', 'Drew', '+380672894758', null, null, null, 5),
        (2, 'West', 'Kanye', 'Omari', '+380963162448', 'Borodyanka', 'Main st. 15', '02896', 6),
        (3, 'West', 'Coast', 'Omarovych', '+380963162448', 'LA', 'Bad st. 14', '01488', 4),
-       (4, 'Easter', '_Eggs', 'Happy', '+380968396739', 'Zalupivka', 'Main st. 15', '02280', 3),
-       (5, 'Westenko', 'Kostyantyn', 'Omarovych', '+380960548699', 'Kyiv', 'Boolboolyatorna st. 228', '02156', 2);
+       (4, 'Easter', '_Eggs', 'Happy', '+380968396739', 'Borodyanka', 'Main st. 15', '02280', 3),
+       (5, 'Westenko', 'Kostyantyn', 'Omarovych', '+380960548699', 'Kyiv', 'Boolboolyatorna st. 228', '02156', 2),
+       (6, 'Yuschenko', 'Voldemar', 'Westenko', '+380912548629', 'Kyiv', 'Boolboolyatorna st. 228', '02156', 1);
 
 INSERT INTO receipt (check_number, print_date, sum_total, vat, id_employee, card_number)
 VALUES ('0000000001', '2020-04-01', 37.5, 7.5, '0000000002', 1),
@@ -32,15 +37,18 @@ VALUES ('0000000001', '2020-04-01', 37.5, 7.5, '0000000002', 1),
        ('0000000006', '2020-04-01', 998, 199.6, '0000000001', 5),
        ('0000000007', '2020-04-01', 150.00, 30, '0000000002', 1),
        ('0000000008', '2020-04-02', 2381.99, 476.398, '0000000002', 2),
-       ('0000000009', '2020-04-02', 23.50, 4.7, '0000000001', 5),
+       ('0000000009', '2020-04-02', 23.50, 4.7, '0000000003', 5),
        ('0000000010', '2020-04-03', 41.23, 8.246, '0000000001', 2),
        ('0000000011', '2020-04-04', 100.01, 20, '0000000002', 4),
-       ('0000000012', '2020-04-04', 589.12, 117.824, '0000000002', 4);
+       ('0000000012', '2020-04-04', 589.12, 117.824, '0000000003', 4),
+       ('0000000013', '2020-05-01', 37.5, 7.5, '0000000003', 5),
+       ('0000000014', '2020-05-01', 37.5, 7.5, '0000000003', 6),
+       ('0000000015', '2020-04-02', 228, 45.6, '0000000003', 6);
 
 INSERT INTO store_product (upc, selling_price, products_number, promotional_product, upc_prom, id_product)
 VALUES ('023100015576', 11.0, 2300, false, null, 1),
- ('761303463011', 7.50, 1200, true, null, 2),
- ('761303463010', 11.50, 1200, false, '761303463011', 3);
+       ('761303463011', 7.50, 1200, true, null, 2),
+       ('761303463010', 11.50, 1200, false, '761303463011', 3);
 
 INSERT INTO sale (upc, check_number, product_number, selling_price)
 VALUES ('761303463011', '0000000001', 2, 7.50),

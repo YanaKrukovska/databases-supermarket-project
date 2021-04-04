@@ -5,12 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ua.edu.ukma.supermarket.persistence.model.*;
-import ua.edu.ukma.supermarket.persistence.service.CategoryService;
-import ua.edu.ukma.supermarket.persistence.service.CustomerService;
-import ua.edu.ukma.supermarket.persistence.service.EmployeeService;
-import ua.edu.ukma.supermarket.persistence.service.ProductService;
+import ua.edu.ukma.supermarket.persistence.service.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class ApplicationController {
@@ -24,15 +22,18 @@ public class ApplicationController {
     @Autowired
     private final CustomerService customerService;
 
-
     @Autowired
     private final ProductService productService;
 
-    public ApplicationController(CategoryService categoryService, EmployeeService employeeService, CustomerService customerService, ProductService productService) {
+    @Autowired
+    private final StoreProductService storeProductService;
+
+    public ApplicationController(CategoryService categoryService, EmployeeService employeeService, CustomerService customerService, ProductService productService, StoreProductService storeProductService) {
         this.categoryService = categoryService;
         this.employeeService = employeeService;
         this.customerService = customerService;
         this.productService = productService;
+        this.storeProductService = storeProductService;
     }
 
     @SneakyThrows
@@ -150,6 +151,18 @@ public class ApplicationController {
         return employeeService.findMostValuableCashier();
     }
 
+    // Yana
+
+    // Знайти всі товари в магазині, що не належать певній категорії
+    @SneakyThrows
+    @GetMapping("/store-product/all/except")
+    @ResponseBody
+    public Response<List<StoreProduct>> findStoreProductsNotInCategory(@RequestParam("category") String category) {
+        return storeProductService.findAllStoreProductsNotInCategory(category);
+    }
+
+    // Знайти номери працівників, їх прізвища та кількість виданих ними чеків за кожен день,
+    // де загальна сума покупки більше заданого параметра
     @SneakyThrows
     @GetMapping("/employee/stats")
     @ResponseBody
@@ -157,4 +170,19 @@ public class ApplicationController {
         return employeeService.getEmployeeReceiptSumStats(sum);
     }
 
+    // Знайти кількість людей (працівників та клієнтів) у кожному місті
+    @SneakyThrows
+    @GetMapping("/city/stats")
+    @ResponseBody
+    public Response<Map<String, Integer>> getCityPeopleCount() {
+        return employeeService.getCityPeopleCount();
+    }
+
+    // Знайти тих покупців, що приходили в магазин тільки в ті дні, що і певний клієнт
+    @SneakyThrows
+    @GetMapping("/customer/same-days")
+    @ResponseBody
+    public Response<List<CustomerCard>> getCustomersWhoShopTheSameDaysAsSomeone(@RequestParam("id") int cardId) {
+        return customerService.getTheSameDaysAsCustomer(cardId);
+    }
 }

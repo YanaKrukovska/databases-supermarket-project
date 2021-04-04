@@ -54,20 +54,20 @@ public class CustomerService {
     public Response<List<CustomerCard>> customersThatByOnlyThooseProductsAs(int id) {
         String query =
                 "SELECT * " +
-                "FROM customer_card AS CustomerCard " +
-                "WHERE card_number<>? AND card_number NOT IN ( " +
-                    "SELECT card_number " +
-                    "FROM sale AS A " +
-                    "INNER JOIN receipt AS B ON A.check_number = B.check_number " +
-                    "INNER JOIN store_product AS C ON C.upc = A.upc " +
-                    "WHERE C.id_product NOT IN ( " +
+                        "FROM customer_card AS CustomerCard " +
+                        "WHERE card_number<>? AND card_number NOT IN ( " +
+                        "SELECT card_number " +
+                        "FROM sale AS A " +
+                        "INNER JOIN receipt AS B ON A.check_number = B.check_number " +
+                        "INNER JOIN store_product AS C ON C.upc = A.upc " +
+                        "WHERE C.id_product NOT IN ( " +
                         "SELECT id_product " +
                         "FROM sale AS AA " +
                         "INNER JOIN receipt AS BB ON AA.check_number = BB.check_number " +
                         "INNER JOIN store_product AS CC ON CC.upc = AA.upc " +
                         "WHERE BB.card_number = ? " +
                         ")" +
-                    ")";
+                        ")";
         PreparedStatement statement;
         try {
             statement = connection.prepareStatement(query);
@@ -85,6 +85,30 @@ public class CustomerService {
         }
     }
 
+    public Response<List<CustomerCard>> getTheSameDaysAsCustomer(int cardId) {
+        String query =
+                "SELECT * FROM customer_card AS CustomerCard WHERE card_number <> ? AND card_number NOT IN (" +
+                        " SELECT card_number FROM Receipt WHERE print_date NOT IN(" +
+                        "SELECT DISTINCT print_date FROM Receipt WHERE card_number = ? ))";
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(query);
+            statement.setInt(1, cardId);
+            statement.setInt(2, cardId);
+            ResultSet resultSet = statement.executeQuery();
+
+            List<CustomerCard> customerCards = new LinkedList<>();
+
+            while (resultSet.next()) {
+                customerCards.add(customerCardFromResultSet(resultSet));
+            }
+
+            return new Response<>(customerCards, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
     private CustomerCard customerCardFromResultSet(ResultSet resultSet) throws SQLException {
         String cardNumber = resultSet.getString("card_number");
         String cardSur = resultSet.getString("card_surname");
@@ -95,7 +119,9 @@ public class CustomerService {
         String street = resultSet.getString("street");
         String zip_code = resultSet.getString("zip_code");
         int percent = resultSet.getInt("percent");
-        CustomerCard card = new CustomerCard(cardNumber,cardSur, cardName, cardPatr,phone,city,street,zip_code,percent);
+        CustomerCard card = new CustomerCard(cardNumber, cardSur, cardName, cardPatr, phone, city, street, zip_code, percent);
         return card;
     }
+
+
 }
