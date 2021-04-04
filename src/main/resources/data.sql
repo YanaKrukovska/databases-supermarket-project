@@ -40,8 +40,10 @@ VALUES ('0000000001', '2020-04-01', 37.5, 7.5, '0000000002', 1),
 INSERT INTO store_product (upc, selling_price, products_number, promotional_product, upc_prom, id_product)
 VALUES ('023100015576', 11.0, 2300, false, null, 1),
  ('761303463011', 7.50, 1200, true, null, 2),
- ('761303463010', 11.50, 1200, false, '761303463011', 2);
+ ('761303463010', 11.50, 1200, false, '761303463011', 3);
 
 INSERT INTO sale (upc, check_number, product_number, selling_price)
-VALUES ('761303463011', '0000000001', 2, 7.50);
+VALUES ('761303463011', '0000000001', 2, 7.50),
+       ('761303463010', '0000000002', 2, 7.50),
+       ('023100015576', '0000000003', 2, 7.50);
 

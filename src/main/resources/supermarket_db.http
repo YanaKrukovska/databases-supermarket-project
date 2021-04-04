@@ -74,12 +74,16 @@ GET http://localhost:8080/employee/contacts/Vynnyk
 ### Get most valuable customer (who spent the biggest amount of money)
 GET http://localhost:8080/customer/most_valuable
 
-### Get most valuable customer (who spent the biggest amount of money)
-GET http://localhost:8080/product/of_customer/1
+### Get all products that were bought by customer of card id 1
+GET http://localhost:8080/product/of_customer?id=1
 
+### Get all customers that buy only thoose products as customer with id 1
+GET http://localhost:8080/customer/only_products_as?id=1
 
 ### Get amount of receipts with total sum over certain per date per employee
 GET http://localhost:8080/employee/stats?sum=50
+
+###
 
 
 

@@ -127,11 +127,20 @@ public class ApplicationController {
 
     //всі продукти які купував ПЕВНИЙ клієнт
     @SneakyThrows
-    @GetMapping("/product/of_customer/{id}")
+    @GetMapping("/product/of_customer")
     @ResponseBody
-    public Response<List<Product>> productsByCustomer(@PathVariable("id") int cardId) {
-        return productService.productsByCustomer(cardId);
+    public Response<List<Product>> productsByCustomer(@RequestParam("id") int id) {
+        return productService.productsByCustomer(id);
     }
+
+    //клієнти, які купували тільки ті товари, що і ПЕВНИЙ клієнт
+    @SneakyThrows
+    @GetMapping("/customer/only_products_as")
+    @ResponseBody
+    public Response<List<CustomerCard>> customersThatByOnlyThooseProducts(@RequestParam("id") int id) {
+        return customerService.customersThatByOnlyThooseProductsAs(id);
+    }
+    // end artem
 
     @SneakyThrows
     @GetMapping("/employee/stats")

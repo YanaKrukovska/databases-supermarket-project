@@ -36,19 +36,15 @@ public class ProductService {
                         "WHERE check_number IN ( " +
                             "SELECT check_number " +
                             "FROM receipt " +
-                            "WHERE card_number = 1" +
+                            "WHERE card_number = ?" +
                             ")" +
                         ")" +
                     ")";
-        return getResponse(query);
-    }
-
-    private Response<List<Product>> getResponse(String query){
         PreparedStatement statement;
         try {
             statement = connection.prepareStatement(query);
+            statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
-
             List<Product> productList = new LinkedList<>();
 
             while (resultSet.next()) productList.add(productFromResultSet(resultSet));

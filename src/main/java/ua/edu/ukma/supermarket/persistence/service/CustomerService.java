@@ -36,13 +36,43 @@ public class CustomerService {
                 "GROUP BY card_number) AS stats " +
                 ")" +
                 ")";
-        return getResponse(query);
-    }
-
-    private Response<List<CustomerCard>> getResponse(String query){
         PreparedStatement statement;
         try {
             statement = connection.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
+
+            List<CustomerCard> cardList = new LinkedList<>();
+
+            while (resultSet.next()) cardList.add(customerCardFromResultSet(resultSet));
+
+            return new Response<>(cardList, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
+    public Response<List<CustomerCard>> customersThatByOnlyThooseProductsAs(int id) {
+        String query =
+                "SELECT * " +
+                "FROM customer_card AS CustomerCard " +
+                "WHERE card_number<>? AND card_number NOT IN ( " +
+                    "SELECT card_number " +
+                    "FROM sale AS A " +
+                    "INNER JOIN receipt AS B ON A.check_number = B.check_number " +
+                    "INNER JOIN store_product AS C ON C.upc = A.upc " +
+                    "WHERE C.id_product NOT IN ( " +
+                        "SELECT id_product " +
+                        "FROM sale AS AA " +
+                        "INNER JOIN receipt AS BB ON AA.check_number = BB.check_number " +
+                        "INNER JOIN store_product AS CC ON CC.upc = AA.upc " +
+                        "WHERE BB.card_number = ? " +
+                        ")" +
+                    ")";
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(query);
+            statement.setInt(1, id);
+            statement.setInt(2, id);
             ResultSet resultSet = statement.executeQuery();
 
             List<CustomerCard> cardList = new LinkedList<>();
