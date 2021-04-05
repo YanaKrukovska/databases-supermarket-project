@@ -112,7 +112,7 @@ public class CustomerService {
         String query =
                 "SELECT * " +
                 "FROM customer_card AS CC1 " +
-                "WHERE NOT EXISTS ( " +
+                "WHERE card_number<>? AND NOT EXISTS ( " +
                     "SELECT * " +
                     "FROM sale AS S " +
                     "INNER JOIN receipt AS R ON R.check_number=S.check_number " +
@@ -130,6 +130,7 @@ public class CustomerService {
         try {
             statement = connection.prepareStatement(query);
             statement.setInt(1, cardId);
+            statement.setInt(2, cardId);
             ResultSet resultSet = statement.executeQuery();
 
             List<CustomerCard> customerCards = new LinkedList<>();
