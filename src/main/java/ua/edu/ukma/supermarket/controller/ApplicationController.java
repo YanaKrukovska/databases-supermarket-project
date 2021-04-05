@@ -116,7 +116,7 @@ public class ApplicationController {
         return employeeService.findPhoneNumberAndAddressBySurname(surname);
     }
 
-    // artem
+    // Voldemar starts
 
     //клієнт, що витратив найбільше грошей в нашому магазині
     @SneakyThrows
@@ -141,7 +141,6 @@ public class ApplicationController {
     public Response<List<CustomerCard>> customersThatByOnlyThooseProducts(@RequestParam("id") int id) {
         return customerService.customersThatByOnlyThooseProductsAs(id);
     }
-    // end artem
 
     //Voldemar: касир, що за весь час роботи оформив товару на найбільшу суму
     @SneakyThrows
@@ -149,6 +148,41 @@ public class ApplicationController {
     @ResponseBody
     public Response<List<Employee>> findMostValuableCashier() {
         return employeeService.findMostValuableCashier();
+    }
+    // Voldemar ends
+
+    // Artemis
+
+    //товари, які купляли разом з даним товаром
+    @SneakyThrows
+    @GetMapping("/product/products_with")
+    @ResponseBody
+    public Response<List<Product>> productsBoughtWith(@RequestParam("id") int id) {
+        return productService.productsBoughtWith(id);
+    }
+
+    //популярність категорії. Для кожної категорії вивести кількість проданих товарів
+    @SneakyThrows
+    @GetMapping("/category/popularity")
+    @ResponseBody
+    public Response<List<CategoryStatistic>> popularity() {
+        return categoryService.popularity();
+    }
+
+    // топ-N продукти, на яких магазин заробив найбільше
+    @SneakyThrows
+    @GetMapping("/product/most_money_earn")
+    @ResponseBody
+    public Response<List<Product>> mostMoneyEarned(@RequestParam("n") int n) {
+        return productService.mostMoneyEarned(n);
+    }
+
+    // клієнти, у яких в чеку були всі ті товари, які були у заданого по айді
+    @SneakyThrows
+    @GetMapping("/product/same_as")
+    @ResponseBody
+    public Response<List<CustomerCard>> sameProductsAs(@RequestParam("id") int id) {
+        return customerService.sameProductsAs(id);
     }
 
     // Yana

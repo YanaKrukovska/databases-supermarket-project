@@ -3,6 +3,8 @@ package ua.edu.ukma.supermarket.persistence.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.edu.ukma.supermarket.persistence.model.Category;
+import ua.edu.ukma.supermarket.persistence.model.CategoryStatistic;
+import ua.edu.ukma.supermarket.persistence.model.Product;
 import ua.edu.ukma.supermarket.persistence.model.Response;
 
 import java.sql.*;
@@ -143,6 +145,29 @@ public class CategoryService {
 
                 categoryList.add(category);
             }
+
+            return new Response<>(categoryList, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
+    public Response<List<CategoryStatistic>> popularity() {
+        String query =
+                "SELECT C.category_number,C.category_name, SUM(S.product_number) AS sum " +
+                        "FROM store_product AS SP " +
+                        "INNER JOIN sale AS S ON S.upc=SP.upc " +
+                        "INNER JOIN product AS P ON P.id_product=SP.id_product " +
+                        "INNER JOIN category AS C ON C.category_number=P.category_number " +
+                        "GROUP BY C.category_number " +
+                        "ORDER BY sum DESC";;
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
+            List<CategoryStatistic> categoryList = new LinkedList<>();
+
+            while (resultSet.next()) categoryList.add(new CategoryStatistic(resultSet.getInt("category_number"),resultSet.getString("category_name"),resultSet.getInt("sum")));
 
             return new Response<>(categoryList, new LinkedList<>());
         } catch (SQLException e) {

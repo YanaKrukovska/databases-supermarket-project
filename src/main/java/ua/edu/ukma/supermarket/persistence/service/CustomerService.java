@@ -108,6 +108,41 @@ public class CustomerService {
             return new Response<>(null, Collections.singletonList(e.getMessage()));
         }
     }
+    public Response<List<CustomerCard>> sameProductsAs(int cardId) {
+        String query =
+                "SELECT * " +
+                "FROM customer_card AS CC1 " +
+                "WHERE NOT EXISTS ( " +
+                    "SELECT * " +
+                    "FROM sale AS S " +
+                    "INNER JOIN receipt AS R ON R.check_number=S.check_number " +
+                    "INNER JOIN store_product AS SP ON S.upc=SP.upc " +
+                    "WHERE R.card_number = ? " +
+                    "AND S.upc NOT IN ( " +
+                        "SELECT SP1.upc " +
+                        "FROM sale AS S1 " +
+                        "INNER JOIN receipt AS R1 ON R1.check_number=S1.check_number " +
+                        "INNER JOIN store_product AS SP1 ON S1.upc=SP1.upc " +
+                        "WHERE R1.card_number = CC1.card_number " +
+                        ")" +
+                    ")";
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(query);
+            statement.setInt(1, cardId);
+            ResultSet resultSet = statement.executeQuery();
+
+            List<CustomerCard> customerCards = new LinkedList<>();
+
+            while (resultSet.next()) {
+                customerCards.add(customerCardFromResultSet(resultSet));
+            }
+
+            return new Response<>(customerCards, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
 
     private CustomerCard customerCardFromResultSet(ResultSet resultSet) throws SQLException {
         String cardNumber = resultSet.getString("card_number");

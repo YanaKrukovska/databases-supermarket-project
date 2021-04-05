@@ -95,4 +95,19 @@ GET http://localhost:8080/city/stats
 ### Get all customers who went to the supermarkest only on those days as customer with certain id
 GET http://localhost:8080/customer/same-days?id=5
 
+### Get products that are bought together with product of id=1
+GET http://localhost:8080/product/products_with?id=1
+
+### Get amount of sold products for each category
+GET http://localhost:8080/category/popularity
+
+### Get top-3 product that bring the most money
+GET http://localhost:8080/product/most_money_earn?n=3
+
+### Get customers that buy all same positions in check as customer with id 3
+GET http://localhost:8080//product/same_as?id=3
+
+
+###
+
 
