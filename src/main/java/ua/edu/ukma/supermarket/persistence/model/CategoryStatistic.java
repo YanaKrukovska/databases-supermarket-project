@@ -17,4 +17,15 @@ public class CategoryStatistic {
     private String categoryName;
     private int soldProductsAmount;
 
+    public int getCategoryNumber() {
+        return categoryNumber;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public int getSoldProductsAmount() {
+        return soldProductsAmount;
+    }
 }

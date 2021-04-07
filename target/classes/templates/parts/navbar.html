@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.6.0/css/bootstrap.min.css} "/>
+
+<nav th:fragment="navigation" class="navbar navbar-expand-lg navbar navbar-light static-top fixed-top"
+     style="background-color: #e3f2fd;" xmlns:th="http://www.w3.org/1999/xhtml">
+
+    <div class="container">
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                aria-controls="navbarResponsive"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li>
+                    <a class="nav-link" href="/employee">Employees</a>
+                </li>
+                <li>
+                    <a class="nav-link" href="/category">Categories</a>
+                </li>
+                <li>
+                    <a class="nav-link" href="/product">Products</a>
+                </li>
+                <li>
+                    <a class="nav-link" href="/store-product">Store products</a>
+                </li>
+                <li>
+                    <a class="nav-link" href="/product">Receipts</a>
+                </li>
+                <li>
+                    <a class="nav-link" href="/product">Sales</a>
+                </li>
+                <li>
+                    <a class="nav-link" href="/customer">Customer cards</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+</html>

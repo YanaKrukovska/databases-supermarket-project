@@ -3,6 +3,7 @@ package ua.edu.ukma.supermarket.controller;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ua.edu.ukma.supermarket.persistence.model.*;
 import ua.edu.ukma.supermarket.persistence.service.*;
@@ -34,6 +35,48 @@ public class ApplicationController {
         this.customerService = customerService;
         this.productService = productService;
         this.storeProductService = storeProductService;
+    }
+
+    @GetMapping("/")
+    public String basePage(Model model){
+        Category sampleCategory=new Category(23,"Weapons");
+        model.addAttribute("category",sampleCategory);
+        return "index";
+    }
+
+    @GetMapping("/product")
+    public String productsPage(Model model){
+        List<Product> products=productService.findAll();
+        model.addAttribute("products",products);
+        return "products";
+    }
+
+    @GetMapping("/category")
+    public String categoriesPage(Model model){
+        List<Category> categories=categoryService.findAll();
+        model.addAttribute("categories",categories);
+        return "categories";
+    }
+
+    @GetMapping("/employee")
+    public String employeesPage(Model model){
+        List<Employee> employees=employeeService.findAll();
+        model.addAttribute("employees",employees);
+        return "employees";
+    }
+
+    @GetMapping("/customer")
+    public String customersPage(Model model){
+        List<CustomerCard> customers=customerService.findAll();
+        model.addAttribute("customers",customers);
+        return "customers";
+    }
+
+    @GetMapping("/store-product")
+    public String storeProductsPage(Model model){
+        List<StoreProduct> storeProducts=storeProductService.findAll();
+        model.addAttribute("storeProducts",storeProducts);
+        return "store-products";
     }
 
     @SneakyThrows
@@ -92,7 +135,7 @@ public class ApplicationController {
     @PostMapping("/employee/update")
     @ResponseBody
     public Response<Employee> updateEmployee(@RequestBody Employee employee) {
-        return employeeService.updateCategory(employee);
+        return employeeService.updateEmployee(employee);
     }
 
     @SneakyThrows

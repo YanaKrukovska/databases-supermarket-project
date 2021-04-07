@@ -26,4 +26,51 @@ public class Employee {
     private String street;
     private String zipCode;
 
+    public String getEmployeeId() {
+        return employeeId;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPatronymic() {
+        return patronymic;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public Double getSalary() {
+        return salary;
+    }
+
+    public Date getBirthDate() {
+        return birthDate;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public String getZipCode() {
+        return zipCode;
+    }
 }

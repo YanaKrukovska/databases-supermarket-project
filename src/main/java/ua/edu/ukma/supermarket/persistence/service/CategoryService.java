@@ -96,6 +96,29 @@ public class CategoryService {
         }
     }
 
+    public List<Category> findAll() {
+        String query =
+                "SELECT * FROM category";
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
+            List<Category> categoryList = new LinkedList<>();
+            while (resultSet.next()) categoryList.add(categoryFromResultSet(resultSet));
+            return categoryList;
+        } catch (SQLException e) {
+            return new LinkedList<>();
+        }
+    }
+
+    private Category categoryFromResultSet(ResultSet resultSet) throws SQLException {
+        int number = resultSet.getInt("category_number");
+        String name = resultSet.getString("category_name");
+
+        Category category = new Category(number, name);
+        return category;
+    }
+
     public Category findCategoryByName(String categoryName) {
         PreparedStatement statement;
         try {

@@ -19,4 +19,28 @@ public class Receipt {
     private Date printDate;
     private double sumTotal;
     private double vat;
+
+    public String getReceiptNumber() {
+        return receiptNumber;
+    }
+
+    public String getEmployeeId() {
+        return employeeId;
+    }
+
+    public String getCardNumber() {
+        return cardNumber;
+    }
+
+    public Date getPrintDate() {
+        return printDate;
+    }
+
+    public double getSumTotal() {
+        return sumTotal;
+    }
+
+    public double getVat() {
+        return vat;
+    }
 }

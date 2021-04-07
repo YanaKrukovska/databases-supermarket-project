@@ -2,6 +2,7 @@ package ua.edu.ukma.supermarket.persistence.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ua.edu.ukma.supermarket.persistence.model.CustomerCard;
 import ua.edu.ukma.supermarket.persistence.model.Employee;
 import ua.edu.ukma.supermarket.persistence.model.EmployeeStatistic;
 import ua.edu.ukma.supermarket.persistence.model.Response;
@@ -61,7 +62,22 @@ public class EmployeeService {
         }
     }
 
-    public Response<Employee> updateCategory(Employee employee) {
+    public List<Employee> findAll(){
+        String query =
+                "SELECT * FROM employee";
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
+            List<Employee> employeeList = new LinkedList<>();
+            while (resultSet.next()) employeeList.add(employeeFromResultSet(resultSet));
+            return employeeList;
+        } catch (SQLException e) {
+            return new LinkedList<>();
+        }
+    }
+
+    public Response<Employee> updateEmployee(Employee employee) {
 
         List<String> employeeErrors = validateEmployee(employee);
         if (!employeeErrors.isEmpty()) {

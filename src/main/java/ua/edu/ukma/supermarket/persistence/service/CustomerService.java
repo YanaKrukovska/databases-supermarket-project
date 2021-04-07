@@ -2,6 +2,7 @@ package ua.edu.ukma.supermarket.persistence.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ua.edu.ukma.supermarket.persistence.model.Category;
 import ua.edu.ukma.supermarket.persistence.model.CustomerCard;
 import ua.edu.ukma.supermarket.persistence.model.Response;
 
@@ -142,6 +143,21 @@ public class CustomerService {
             return new Response<>(customerCards, new LinkedList<>());
         } catch (SQLException e) {
             return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
+    public List<CustomerCard> findAll(){
+        String query =
+                "SELECT * FROM customer_card";
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
+            List<CustomerCard> customerCardList = new LinkedList<>();
+            while (resultSet.next()) customerCardList.add(customerCardFromResultSet(resultSet));
+            return customerCardList;
+        } catch (SQLException e) {
+            return new LinkedList<>();
         }
     }
 

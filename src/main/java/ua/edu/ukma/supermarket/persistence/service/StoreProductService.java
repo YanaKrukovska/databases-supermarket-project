@@ -4,10 +4,7 @@ import lombok.SneakyThrows;
 import org.apache.catalina.Store;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ua.edu.ukma.supermarket.persistence.model.Category;
-import ua.edu.ukma.supermarket.persistence.model.EmployeeStatistic;
-import ua.edu.ukma.supermarket.persistence.model.Response;
-import ua.edu.ukma.supermarket.persistence.model.StoreProduct;
+import ua.edu.ukma.supermarket.persistence.model.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -50,6 +47,21 @@ public class StoreProductService {
             return new Response<>(storeProducts, new LinkedList<>());
         } catch (SQLException e) {
             return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
+    public List<StoreProduct> findAll() {
+        String query =
+                "SELECT * FROM store_product";
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
+            List<StoreProduct> storeProductList = new LinkedList<>();
+            while (resultSet.next()) storeProductList.add(extractStoreProduct(resultSet));
+            return storeProductList;
+        } catch (SQLException e) {
+            return new LinkedList<>();
         }
     }
 
