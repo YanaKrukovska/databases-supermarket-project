@@ -13,14 +13,14 @@ import java.util.Date;
 @AllArgsConstructor
 public class Receipt {
 
-    private String receiptNumber;
+    private Integer receiptNumber;
     private String employeeId;
-    private String cardNumber;
+    private Integer cardNumber;
     private Date printDate;
     private double sumTotal;
     private double vat;
 
-    public String getReceiptNumber() {
+    public Integer getReceiptNumber() {
         return receiptNumber;
     }
 
@@ -28,7 +28,7 @@ public class Receipt {
         return employeeId;
     }
 
-    public String getCardNumber() {
+    public Integer getCardNumber() {
         return cardNumber;
     }
 

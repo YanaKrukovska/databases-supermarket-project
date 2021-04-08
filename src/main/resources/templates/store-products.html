@@ -31,7 +31,7 @@
             <td class="align-middle"><span class="align-middle" th:text="${storeProduct.productId}"></span></td>
             <td class="align-middle"><span class="align-middle" th:text="${storeProduct.sellingPrice}"></span></td>
             <td class="align-middle"><span class="align-middle" th:text="${storeProduct.productsNumber}"></span></td>
-            <td class="align-middle"><span class="align-middle" th:text="${storeProduct.isPromotionalProduct()}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${storeProduct.isPromotionalProductString()}"></span></td>
             <form th:action="@{/}" method="get">
                 <td><input type="hidden" th:value="${1}" name="storeProductID">
                     <button type="submit" class="font-weight-bold btn btn-danger btn-block" style="padding: 0px;"

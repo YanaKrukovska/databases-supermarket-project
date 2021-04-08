@@ -94,7 +94,11 @@ public class ProductService {
         }
     }
 
-    public Response<Product> deleteProduct(int productId) {
+    public Response<Product> deleteProduct(Integer productId) {
+
+        if (productId == null){
+            return new Response<>(null, Collections.singletonList("Receipt id can't be null"));
+        }
 
         if (findProductById(productId).getObject() == null) {
             return new Response<>(null, Collections.singletonList("Can't delete nonexistent product"));
@@ -223,6 +227,23 @@ public class ProductService {
             return productList;
         } catch (SQLException e) {
             return new LinkedList<>();
+        }
+    }
+
+    public Response<List<Product>> getAllProductsFromCategorySortedByName(int categoryId) {
+        String query = "SELECT * FROM product WHERE category_number = ? ORDER BY product_name ASC";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, categoryId);
+            ResultSet resultSet = statement.executeQuery();
+
+            List<Product> productList = new LinkedList<>();
+            while (resultSet.next()) {
+                productList.add(extractProduct(resultSet));
+            }
+
+            return new Response<>(productList, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
         }
     }
 

@@ -29,12 +29,16 @@ public class ApplicationController {
     @Autowired
     private final StoreProductService storeProductService;
 
-    public ApplicationController(CategoryService categoryService, EmployeeService employeeService, CustomerService customerService, ProductService productService, StoreProductService storeProductService) {
+    @Autowired
+    private final ReceiptService receiptService;
+
+    public ApplicationController(CategoryService categoryService, EmployeeService employeeService, CustomerService customerService, ProductService productService, StoreProductService storeProductService, ReceiptService receiptService) {
         this.categoryService = categoryService;
         this.employeeService = employeeService;
         this.customerService = customerService;
         this.productService = productService;
         this.storeProductService = storeProductService;
+        this.receiptService = receiptService;
     }
 
     @GetMapping("/")
@@ -188,6 +192,13 @@ public class ApplicationController {
     }
 
     @SneakyThrows
+    @GetMapping("/product/all/{categoryId}")
+    @ResponseBody
+    public Response<List<Product>> getAllProductsInCategorySorted(@PathVariable("categoryId") int categoryId) {
+        return productService.getAllProductsFromCategorySortedByName(categoryId);
+    }
+
+    @SneakyThrows
     @PostMapping("/customer")
     @ResponseBody
     public Response<CustomerCard> createCustomerCard(@RequestBody CustomerCard customerCard) {
@@ -206,6 +217,55 @@ public class ApplicationController {
     @ResponseBody
     public Response<CustomerCard> deleteCustomerCard(@PathVariable("id") int customerCardId) {
         return customerService.deleteCustomerCard(customerCardId);
+    }
+
+    @SneakyThrows
+    @PostMapping("/store-product")
+    @ResponseBody
+    public Response<StoreProduct> createStoreProduct(@RequestBody StoreProduct storeProduct) {
+        return storeProductService.createStoreProduct(storeProduct);
+    }
+
+    @SneakyThrows
+    @PostMapping("/store-product/update")
+    @ResponseBody
+    public Response<StoreProduct> updateStoreProduct(@RequestBody StoreProduct storeProduct) {
+        return storeProductService.updateStoreProduct(storeProduct);
+    }
+
+    @SneakyThrows
+    @DeleteMapping("/store-product/{upc}")
+    @ResponseBody
+    public Response<StoreProduct> deleteStoreProduct(@PathVariable("upc") String productUpc) {
+        return storeProductService.deleteStoreProduct(productUpc);
+    }
+
+    @SneakyThrows
+    @GetMapping("/store-product/all/{productId}")
+    @ResponseBody
+    public Response<List<StoreProduct>> getAllStoreProductsFromProduct(@PathVariable("productId") int productId) {
+        return storeProductService.getAllStoreProductsFromProduct(productId);
+    }
+
+    @SneakyThrows
+    @PostMapping("/receipt")
+    @ResponseBody
+    public Response<Receipt> createReceipt(@RequestBody Receipt receipt) {
+        return receiptService.createReceipt(receipt);
+    }
+
+    @SneakyThrows
+    @PostMapping("/receipt/update")
+    @ResponseBody
+    public Response<Receipt> updateReceipt(@RequestBody Receipt receipt) {
+        return receiptService.updateReceipt(receipt);
+    }
+
+    @SneakyThrows
+    @DeleteMapping("/receipt/{id}")
+    @ResponseBody
+    public Response<Receipt> deleteStoreProduct(@PathVariable("id") Integer id) {
+        return receiptService.deleteReceipt(id);
     }
 
     // Voldemar starts

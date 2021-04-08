@@ -38,7 +38,7 @@ public class StoreProduct {
         return productsNumber;
     }
 
-    public String isPromotionalProduct() {
+    public String isPromotionalProductString() {
         return isPromotionalProduct? "Yes":"No";
     }
 }

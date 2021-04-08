@@ -168,3 +168,69 @@ Content-Type: application/json
 
 ###  Delete customer card
 DELETE http://localhost:8080/customer/7
+
+### Get all products from category sorted by name
+GET http://localhost:8080/product/all/5
+
+###  Create store product
+POST http://localhost:8080/store-product
+Content-Type: application/json
+
+{
+  "upc": "123456789123",
+  "upcPromo": null,
+  "productId": 3,
+  "sellingPrice": 11.5,
+  "productsNumber": 1200,
+  "promotionalProduct": false
+}
+
+###  Update store product
+POST http://localhost:8080/store-product/update
+Content-Type: application/json
+
+{
+  "upc": "123456789123",
+  "upcPromo": null,
+  "productId": 3,
+  "sellingPrice": 5.5,
+  "productsNumber": 500,
+  "promotionalProduct": false
+}
+
+###  Delete store product
+DELETE http://localhost:8080/store-product/123456789123
+
+### Get all store products from product
+GET http://localhost:8080/store-product/all/4
+
+
+###  Create receipt
+POST http://localhost:8080/receipt
+Content-Type: application/json
+
+{
+  "upc": "123456789123",
+  "printDate": "2021-04-01T10:02:43.000+0000",
+  "sumTotal": 37.5,
+  "vat": 7.5,
+  "employeeId": "0000000002",
+  "cardNumber": 2
+}
+
+###  Update receipt
+POST http://localhost:8080/receipt/update
+Content-Type: application/json
+
+{
+  "receiptNumber": 223,
+  "upc": "123456789123",
+  "printDate": "2021-04-01T10:02:43.000+0000",
+  "sumTotal": 43.5,
+  "vat": 8.7,
+  "employeeId": "0000000002",
+  "cardNumber": 2
+}
+
+###  Delete receipt
+DELETE http://localhost:8080/receipt/23
