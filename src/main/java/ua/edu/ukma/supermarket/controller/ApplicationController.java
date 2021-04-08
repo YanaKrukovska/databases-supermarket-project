@@ -104,6 +104,16 @@ public class ApplicationController {
         return "employees";
     }
 
+    @PostMapping("/request-delete-employee")
+    public String removeEmployee(@ModelAttribute("employeeId") String id,Model model) {
+        Response<Employee> employeeResponse = employeeService.deleteEmployee(id);
+        if (employeeResponse.getErrors().size()>0) {
+            model.addAttribute("errors",employeeResponse.getErrors());
+            return "error-page";
+        }
+        return "redirect:/employee";
+    }
+
     @GetMapping("/customer")
     public String customersPage(Model model) {
         List<CustomerCard> customers = customerService.findAll();
