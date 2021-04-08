@@ -38,44 +38,44 @@ public class ApplicationController {
     }
 
     @GetMapping("/")
-    public String basePage(Model model){
-        Category sampleCategory=new Category(23,"Weapons");
-        model.addAttribute("category",sampleCategory);
+    public String basePage(Model model) {
+        Category sampleCategory = new Category(23, "Weapons");
+        model.addAttribute("category", sampleCategory);
         return "index";
     }
 
     @GetMapping("/product")
-    public String productsPage(Model model){
-        List<Product> products=productService.findAll();
-        model.addAttribute("products",products);
+    public String productsPage(Model model) {
+        List<Product> products = productService.findAll();
+        model.addAttribute("products", products);
         return "products";
     }
 
     @GetMapping("/category")
-    public String categoriesPage(Model model){
-        List<Category> categories=categoryService.findAll();
-        model.addAttribute("categories",categories);
+    public String categoriesPage(Model model) {
+        List<Category> categories = categoryService.findAll();
+        model.addAttribute("categories", categories);
         return "categories";
     }
 
     @GetMapping("/employee")
-    public String employeesPage(Model model){
-        List<Employee> employees=employeeService.findAll();
-        model.addAttribute("employees",employees);
+    public String employeesPage(Model model) {
+        List<Employee> employees = employeeService.findAll();
+        model.addAttribute("employees", employees);
         return "employees";
     }
 
     @GetMapping("/customer")
-    public String customersPage(Model model){
-        List<CustomerCard> customers=customerService.findAll();
-        model.addAttribute("customers",customers);
+    public String customersPage(Model model) {
+        List<CustomerCard> customers = customerService.findAll();
+        model.addAttribute("customers", customers);
         return "customers";
     }
 
     @GetMapping("/store-product")
-    public String storeProductsPage(Model model){
-        List<StoreProduct> storeProducts=storeProductService.findAll();
-        model.addAttribute("storeProducts",storeProducts);
+    public String storeProductsPage(Model model) {
+        List<StoreProduct> storeProducts = storeProductService.findAll();
+        model.addAttribute("storeProducts", storeProducts);
         return "store-products";
     }
 
@@ -157,6 +157,55 @@ public class ApplicationController {
     @ResponseBody
     public Response<List<Employee>> findEmployeeNumberAddressBySurname(@PathVariable("surname") String surname) {
         return employeeService.findPhoneNumberAndAddressBySurname(surname);
+    }
+
+    @SneakyThrows
+    @PostMapping("/product")
+    @ResponseBody
+    public Response<Product> createProduct(@RequestBody Product product) {
+        return productService.createProduct(product);
+    }
+
+    @SneakyThrows
+    @PostMapping("/product/update")
+    @ResponseBody
+    public Response<Product> updateProduct(@RequestBody Product product) {
+        return productService.updateProduct(product);
+    }
+
+    @SneakyThrows
+    @DeleteMapping("/product/{id}")
+    @ResponseBody
+    public Response<Product> deleteProduct(@PathVariable("id") int productId) {
+        return productService.deleteProduct(productId);
+    }
+
+    @SneakyThrows
+    @GetMapping("/product/all")
+    @ResponseBody
+    public Response<List<Product>> getAllProductsSorted() {
+        return productService.getAllProductsSortedByName();
+    }
+
+    @SneakyThrows
+    @PostMapping("/customer")
+    @ResponseBody
+    public Response<CustomerCard> createCustomerCard(@RequestBody CustomerCard customerCard) {
+        return customerService.createCustomerCard(customerCard);
+    }
+
+    @SneakyThrows
+    @PostMapping("/customer/update")
+    @ResponseBody
+    public Response<CustomerCard> updateCustomerCard(@RequestBody CustomerCard customerCard) {
+        return customerService.updateCustomerCard(customerCard);
+    }
+
+    @SneakyThrows
+    @DeleteMapping("/customer/{id}")
+    @ResponseBody
+    public Response<CustomerCard> deleteCustomerCard(@PathVariable("id") int customerCardId) {
+        return customerService.deleteCustomerCard(customerCardId);
     }
 
     // Voldemar starts

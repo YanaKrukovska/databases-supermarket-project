@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CustomerCard {
 
-    private String cardNumber;
+    private int cardNumber;
     private String customerSurname;
     private String customerName;
     private String customerPatronymic;
@@ -21,7 +21,7 @@ public class CustomerCard {
     private String zipcode;
     private int percent;
 
-    public String getCardNumber() {
+    public int getCardNumber() {
         return cardNumber;
     }
 
