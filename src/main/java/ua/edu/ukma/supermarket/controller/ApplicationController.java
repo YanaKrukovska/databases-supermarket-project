@@ -55,11 +55,21 @@ public class ApplicationController {
         return "products";
     }
 
+    @PostMapping("/request-delete-product")
+    public String removeProduct(@ModelAttribute("productId") int id, Model model) {
+        Response<Product> productResponse = productService.deleteProduct(id);
+        if (productResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", productResponse.getErrors());
+            return "error-page";
+        }
+        return "redirect:/product";
+    }
+
     @GetMapping("/category")
     public String categoriesPage(Model model) {
-        Response<List<Category>> categoryResponse=categoryService.findAll();
-        if (categoryResponse.getErrors().size()>0) {
-            model.addAttribute("errors",categoryResponse.getErrors());
+        Response<List<Category>> categoryResponse = categoryService.findAll();
+        if (categoryResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", categoryResponse.getErrors());
             return "error-page";
         }
         model.addAttribute("categories", categoryResponse.getObject());
@@ -67,10 +77,10 @@ public class ApplicationController {
     }
 
     @GetMapping("/edit-category")
-    public String editCategory(@ModelAttribute("categoryNumber") int id,Model model){
-        Response<Category> categoryResponse=categoryService.findCategoryById(id);
-        if (categoryResponse.getErrors().size()>0) {
-            model.addAttribute("errors",categoryResponse.getErrors());
+    public String editCategory(@ModelAttribute("categoryNumber") int id, Model model) {
+        Response<Category> categoryResponse = categoryService.findCategoryById(id);
+        if (categoryResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", categoryResponse.getErrors());
             return "error-page";
         }
         model.addAttribute("category", categoryResponse.getObject());
@@ -78,20 +88,20 @@ public class ApplicationController {
     }
 
     @PostMapping("/request-edit-category")
-    public String requestEditCategory(@ModelAttribute Category category,Model model){
-        Response<Category> categoryResponse = categoryService.updateCategory(category.getCategoryNumber(),category.getCategoryName());
-        if (categoryResponse.getErrors().size()>0) {
-            model.addAttribute("errors",categoryResponse.getErrors());
+    public String requestEditCategory(@ModelAttribute Category category, Model model) {
+        Response<Category> categoryResponse = categoryService.updateCategory(category.getCategoryNumber(), category.getCategoryName());
+        if (categoryResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", categoryResponse.getErrors());
             return "error-page";
         }
         return "redirect:/category";
     }
 
     @PostMapping("/request-delete-category")
-    public String removeCategory(@ModelAttribute("categoryNumber") int id,Model model) {
+    public String removeCategory(@ModelAttribute("categoryNumber") int id, Model model) {
         Response<Category> categoryResponse = categoryService.deleteCategory(id);
-        if (categoryResponse.getErrors().size()>0) {
-            model.addAttribute("errors",categoryResponse.getErrors());
+        if (categoryResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", categoryResponse.getErrors());
             return "error-page";
         }
         return "redirect:/category";
@@ -105,10 +115,10 @@ public class ApplicationController {
     }
 
     @PostMapping("/request-delete-employee")
-    public String removeEmployee(@ModelAttribute("employeeId") String id,Model model) {
+    public String removeEmployee(@ModelAttribute("employeeId") String id, Model model) {
         Response<Employee> employeeResponse = employeeService.deleteEmployee(id);
-        if (employeeResponse.getErrors().size()>0) {
-            model.addAttribute("errors",employeeResponse.getErrors());
+        if (employeeResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", employeeResponse.getErrors());
             return "error-page";
         }
         return "redirect:/employee";
@@ -121,11 +131,31 @@ public class ApplicationController {
         return "customers";
     }
 
+    @PostMapping("/request-delete-customer")
+    public String removeCustomer(@ModelAttribute("cardNumber") int id, Model model) {
+        Response<CustomerCard> customerCardResponse = customerService.deleteCustomerCard(id);
+        if (customerCardResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", customerCardResponse.getErrors());
+            return "error-page";
+        }
+        return "redirect:/customer";
+    }
+
     @GetMapping("/store-product")
     public String storeProductsPage(Model model) {
         List<StoreProduct> storeProducts = storeProductService.findAll();
         model.addAttribute("storeProducts", storeProducts);
         return "store-products";
+    }
+
+    @PostMapping("/request-delete-store-product")
+    public String removeStoreProduct(@ModelAttribute("upc") String upc, Model model) {
+        Response<StoreProduct> storeProductResponse = storeProductService.deleteStoreProduct(upc);
+        if (storeProductResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", storeProductResponse.getErrors());
+            return "error-page";
+        }
+        return "redirect:/store-product";
     }
 
     @SneakyThrows
