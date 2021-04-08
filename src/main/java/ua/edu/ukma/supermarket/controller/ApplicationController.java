@@ -57,9 +57,44 @@ public class ApplicationController {
 
     @GetMapping("/category")
     public String categoriesPage(Model model) {
-        List<Category> categories = categoryService.findAll();
-        model.addAttribute("categories", categories);
+        Response<List<Category>> categoryResponse=categoryService.findAll();
+        if (categoryResponse.getErrors().size()>0) {
+            model.addAttribute("errors",categoryResponse.getErrors());
+            return "error-page";
+        }
+        model.addAttribute("categories", categoryResponse.getObject());
         return "categories";
+    }
+
+    @GetMapping("/edit-category")
+    public String editCategory(@ModelAttribute("categoryNumber") int id,Model model){
+        Response<Category> categoryResponse=categoryService.findCategoryById(id);
+        if (categoryResponse.getErrors().size()>0) {
+            model.addAttribute("errors",categoryResponse.getErrors());
+            return "error-page";
+        }
+        model.addAttribute("category", categoryResponse.getObject());
+        return "category-edit";
+    }
+
+    @PostMapping("/request-edit-category")
+    public String requestEditCategory(@ModelAttribute Category category,Model model){
+        Response<Category> categoryResponse = categoryService.updateCategory(category.getCategoryNumber(),category.getCategoryName());
+        if (categoryResponse.getErrors().size()>0) {
+            model.addAttribute("errors",categoryResponse.getErrors());
+            return "error-page";
+        }
+        return "redirect:/category";
+    }
+
+    @PostMapping("/request-delete-category")
+    public String removeCategory(@ModelAttribute("categoryNumber") int id,Model model) {
+        Response<Category> categoryResponse = categoryService.deleteCategory(id);
+        if (categoryResponse.getErrors().size()>0) {
+            model.addAttribute("errors",categoryResponse.getErrors());
+            return "error-page";
+        }
+        return "redirect:/category";
     }
 
     @GetMapping("/employee")

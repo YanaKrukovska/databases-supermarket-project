@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" const="text/html;charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+    <title>Edit group</title>
+    <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.6.0/css/bootstrap.min.css} "/>
+
+</head>
+<body class="text-center">
+
+<main>
+<div th:replace="parts/navbar.html :: navigation"></div>
+<form class="row d-flex justify-content-center" th:action="@{/request-edit-category}" enctype="multipart/form-data"
+      method="post" style="padding-top: 60px">
+    <div class="col-lg-auto d-flex justify-content-center flex-column">
+        <input class="fields" type="hidden" id="categoryNumber" name="categoryNumber" th:value="*{category.categoryNumber}"
+               placeholder="id">
+
+        <span class="title">Name</span>
+        <input class="fields" type="text" id="categoryName" name="categoryName" th:value="*{category.categoryName}"
+               placeholder="Name">
+
+
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Save</button>
+    </div>
+</form>
+</main>
+</body>
+</html>

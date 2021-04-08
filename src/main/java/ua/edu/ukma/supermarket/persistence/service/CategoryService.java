@@ -87,19 +87,7 @@ public class CategoryService {
         }
     }
 
-    public List<Category> findAll() {
-        String query = "SELECT * FROM category";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            ResultSet resultSet = statement.executeQuery();
-            List<Category> categoryList = new LinkedList<>();
-            while (resultSet.next()) {
-                categoryList.add(categoryFromResultSet(resultSet));
-            }
-            return categoryList;
-        } catch (SQLException e) {
-            return new LinkedList<>();
-        }
-    }
+
 
     private Category categoryFromResultSet(ResultSet resultSet) throws SQLException {
         int number = resultSet.getInt("category_number");
@@ -144,6 +132,24 @@ public class CategoryService {
                 int number = resultSet.getInt("category_number");
                 String name = resultSet.getString("category_name");
                 categoryList.add(new Category(number, name));
+            }
+
+            return new Response<>(categoryList, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
+    public Response<List<Category>> findAll() {
+
+        String query = "SELECT * FROM category";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            ResultSet resultSet = statement.executeQuery();
+
+            List<Category> categoryList = new LinkedList<>();
+
+            while (resultSet.next()) {
+                categoryList.add(categoryFromResultSet(resultSet));
             }
 
             return new Response<>(categoryList, new LinkedList<>());
