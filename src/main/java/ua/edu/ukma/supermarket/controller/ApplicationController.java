@@ -2,11 +2,14 @@ package ua.edu.ukma.supermarket.controller;
 
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ua.edu.ukma.supermarket.persistence.model.*;
 import ua.edu.ukma.supermarket.persistence.service.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -28,12 +31,58 @@ public class ApplicationController {
     @Autowired
     private final StoreProductService storeProductService;
 
-    public ApplicationController(CategoryService categoryService, EmployeeService employeeService, CustomerService customerService, ProductService productService, StoreProductService storeProductService) {
+    @Autowired
+    private final ReceiptService receiptService;
+
+    public ApplicationController(CategoryService categoryService, EmployeeService employeeService, CustomerService customerService, ProductService productService, StoreProductService storeProductService, ReceiptService receiptService) {
         this.categoryService = categoryService;
         this.employeeService = employeeService;
         this.customerService = customerService;
         this.productService = productService;
         this.storeProductService = storeProductService;
+        this.receiptService = receiptService;
+    }
+
+    @GetMapping("/")
+    public String basePage(Model model) {
+        Category sampleCategory = new Category(23, "Weapons");
+        model.addAttribute("category", sampleCategory);
+        return "index";
+    }
+
+    @GetMapping("/product")
+    public String productsPage(Model model) {
+        List<Product> products = productService.findAll();
+        model.addAttribute("products", products);
+        return "products";
+    }
+
+    @GetMapping("/category")
+    public String categoriesPage(Model model) {
+        List<Category> categories = categoryService.findAll();
+        model.addAttribute("categories", categories);
+        return "categories";
+    }
+
+    @GetMapping("/employee")
+    public String employeesPage(Model model) {
+        List<Employee> employees = employeeService.findAll();
+        model.addAttribute("employees", employees);
+        return "employees";
+    }
+
+    @GetMapping("/customer")
+    public String customersPage(Model model) {
+        List<CustomerCard> customers = customerService.findAll();
+        model.addAttribute("customers", customers);
+        return "customers";
+    }
+
+    @GetMapping("/store-product")
+    public String storeProductsPage(Model model) {
+        List<StoreProduct> storeProducts = storeProductService.findAll();
+        model.addAttribute("storeProducts", storeProducts);
+        return "store-products";
     }
 
     @SneakyThrows
@@ -92,7 +141,7 @@ public class ApplicationController {
     @PostMapping("/employee/update")
     @ResponseBody
     public Response<Employee> updateEmployee(@RequestBody Employee employee) {
-        return employeeService.updateCategory(employee);
+        return employeeService.updateEmployee(employee);
     }
 
     @SneakyThrows
@@ -115,6 +164,167 @@ public class ApplicationController {
     public Response<List<Employee>> findEmployeeNumberAddressBySurname(@PathVariable("surname") String surname) {
         return employeeService.findPhoneNumberAndAddressBySurname(surname);
     }
+
+
+    @SneakyThrows
+    @PostMapping("/product")
+    @ResponseBody
+    public Response<Product> createProduct(@RequestBody Product product) {
+        return productService.createProduct(product);
+    }
+
+    @SneakyThrows
+    @PostMapping("/product/update")
+    @ResponseBody
+    public Response<Product> updateProduct(@RequestBody Product product) {
+        return productService.updateProduct(product);
+    }
+
+    @SneakyThrows
+    @DeleteMapping("/product/{id}")
+    @ResponseBody
+    public Response<Product> deleteProduct(@PathVariable("id") int productId) {
+        return productService.deleteProduct(productId);
+    }
+
+    @SneakyThrows
+    @GetMapping("/product/all")
+    @ResponseBody
+    public Response<List<Product>> getAllProductsSorted() {
+        return productService.getAllProductsSortedByName();
+    }
+
+    @SneakyThrows
+    @GetMapping("/product/all/{categoryId}")
+    @ResponseBody
+    public Response<List<Product>> getAllProductsInCategorySorted(@PathVariable("categoryId") int categoryId) {
+        return productService.getAllProductsFromCategorySortedByName(categoryId);
+    }
+
+    @SneakyThrows
+    @PostMapping("/customer")
+    @ResponseBody
+    public Response<CustomerCard> createCustomerCard(@RequestBody CustomerCard customerCard) {
+        return customerService.createCustomerCard(customerCard);
+    }
+
+    @SneakyThrows
+    @PostMapping("/customer/update")
+    @ResponseBody
+    public Response<CustomerCard> updateCustomerCard(@RequestBody CustomerCard customerCard) {
+        return customerService.updateCustomerCard(customerCard);
+    }
+
+    @SneakyThrows
+    @DeleteMapping("/customer/{id}")
+    @ResponseBody
+    public Response<CustomerCard> deleteCustomerCard(@PathVariable("id") int customerCardId) {
+        return customerService.deleteCustomerCard(customerCardId);
+    }
+
+    @SneakyThrows
+    @GetMapping("/customer/{surname}")
+    @ResponseBody
+    public Response<List<CustomerCard>> findCustomersBySurname(@PathVariable("surname") String surname) {
+        return customerService.findCustomersCardBySurname(surname);
+    }
+
+    @SneakyThrows
+    @GetMapping("/customer/discount/{percent}")
+    @ResponseBody
+    public Response<List<CustomerCard>> findCustomersByPercent(@PathVariable("percent") int percent) {
+        return customerService.findCustomersWithCertainPercent(percent);
+    }
+
+    @SneakyThrows
+    @PostMapping("/store-product")
+    @ResponseBody
+    public Response<StoreProduct> createStoreProduct(@RequestBody StoreProduct storeProduct) {
+        return storeProductService.createStoreProduct(storeProduct);
+    }
+
+    @SneakyThrows
+    @PostMapping("/store-product/update")
+    @ResponseBody
+    public Response<StoreProduct> updateStoreProduct(@RequestBody StoreProduct storeProduct) {
+        return storeProductService.updateStoreProduct(storeProduct);
+    }
+
+    @SneakyThrows
+    @DeleteMapping("/store-product/{upc}")
+    @ResponseBody
+    public Response<StoreProduct> deleteStoreProduct(@PathVariable("upc") String productUpc) {
+        return storeProductService.deleteStoreProduct(productUpc);
+    }
+
+    @SneakyThrows
+    @GetMapping("/store-product/all/{productId}")
+    @ResponseBody
+    public Response<List<StoreProduct>> getAllStoreProductsFromProduct(@PathVariable("productId") int productId) {
+        return storeProductService.getAllStoreProductsFromProduct(productId);
+    }
+
+    @SneakyThrows
+    @PostMapping("/receipt")
+    @ResponseBody
+    public Response<Receipt> createReceipt(@RequestBody Receipt receipt) {
+        return receiptService.createReceipt(receipt);
+    }
+
+    @SneakyThrows
+    @PostMapping("/receipt/update")
+    @ResponseBody
+    public Response<Receipt> updateReceipt(@RequestBody Receipt receipt) {
+        return receiptService.updateReceipt(receipt);
+    }
+
+    @SneakyThrows
+    @DeleteMapping("/receipt/{id}")
+    @ResponseBody
+    public Response<Receipt> deleteStoreProduct(@PathVariable("id") Integer id) {
+        return receiptService.deleteReceipt(id);
+    }
+
+    @SneakyThrows
+    @GetMapping("/receipt/{id}")
+    @ResponseBody
+    public Response<List<Receipt>> findEmployeeReceiptsPeriod(@PathVariable("id") String id,
+                                                              @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                                                              @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        return receiptService.findReceiptsOfEmployeeFromPeriod(id, startDate, endDate);
+    }
+
+    @SneakyThrows
+    @GetMapping("/receipt/sum/{id}")
+    @ResponseBody
+    public Response<Double> findSumEmployeeFromPeriod(@PathVariable("id") String id,
+                                                      @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                                                      @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        return receiptService.sumAllReceiptsByEmployeeFromPeriod(id, startDate, endDate);
+    }
+
+    @SneakyThrows
+    @GetMapping("/receipt/sum")
+    @ResponseBody
+    public Response<Double> findSumFromPeriod(@RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                                              @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        return receiptService.sumAllReceiptsFromPeriod(startDate, endDate);
+    }
+
+    @SneakyThrows
+    @GetMapping("/store-product/promo/by-amount")
+    @ResponseBody
+    public Response<List<StoreProduct>> getAllPromoStoreProductsSortedByAmount() {
+        return storeProductService.findAllPromotionalSortedByAmount(true);
+    }
+
+    @SneakyThrows
+    @GetMapping("/store-product/regular/by-amount")
+    @ResponseBody
+    public Response<List<StoreProduct>> getAllRegularStoreProductsSortedByAmount() {
+        return storeProductService.findAllPromotionalSortedByAmount(false);
+    }
+
 
     // Voldemar starts
 

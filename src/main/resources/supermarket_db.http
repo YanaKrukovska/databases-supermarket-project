@@ -14,7 +14,7 @@ POST http://localhost:8080/category/1/Cats
 
 ###  Delete category
 
-DELETE http://localhost:8080/category/4
+DELETE http://localhost:8080/category/6
 
 ### Get all categories sorted by name
 GET http://localhost:8080/category/all
@@ -29,7 +29,7 @@ POST http://localhost:8080/employee
 Content-Type: application/json
 
 {
-  "employeeId": "0000000003",
+  "employeeId": "0000000103",
   "surname": "Yushchenko",
   "name": "Viktor",
   "patronymic": "Andriyovych",
@@ -48,7 +48,7 @@ POST http://localhost:8080/employee/update
 Content-Type: application/json
 
 {
-  "employeeId": "0000000003",
+  "employeeId": "0000000103",
   "surname": "Yushchenko",
   "name": "Viktor",
   "patronymic": "Andriyovych",
@@ -63,7 +63,7 @@ Content-Type: application/json
 }
 
 ###  Delete employee
-DELETE http://localhost:8080/employee/0000000003
+DELETE http://localhost:8080/employee/0000000103
 
 ### Get all cashiers sorted by surname
 GET http://localhost:8080/employee/cashiers
@@ -87,13 +87,13 @@ GET http://localhost:8080/customer/only_products_as?id=1
 GET http://localhost:8080/employee/stats?sum=200
 
 ### Find all store products that do not belong to certain category
-GET http://localhost:8080/store-product/all/except?category=Pet Food
+GET http://localhost:8080/store-product/all/except?category=Fruits
 
 ### Get amount of people (employees and customers) from each city
 GET http://localhost:8080/city/stats
 
 ### Get all customers who went to the supermarkest only on those days as customer with certain id
-GET http://localhost:8080/customer/same-days?id=5
+GET http://localhost:8080/customer/same-days?id=2
 
 ### Get products that are bought together with product of id=1
 GET http://localhost:8080/product/products_with?id=1
@@ -107,7 +107,152 @@ GET http://localhost:8080/product/most_money_earn?n=3
 ### Get customers that buy all same positions in check as customer with id 3
 GET http://localhost:8080//product/same_as?id=3
 
+###  Create product
+POST http://localhost:8080/product
+Content-Type: application/json
 
-###
+{
+  "productName": "Butter",
+  "characteristics": "As milk and smetana but different",
+  "categoryNumber": 4
+}
 
+###  Update product
+POST http://localhost:8080/product/update
+Content-Type: application/json
+
+{
+  "productId": 9,
+  "productName": "Butter",
+  "characteristics": "Poroshenko's plan to conquer the world",
+  "categoryNumber": 4
+}
+
+###  Delete product
+DELETE http://localhost:8080/product/9
+
+### Get all products sorted by name
+GET http://localhost:8080/product/all
+
+
+###  Create customer card
+POST http://localhost:8080/customer
+Content-Type: application/json
+
+{
+  "customerSurname": "Bidenko",
+  "customerName": "Joe",
+  "customerPatronymic": "Robinettovych",
+  "phone": "+380991122122",
+  "city": null,
+  "street": null,
+  "zipcode": null,
+  "percent": 14
+}
+
+###  Update customer card
+POST http://localhost:8080/customer/update
+Content-Type: application/json
+
+{
+  "cardNumber": 7,
+  "customerSurname": "Bidenko",
+  "customerName": "Joe",
+  "customerPatronymic": "Robinettovych",
+  "phone": "+380991122122",
+  "city": "Kharkiv",
+  "street": "Shokoladna St. 2",
+  "zipcode": "03574",
+  "percent": 14
+}
+
+###  Delete customer card
+DELETE http://localhost:8080/customer/7
+
+### Get find customers with certain surname
+GET http://localhost:8080/customer/West
+
+### Get find customers with certain percent
+GET http://localhost:8080/customer/discount/2
+
+### Get all products from category sorted by name
+GET http://localhost:8080/product/all/5
+
+###  Create store product
+POST http://localhost:8080/store-product
+Content-Type: application/json
+
+{
+  "upc": "123456789123",
+  "upcPromo": null,
+  "productId": 3,
+  "sellingPrice": 11.5,
+  "productsNumber": 1200,
+  "promotionalProduct": false
+}
+
+###  Update store product
+POST http://localhost:8080/store-product/update
+Content-Type: application/json
+
+{
+  "upc": "123456789123",
+  "upcPromo": null,
+  "productId": 3,
+  "sellingPrice": 5.5,
+  "productsNumber": 500,
+  "promotionalProduct": false
+}
+
+###  Delete store product
+DELETE http://localhost:8080/store-product/123456789123
+
+### Get all store products from product
+GET http://localhost:8080/store-product/all/4
+
+
+###  Create receipt
+POST http://localhost:8080/receipt
+Content-Type: application/json
+
+{
+  "upc": "123456789123",
+  "printDate": "2021-04-01T10:02:43.000+0000",
+  "sumTotal": 37.5,
+  "vat": 7.5,
+  "employeeId": "0000000002",
+  "cardNumber": 2
+}
+
+###  Update receipt
+POST http://localhost:8080/receipt/update
+Content-Type: application/json
+
+{
+  "receiptNumber": 223,
+  "upc": "123456789123",
+  "printDate": "2021-04-01T10:02:43.000+0000",
+  "sumTotal": 43.5,
+  "vat": 8.7,
+  "employeeId": "0000000002",
+  "cardNumber": 2
+}
+
+###  Delete receipt
+DELETE http://localhost:8080/receipt/23
+
+###  Get all receipts by employee between dates
+GET http://localhost:8080/receipt/0000000002?startDate=2020-04-02&endDate=2020-04-05
+
+###  Get sum of all receipts by employee between dates
+GET http://localhost:8080/receipt/sum/0000000002?startDate=2020-04-02&endDate=2020-04-05
+
+###  Get sum of all receipts by all employees between dates
+GET http://localhost:8080/receipt/sum?startDate=2020-04-02&endDate=2020-04-05
+
+### Get all promo store products sorted by amount
+GET http://localhost:8080/store-product/promo/by-amount
+
+### Get all not promo store products sorted by amount
+GET http://localhost:8080/store-product/regular/by-amount
 

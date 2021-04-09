@@ -18,4 +18,27 @@ public class StoreProduct {
     private int productsNumber;
     private boolean isPromotionalProduct;
 
+    public String getUpc() {
+        return upc;
+    }
+
+    public String getUpcPromo() {
+        return upcPromo;
+    }
+
+    public int getProductId() {
+        return productId;
+    }
+
+    public double getSellingPrice() {
+        return sellingPrice;
+    }
+
+    public int getProductsNumber() {
+        return productsNumber;
+    }
+
+    public String isPromotionalProductString() {
+        return isPromotionalProduct? "Yes":"No";
+    }
 }

@@ -18,4 +18,19 @@ public class EmployeeStatistic {
     private Date date;
     private int receiptAmount;
 
+    public String getEmployeeId() {
+        return employeeId;
+    }
+
+    public String getEmployeeSurname() {
+        return employeeSurname;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public int getReceiptAmount() {
+        return receiptAmount;
+    }
 }

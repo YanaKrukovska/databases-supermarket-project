@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Products</title>
+    <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.6.0/css/bootstrap.min.css} "/>
+</head>
+<body>
+
+<div th:replace="parts/navbar.html :: navigation"></div>
+<main style="padding-top: 56px; padding-bottom: 60px;">
+<table class="table">
+    <thead class="thead-light">
+    <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Name</th>
+        <th scope="col">Characteristics</th>
+        <th scope="col">Category</th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+    </tr>
+    </thead>
+
+    <tbody>
+
+    <tr th:each="product : ${products}">
+        <td class="align-middle"><span class="align-middle" th:text="${product.productId}"></span></td>
+        <td class="align-middle"><span class="align-middle" th:text="${product.productName}"></span></td>
+        <td class="align-middle"><span class="align-middle" th:text="${product.characteristics}"></span></td>
+        <td class="align-middle"><span class="align-middle" th:text="${product.categoryNumber}"></span></td>
+
+
+        <form th:action="@{/}" method="get">
+            <td><input type="hidden" th:value="${1}" name="productID">
+                <button type="submit" class="font-weight-bold btn btn-danger btn-block" style="padding: 0px;"
+                        onclick="return confirm('Are you sure you want to delete this product?')">
+                    Remove
+                </button>
+            </td>
+        </form>
+        <form th:action="@{/}" method="get">
+            <td><input type="hidden" th:value="${1}" name="productID">
+                <button type="submit" class="btn btn-primary btn-block" style="padding: 0px;">
+                    Edit
+                </button>
+            </td>
+        </form>
+
+    </tbody>
+</table>
+</main>
+</body>
+</html>

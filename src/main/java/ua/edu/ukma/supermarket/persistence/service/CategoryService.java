@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ua.edu.ukma.supermarket.persistence.model.Category;
 import ua.edu.ukma.supermarket.persistence.model.CategoryStatistic;
-import ua.edu.ukma.supermarket.persistence.model.Product;
 import ua.edu.ukma.supermarket.persistence.model.Response;
 
 import java.sql.*;
@@ -29,15 +28,12 @@ public class CategoryService {
             return new Response<>(null, Collections.singletonList("Category name can't be empty"));
         }
 
-        PreparedStatement statement;
-        try {
-            String query = "INSERT INTO category (category_number, category_name) VALUES (?,?)";
-
-            statement = connection.prepareStatement(query);
+        String query = "INSERT INTO category (category_number, category_name) VALUES (?,?)";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setNull(1, Types.NULL);
             statement.setString(2, categoryName);
-            int rows = statement.executeUpdate();
 
+            int rows = statement.executeUpdate();
             if (rows == 0) {
                 return new Response<>(null, Collections.singletonList("Failed to save"));
             }
@@ -57,15 +53,12 @@ public class CategoryService {
             return new Response<>(null, Collections.singletonList("Category name can't be empty"));
         }
 
-        PreparedStatement statement;
-        try {
-            String query = "UPDATE category SET category_name = ? WHERE category_number = ?";
-
-            statement = connection.prepareStatement(query);
+        String query = "UPDATE category SET category_name = ? WHERE category_number = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, newCategoryName);
             statement.setInt(2, categoryId);
-            int rows = statement.executeUpdate();
 
+            int rows = statement.executeUpdate();
             if (rows == 0) {
                 return new Response<>(null, Collections.singletonList("Failed to update"));
             }
@@ -82,11 +75,9 @@ public class CategoryService {
             return new Response<>(null, Collections.singletonList("Category with such id doesn't exist"));
         }
 
-        PreparedStatement statement;
-        try {
-            String query = "DELETE FROM category WHERE category_number = ?";
+        String query = "DELETE FROM category WHERE category_number = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
 
-            statement = connection.prepareStatement(query);
             statement.setInt(1, categoryId);
             statement.execute();
 
@@ -96,11 +87,29 @@ public class CategoryService {
         }
     }
 
+    public List<Category> findAll() {
+        String query = "SELECT * FROM category";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            ResultSet resultSet = statement.executeQuery();
+            List<Category> categoryList = new LinkedList<>();
+            while (resultSet.next()) {
+                categoryList.add(categoryFromResultSet(resultSet));
+            }
+            return categoryList;
+        } catch (SQLException e) {
+            return new LinkedList<>();
+        }
+    }
+
+    private Category categoryFromResultSet(ResultSet resultSet) throws SQLException {
+        int number = resultSet.getInt("category_number");
+        String name = resultSet.getString("category_name");
+        return new Category(number, name);
+    }
+
     public Category findCategoryByName(String categoryName) {
-        PreparedStatement statement;
-        try {
-            String query = "SELECT * FROM category WHERE category_name=?";
-            statement = connection.prepareStatement(query);
+        String query = "SELECT * FROM category WHERE category_name=?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, categoryName);
             ResultSet resultSet = statement.executeQuery();
             resultSet.next();
@@ -112,10 +121,8 @@ public class CategoryService {
     }
 
     public Response<Category> findCategoryById(int id) {
-        PreparedStatement statement;
-        try {
-            String query = "SELECT * FROM category WHERE category_number=?";
-            statement = connection.prepareStatement(query);
+        String query = "SELECT * FROM category WHERE category_number=?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id);
             ResultSet resultSet = statement.executeQuery();
             resultSet.next();
@@ -127,12 +134,8 @@ public class CategoryService {
 
     public Response<List<Category>> getCategoriesSortedByName() {
 
-
-        PreparedStatement statement;
-        try {
-            String query = "SELECT * FROM category ORDER BY category_name ASC";
-
-            statement = connection.prepareStatement(query);
+        String query = "SELECT * FROM category ORDER BY category_name ASC";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
             ResultSet resultSet = statement.executeQuery();
 
             List<Category> categoryList = new LinkedList<>();
@@ -140,10 +143,7 @@ public class CategoryService {
             while (resultSet.next()) {
                 int number = resultSet.getInt("category_number");
                 String name = resultSet.getString("category_name");
-
-                Category category = new Category(number, name);
-
-                categoryList.add(category);
+                categoryList.add(new Category(number, name));
             }
 
             return new Response<>(categoryList, new LinkedList<>());
@@ -160,14 +160,17 @@ public class CategoryService {
                         "INNER JOIN product AS P ON P.id_product=SP.id_product " +
                         "INNER JOIN category AS C ON C.category_number=P.category_number " +
                         "GROUP BY C.category_number " +
-                        "ORDER BY sum DESC";;
-        PreparedStatement statement;
-        try {
-            statement = connection.prepareStatement(query);
+                        "ORDER BY sum DESC";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+
             ResultSet resultSet = statement.executeQuery();
             List<CategoryStatistic> categoryList = new LinkedList<>();
 
-            while (resultSet.next()) categoryList.add(new CategoryStatistic(resultSet.getInt("category_number"),resultSet.getString("category_name"),resultSet.getInt("sum")));
+            while (resultSet.next()) {
+                categoryList.add(new CategoryStatistic(resultSet.getInt("category_number"),
+                        resultSet.getString("category_name"), resultSet.getInt("sum")));
+            }
 
             return new Response<>(categoryList, new LinkedList<>());
         } catch (SQLException e) {
