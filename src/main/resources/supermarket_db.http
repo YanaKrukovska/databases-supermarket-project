@@ -169,6 +169,12 @@ Content-Type: application/json
 ###  Delete customer card
 DELETE http://localhost:8080/customer/7
 
+### Get find customers with certain surname
+GET http://localhost:8080/customer/West
+
+### Get find customers with certain percent
+GET http://localhost:8080/customer/discount/2
+
 ### Get all products from category sorted by name
 GET http://localhost:8080/product/all/5
 
@@ -234,3 +240,19 @@ Content-Type: application/json
 
 ###  Delete receipt
 DELETE http://localhost:8080/receipt/23
+
+###  Get all receipts by employee between dates
+GET http://localhost:8080/receipt/0000000002?startDate=2020-04-02&endDate=2020-04-05
+
+###  Get sum of all receipts by employee between dates
+GET http://localhost:8080/receipt/sum/0000000002?startDate=2020-04-02&endDate=2020-04-05
+
+###  Get sum of all receipts by all employees between dates
+GET http://localhost:8080/receipt/sum?startDate=2020-04-02&endDate=2020-04-05
+
+### Get all promo store products sorted by amount
+GET http://localhost:8080/store-product/promo/by-amount
+
+### Get all not promo store products sorted by amount
+GET http://localhost:8080/store-product/regular/by-amount
+

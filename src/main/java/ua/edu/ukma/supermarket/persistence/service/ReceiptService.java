@@ -140,6 +140,68 @@ public class ReceiptService {
         }
     }
 
+    public Response<List<Receipt>> findReceiptsOfEmployeeFromPeriod(String employeeId, java.util.Date startDate, java.util.Date endDate) {
+
+        if (employeeService.findEmployeeById(employeeId) == null) {
+            return new Response<>(null, Collections.singletonList("Can't find receipts of nonexistent employee"));
+        }
+
+        String query = "SELECT * FROM receipt WHERE id_employee = ? AND print_date BETWEEN ? AND ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, employeeId);
+            statement.setDate(2, new Date(startDate.getTime()));
+            statement.setDate(3, new Date(endDate.getTime()));
+
+            ResultSet resultSet = statement.executeQuery();
+
+            List<Receipt> receiptList = new LinkedList<>();
+            while (resultSet.next()) {
+                receiptList.add(extractReceipt(resultSet));
+            }
+
+            return new Response<>(receiptList, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
+    public Response<Double> sumAllReceiptsByEmployeeFromPeriod(String employeeId, java.util.Date startDate, java.util.Date endDate) {
+
+        if (employeeService.findEmployeeById(employeeId) == null) {
+            return new Response<>(null, Collections.singletonList("Can't find receipts of nonexistent employee"));
+        }
+
+        String query = "SELECT SUM(sum_total) FROM receipt WHERE id_employee = ? AND print_date BETWEEN ? AND ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, employeeId);
+            statement.setDate(2, new Date(startDate.getTime()));
+            statement.setDate(3, new Date(endDate.getTime()));
+
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+
+            return new Response<>(Double.valueOf(resultSet.getString(1)), new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
+    public Response<Double> sumAllReceiptsFromPeriod(java.util.Date startDate, java.util.Date endDate) {
+
+        String query = "SELECT SUM(sum_total) FROM receipt WHERE print_date BETWEEN ? AND ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setDate(1, new Date(startDate.getTime()));
+            statement.setDate(2, new Date(endDate.getTime()));
+
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+
+            return new Response<>(Double.valueOf(resultSet.getString(1)), new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
     private List<String> validateReceipt(Receipt receipt) {
         List<String> errors = new LinkedList<>();
 

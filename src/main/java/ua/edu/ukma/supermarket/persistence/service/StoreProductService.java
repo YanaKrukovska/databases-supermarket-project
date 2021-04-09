@@ -185,6 +185,23 @@ public class StoreProductService {
         }
     }
 
+    public Response<List<StoreProduct>> findAllPromotionalSortedByAmount(boolean isPromo) {
+        String query = "SELECT * FROM store_product WHERE promotional_product  = ? ORDER BY products_number";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setBoolean(1, isPromo);
+            ResultSet resultSet = statement.executeQuery();
+
+            List<StoreProduct> productList = new LinkedList<>();
+            while (resultSet.next()) {
+                productList.add(extractStoreProduct(resultSet));
+            }
+
+            return new Response<>(productList, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
 
     private List<String> validateStoreProduct(StoreProduct product) {
         List<String> errors = new LinkedList<>();

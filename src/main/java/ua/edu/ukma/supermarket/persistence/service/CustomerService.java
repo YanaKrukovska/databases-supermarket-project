@@ -257,10 +257,42 @@ public class CustomerService {
             statement = connection.prepareStatement(query);
             ResultSet resultSet = statement.executeQuery();
             List<CustomerCard> customerCardList = new LinkedList<>();
-            while (resultSet.next()) customerCardList.add(customerCardFromResultSet(resultSet));
+            while (resultSet.next()) {
+                customerCardList.add(customerCardFromResultSet(resultSet));
+            }
             return customerCardList;
         } catch (SQLException e) {
             return new LinkedList<>();
+        }
+    }
+
+    public Response<List<CustomerCard>> findCustomersCardBySurname(String surname) {
+        String query = "SELECT * FROM customer_card WHERE card_surname = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, surname);
+            ResultSet resultSet = statement.executeQuery();
+            List<CustomerCard> customerCardList = new LinkedList<>();
+            while (resultSet.next()) {
+                customerCardList.add(customerCardFromResultSet(resultSet));
+            }
+            return new Response<>(customerCardList, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
+    public Response<List<CustomerCard>> findCustomersWithCertainPercent(int percent) {
+        String query = "SELECT * FROM customer_card WHERE percent = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, percent);
+            ResultSet resultSet = statement.executeQuery();
+            List<CustomerCard> customerCardList = new LinkedList<>();
+            while (resultSet.next()) {
+                customerCardList.add(customerCardFromResultSet(resultSet));
+            }
+            return new Response<>(customerCardList, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
         }
     }
 

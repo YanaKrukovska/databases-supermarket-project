@@ -2,12 +2,14 @@ package ua.edu.ukma.supermarket.controller;
 
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ua.edu.ukma.supermarket.persistence.model.*;
 import ua.edu.ukma.supermarket.persistence.service.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -163,6 +165,7 @@ public class ApplicationController {
         return employeeService.findPhoneNumberAndAddressBySurname(surname);
     }
 
+
     @SneakyThrows
     @PostMapping("/product")
     @ResponseBody
@@ -220,6 +223,20 @@ public class ApplicationController {
     }
 
     @SneakyThrows
+    @GetMapping("/customer/{surname}")
+    @ResponseBody
+    public Response<List<CustomerCard>> findCustomersBySurname(@PathVariable("surname") String surname) {
+        return customerService.findCustomersCardBySurname(surname);
+    }
+
+    @SneakyThrows
+    @GetMapping("/customer/discount/{percent}")
+    @ResponseBody
+    public Response<List<CustomerCard>> findCustomersByPercent(@PathVariable("percent") int percent) {
+        return customerService.findCustomersWithCertainPercent(percent);
+    }
+
+    @SneakyThrows
     @PostMapping("/store-product")
     @ResponseBody
     public Response<StoreProduct> createStoreProduct(@RequestBody StoreProduct storeProduct) {
@@ -267,6 +284,47 @@ public class ApplicationController {
     public Response<Receipt> deleteStoreProduct(@PathVariable("id") Integer id) {
         return receiptService.deleteReceipt(id);
     }
+
+    @SneakyThrows
+    @GetMapping("/receipt/{id}")
+    @ResponseBody
+    public Response<List<Receipt>> findEmployeeReceiptsPeriod(@PathVariable("id") String id,
+                                                              @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                                                              @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        return receiptService.findReceiptsOfEmployeeFromPeriod(id, startDate, endDate);
+    }
+
+    @SneakyThrows
+    @GetMapping("/receipt/sum/{id}")
+    @ResponseBody
+    public Response<Double> findSumEmployeeFromPeriod(@PathVariable("id") String id,
+                                                      @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                                                      @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        return receiptService.sumAllReceiptsByEmployeeFromPeriod(id, startDate, endDate);
+    }
+
+    @SneakyThrows
+    @GetMapping("/receipt/sum")
+    @ResponseBody
+    public Response<Double> findSumFromPeriod(@RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                                              @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        return receiptService.sumAllReceiptsFromPeriod(startDate, endDate);
+    }
+
+    @SneakyThrows
+    @GetMapping("/store-product/promo/by-amount")
+    @ResponseBody
+    public Response<List<StoreProduct>> getAllPromoStoreProductsSortedByAmount() {
+        return storeProductService.findAllPromotionalSortedByAmount(true);
+    }
+
+    @SneakyThrows
+    @GetMapping("/store-product/regular/by-amount")
+    @ResponseBody
+    public Response<List<StoreProduct>> getAllRegularStoreProductsSortedByAmount() {
+        return storeProductService.findAllPromotionalSortedByAmount(false);
+    }
+
 
     // Voldemar starts
 
