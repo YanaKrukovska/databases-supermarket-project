@@ -10,6 +10,7 @@ import ua.edu.ukma.supermarket.persistence.model.*;
 import ua.edu.ukma.supermarket.persistence.service.*;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,9 +53,54 @@ public class ApplicationController {
 
     @GetMapping("/product")
     public String productsPage(Model model) {
-        List<Product> products = productService.findAll();
-        model.addAttribute("products", products);
+        Response<List<Product>> productsResponse = productService.findAll();
+        if (productsResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", productsResponse.getErrors());
+            return "error-page";
+        }
+        List<Product> products = productsResponse.getObject();
+        LinkedHashMap<Product, String> productsWithCategories = new LinkedHashMap<>();
+        for (int i = 0; i < products.size(); i++) {
+            Product currentProduct = products.get(i);
+            Response<Category> categoryResponse = categoryService.findCategoryById(currentProduct.getCategoryNumber());
+            if (categoryResponse.getErrors().size() > 0) {
+                model.addAttribute("errors", categoryResponse.getErrors());
+                return "error-page";
+            }
+            Category currentCategory = categoryResponse.getObject();
+            productsWithCategories.put(currentProduct, currentCategory.getCategoryName());
+        }
+        model.addAttribute("products", productsWithCategories);
         return "products";
+    }
+
+    @GetMapping("/edit-product")
+    public String editProduct(@ModelAttribute("productId") int id, Model model) {
+        Response<Product> productResponse = productService.findProductById(id);
+        if (productResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", productResponse.getErrors());
+            return "error-page";
+        }
+        Product product = productResponse.getObject();
+        Response<List<Category>> categoryResponse = categoryService.findAll();
+        if (categoryResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", categoryResponse.getErrors());
+            return "error-page";
+        }
+        List<Category> categories = categoryResponse.getObject();
+        model.addAttribute("product", product);
+        model.addAttribute("categories", categories);
+        return "product-edit";
+    }
+
+    @PostMapping("/request-edit-product")
+    public String requestEditProduct(@ModelAttribute Product product, Model model) {
+        Response<Product> productResponse = productService.updateProduct(product);
+        if (productResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", productResponse.getErrors());
+            return "error-page";
+        }
+        return "redirect:/product";
     }
 
     @PostMapping("/request-delete-product")

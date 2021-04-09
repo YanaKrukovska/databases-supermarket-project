@@ -218,15 +218,15 @@ public class ProductService {
         }
     }
 
-    public List<Product> findAll() {
+    public Response<List<Product>> findAll() {
         String query = "SELECT * FROM product";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             ResultSet resultSet = statement.executeQuery();
             List<Product> productList = new LinkedList<>();
             while (resultSet.next()) productList.add(productFromResultSet(resultSet));
-            return productList;
+            return new Response<>(productList, new LinkedList<>());
         } catch (SQLException e) {
-            return new LinkedList<>();
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
         }
     }
 
