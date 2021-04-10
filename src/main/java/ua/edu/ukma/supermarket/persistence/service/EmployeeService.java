@@ -1,6 +1,9 @@
 package ua.edu.ukma.supermarket.persistence.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ua.edu.ukma.supermarket.persistence.model.Employee;
 import ua.edu.ukma.supermarket.persistence.model.EmployeeStatistic;
@@ -13,13 +16,15 @@ import java.sql.SQLException;
 import java.util.*;
 
 @Service
-public class EmployeeService {
+public class EmployeeService implements UserDetailsService {
 
     private final Connection connection;
+    private final RoleService roleService;
 
     @Autowired
-    public EmployeeService(Connection connection) {
+    public EmployeeService(Connection connection, RoleService roleService) {
         this.connection = connection;
+        this.roleService = roleService;
     }
 
 
@@ -34,7 +39,7 @@ public class EmployeeService {
                 "empl_role, salary, date_of_birth, date_of_start, phone_number, city, street, zip_code) " +
                 "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
 
-        try (PreparedStatement statement = connection.prepareStatement(query)){
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
 
             statement.setString(1, employee.getEmployeeId());
             statement.setString(2, employee.getSurname());
@@ -227,6 +232,27 @@ public class EmployeeService {
         }
     }
 
+    public Response<Employee> findEmployeeByUsername(String username) {
+
+        if (username == null || username.isBlank()) {
+            return new Response<>(null, Collections.singletonList("Username can't be null"));
+        }
+        String query = "SELECT * FROM EMPLOYEE WHERE username=?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, username);
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+            Employee employee = employeeFromResultSet(resultSet);
+            employee.setPassword(resultSet.getString("password"));
+            employee.setUsername(resultSet.getString("username"));
+            employee.setSystemRole(roleService.findRoleById(resultSet.getLong("id_role")).getObject());
+            return new Response<>(employee, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
 
     public Response<List<EmployeeStatistic>> getEmployeeReceiptSumStats(double sum) {
         String query = "SELECT e.id_employee, e.empl_surname, print_date AS date, COUNT(*) AS receipt_amount FROM Receipt r " +
@@ -335,5 +361,13 @@ public class EmployeeService {
         return new Employee(id, surname, name, patronymic, role, salary, birthDate, startDate, phoneNumber, city, street, zipCode);
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+        Employee employee = findEmployeeByUsername(s).getObject();
 
+        if (employee == null) {
+            throw new UsernameNotFoundException("User not found");
+        }
+        return employee;
+    }
 }
