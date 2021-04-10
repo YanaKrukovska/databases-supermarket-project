@@ -94,6 +94,8 @@ public class ProductService {
         }
     }
 
+
+
     public Response<Product> deleteProduct(Integer productId) {
 
         if (productId == null){
@@ -242,6 +244,24 @@ public class ProductService {
             }
 
             return new Response<>(productList, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
+    public Response<Integer>  getAmountOfSalesForPeriodByProductId(int prodId, java.util.Date startDate, java.util.Date endDate) {
+        String query =
+                "SELECT SUM(product_number)" +
+                "FROM sale AS S " +
+                "INNER JOIN receipt AS R ON R.check_number=S.check_number " +
+                "INNER JOIN store_product AS SP ON S.upc=SP.upc " +
+                "WHERE SP.id_product = ? AND R.print_date BETWEEN ? AND ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, prodId);
+            statement.setDate(2, new Date(startDate.getTime()));
+            statement.setDate(3, new Date(endDate.getTime()));
+            ResultSet resultSet = statement.executeQuery();
+            return new Response<>(Integer.valueOf(resultSet.getString(1)), new LinkedList<>());
         } catch (SQLException e) {
             return new Response<>(null, Collections.singletonList(e.getMessage()));
         }

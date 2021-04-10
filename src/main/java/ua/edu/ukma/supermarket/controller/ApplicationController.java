@@ -458,6 +458,14 @@ public class ApplicationController {
         return customerService.findCustomersWithCertainPercent(percent);
     }
 
+    // Скласти список усіх постійних клієнтів, що мають карту клієнта, по полях  ПІБ, телефон, адреса (якщо вказана)
+    @SneakyThrows
+    @GetMapping("/customer/all/basic")
+    @ResponseBody
+    public Response<List<BasicCustomerCard>> getBasicCustomerInfo() {
+        return customerService.getBasicCustomerInfo();
+    }
+
     @SneakyThrows
     @PostMapping("/store-product")
     @ResponseBody
@@ -484,6 +492,21 @@ public class ApplicationController {
     @ResponseBody
     public Response<List<StoreProduct>> getAllStoreProductsFromProduct(@PathVariable("productId") int productId) {
         return storeProductService.getAllStoreProductsFromProduct(productId);
+    }
+ // За UPC-товару знайти ціну продажу товару, кількість наявних одиниць товару.
+    @SneakyThrows
+    @GetMapping("/store-product/{upc}")
+    @ResponseBody
+    public Response<List<BasicStoredProduct>> getBasicStoredProductInfo(@PathVariable("upc") String upc) {
+        return storeProductService.getBasicStoredProductInfo(upc);
+    }
+
+    // За UPC-товару знайти ціну продажу товару, кількість наявних одиниць товару, назву та характеристики товару.
+    @SneakyThrows
+    @GetMapping("/store-product-advanced/{upc}")
+    @ResponseBody
+    public Response<List<AdvancedStoreProduct>> getAdvancedStoredProductInfo(@PathVariable("upc") String upc) {
+        return storeProductService.getAdvancedStoredProductInfo(upc);
     }
 
     @SneakyThrows
@@ -523,6 +546,17 @@ public class ApplicationController {
                                                       @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
                                                       @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
         return receiptService.sumAllReceiptsByEmployeeFromPeriod(id, startDate, endDate);
+    }
+
+    //Визначити загальну кількість одиниць певного товару, проданого за певний період часу NOT WORKING
+
+    @SneakyThrows
+    @GetMapping("/amount_of_sales_by_period")
+    @ResponseBody
+    public Response<Integer> getAmountOfSalesForPeriodByProductId(@RequestParam("id") int id,
+                                                              @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                                                              @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        return productService.getAmountOfSalesForPeriodByProductId(id, startDate, endDate);
     }
 
     @SneakyThrows
