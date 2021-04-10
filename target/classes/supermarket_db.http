@@ -264,5 +264,8 @@ GET http://localhost:8080/customer/all/basic
 ###  Get amount of sold product of certain id between dates
 GET http://localhost:8080/amount_of_sales_by_period?id=1&startDate=2020-03-01&endDate=2020-04-05
 
+###  Get  Get price and amount, name and characteristics of stored product from UPC
+GET http://localhost:8080/store-product-advanced/761303463013
+
 ###
 

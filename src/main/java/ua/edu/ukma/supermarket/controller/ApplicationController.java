@@ -8,6 +8,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ua.edu.ukma.supermarket.persistence.model.*;
 import ua.edu.ukma.supermarket.persistence.service.*;
+import ua.edu.ukma.supermarket.persistence.model.AdvancedStoreProduct;
+import ua.edu.ukma.supermarket.persistence.model.BasicCustomerCard;
+import ua.edu.ukma.supermarket.persistence.model.BasicStoredProduct;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -160,8 +163,12 @@ public class ApplicationController {
 
     @GetMapping("/employee")
     public String employeesPage(Model model) {
-        List<Employee> employees = employeeService.findAll();
-        model.addAttribute("employees", employees);
+        Response<List<Employee>> employeeResponse = employeeService.findAll();
+        if (employeeResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", employeeResponse.getErrors());
+            return "error-page";
+        }
+        model.addAttribute("employees", employeeResponse.getObject());
         return "employees";
     }
 
@@ -215,8 +222,12 @@ public class ApplicationController {
 
     @GetMapping("/customer")
     public String customersPage(Model model) {
-        List<CustomerCard> customers = customerService.findAll();
-        model.addAttribute("customers", customers);
+        Response<List<CustomerCard>> customerCardResponse = customerService.findAll();
+        if (customerCardResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", customerCardResponse.getErrors());
+            return "error-page";
+        }
+        model.addAttribute("customers", customerCardResponse.getObject());
         return "customers";
     }
 
@@ -269,21 +280,21 @@ public class ApplicationController {
             return "error-page";
         }
         List<StoreProduct> otherStoreProducts = storeProductListResponse.getObject();
-        List<String> otherUPCs=   otherStoreProducts.stream().filter(x -> !x.getUpc().equals(upc)).map(f->f.getUpc()).collect(Collectors.toList());
-        otherUPCs.add(0,null);
+        List<String> otherUPCs = otherStoreProducts.stream().filter(x -> !x.getUpc().equals(upc)).map(f -> f.getUpc()).collect(Collectors.toList());
+        otherUPCs.add(0, null);
         Response<List<Product>> productResponse = productService.findAll();
         if (productResponse.getErrors().size() > 0) {
             model.addAttribute("errors", productResponse.getErrors());
             return "error-page";
         }
         List<Product> products = productResponse.getObject();
-        LinkedHashMap<Boolean,String> promos=new LinkedHashMap<>();
-        promos.put(true,"Yes");
-        promos.put(false,"No");
+        LinkedHashMap<Boolean, String> promos = new LinkedHashMap<>();
+        promos.put(true, "Yes");
+        promos.put(false, "No");
         model.addAttribute("storeProduct", storeProduct);
         model.addAttribute("otherUPCs", otherUPCs);
-        model.addAttribute("products",products);
-        model.addAttribute("promos",promos);
+        model.addAttribute("products", products);
+        model.addAttribute("promos", promos);
         return "store-product-edit";
     }
 
@@ -305,6 +316,73 @@ public class ApplicationController {
             return "error-page";
         }
         return "redirect:/store-product";
+    }
+
+    @GetMapping("receipt")
+    public String receiptsPage(Model model) {
+        Response<List<Receipt>> receiptsResponse = receiptService.findAll();
+        if (receiptsResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", receiptsResponse.getErrors());
+            return "error-page";
+        }
+        model.addAttribute("receipts", receiptsResponse.getObject());
+        return "receipts";
+    }
+
+    @PostMapping("/request-delete-receipt")
+    public String removeReceipt(@ModelAttribute("receiptNumber") int receiptNumber, Model model) {
+        Response<Receipt> receiptResponse = receiptService.deleteReceipt(receiptNumber);
+        if (receiptResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", receiptResponse.getErrors());
+            return "error-page";
+        }
+        return "redirect:/receipt";
+    }
+
+    @GetMapping("edit-receipt")
+    public String editReceipt(@ModelAttribute("receiptNumber") int receiptNumber, Model model) {
+        Response<Receipt> receiptResponse = receiptService.findReceiptById(receiptNumber);
+        if (receiptResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", receiptResponse.getErrors());
+            return "error-page";
+        }
+        Response<List<CustomerCard>> customerCardResponse = customerService.findAll();
+        if (customerCardResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", customerCardResponse.getErrors());
+            return "error-page";
+        }
+        Response<List<Employee>> employeeResponse = employeeService.findAll();
+        if (employeeResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", employeeResponse.getErrors());
+            return "error-page";
+        }
+        List<Employee> employees = employeeResponse.getObject();
+        List<CustomerCard> customerCards = customerCardResponse.getObject();
+        List<String> employeeIds = employees.stream().map(f -> f.getEmployeeId()).collect(Collectors.toList());
+        List<Integer> cardNumbers = customerCards.stream().map(f -> f.getCardNumber()).collect(Collectors.toList());
+        model.addAttribute("employeeIds", employeeIds);
+        model.addAttribute("cardNumbers", cardNumbers);
+        model.addAttribute("receipt", receiptResponse.getObject());
+        return "receipt-edit";
+    }
+
+    @PostMapping("/request-edit-receipt")
+    public String requestEditReceipt(@ModelAttribute("receiptNumber") Integer receiptNumber,
+                                     @ModelAttribute("employeeId") String employeeId,
+                                     @ModelAttribute("cardNumber") Integer cardNumber,
+                                     @ModelAttribute("printDate") String printDate,
+                                     @ModelAttribute("sumTotal") Double sumTotal,
+                                     @ModelAttribute("vat") Double vat,
+                                     Model model) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date dateProper = formatter.parse(printDate);
+        Receipt receipt = new Receipt(receiptNumber, employeeId, cardNumber, dateProper, sumTotal, vat);
+        Response<Receipt> receiptResponse = receiptService.updateReceipt(receipt);
+        if (receiptResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", receiptResponse.getErrors());
+            return "error-page";
+        }
+        return "redirect:/receipt";
     }
 
     @SneakyThrows
@@ -459,12 +537,16 @@ public class ApplicationController {
     }
 
     // Скласти список усіх постійних клієнтів, що мають карту клієнта, по полях  ПІБ, телефон, адреса (якщо вказана)
-    @SneakyThrows
-    @GetMapping("/customer/all/basic")
+    @GetMapping({"/customer/all/basic"})
     @ResponseBody
     public Response<List<BasicCustomerCard>> getBasicCustomerInfo() {
-        return customerService.getBasicCustomerInfo();
+        try {
+            return this.customerService.getBasicCustomerInfo();
+        } catch (Throwable var2) {
+            throw var2;
+        }
     }
+
 
     @SneakyThrows
     @PostMapping("/store-product")
@@ -487,26 +569,36 @@ public class ApplicationController {
         return storeProductService.deleteStoreProduct(productUpc);
     }
 
-    @SneakyThrows
-    @GetMapping("/store-product/all/{productId}")
+    @GetMapping({"/store-product/all/{productId}"})
     @ResponseBody
     public Response<List<StoreProduct>> getAllStoreProductsFromProduct(@PathVariable("productId") int productId) {
-        return storeProductService.getAllStoreProductsFromProduct(productId);
+        try {
+            return this.storeProductService.getAllStoreProductsFromProduct(productId);
+        } catch (Throwable var3) {
+            throw var3;
+        }
     }
- // За UPC-товару знайти ціну продажу товару, кількість наявних одиниць товару.
-    @SneakyThrows
-    @GetMapping("/store-product/{upc}")
+
+    // За UPC-товару знайти ціну продажу товару, кількість наявних одиниць товару.
+    @GetMapping({"/store-product/{upc}"})
     @ResponseBody
     public Response<List<BasicStoredProduct>> getBasicStoredProductInfo(@PathVariable("upc") String upc) {
-        return storeProductService.getBasicStoredProductInfo(upc);
+        try {
+            return this.storeProductService.getBasicStoredProductInfo(upc);
+        } catch (Throwable var3) {
+            throw var3;
+        }
     }
 
     // За UPC-товару знайти ціну продажу товару, кількість наявних одиниць товару, назву та характеристики товару.
-    @SneakyThrows
-    @GetMapping("/store-product-advanced/{upc}")
+    @GetMapping({"/store-product-advanced/{upc}"})
     @ResponseBody
     public Response<List<AdvancedStoreProduct>> getAdvancedStoredProductInfo(@PathVariable("upc") String upc) {
-        return storeProductService.getAdvancedStoredProductInfo(upc);
+        try {
+            return this.storeProductService.getAdvancedStoredProductInfo(upc);
+        } catch (Throwable var3) {
+            throw var3;
+        }
     }
 
     @SneakyThrows
@@ -539,24 +631,26 @@ public class ApplicationController {
         return receiptService.findReceiptsOfEmployeeFromPeriod(id, startDate, endDate);
     }
 
-    @SneakyThrows
-    @GetMapping("/receipt/sum/{id}")
+    @GetMapping({"/receipt/sum/{id}"})
     @ResponseBody
-    public Response<Double> findSumEmployeeFromPeriod(@PathVariable("id") String id,
-                                                      @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-                                                      @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
-        return receiptService.sumAllReceiptsByEmployeeFromPeriod(id, startDate, endDate);
+    public Response<Double> findSumEmployeeFromPeriod(@PathVariable("id") String id, @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate, @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        try {
+            return this.receiptService.sumAllReceiptsByEmployeeFromPeriod(id, startDate, endDate);
+        } catch (Throwable var5) {
+            throw var5;
+        }
     }
 
     //Визначити загальну кількість одиниць певного товару, проданого за певний період часу NOT WORKING
 
-    @SneakyThrows
-    @GetMapping("/amount_of_sales_by_period")
+    @GetMapping({"/amount_of_sales_by_period"})
     @ResponseBody
-    public Response<Integer> getAmountOfSalesForPeriodByProductId(@RequestParam("id") int id,
-                                                              @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-                                                              @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
-        return productService.getAmountOfSalesForPeriodByProductId(id, startDate, endDate);
+    public Response<Integer> getAmountOfSalesForPeriodByProductId(@RequestParam("id") int id, @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate, @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        try {
+            return this.productService.getAmountOfSalesForPeriodByProductId(id, startDate, endDate);
+        } catch (Throwable var5) {
+            throw var5;
+        }
     }
 
     @SneakyThrows

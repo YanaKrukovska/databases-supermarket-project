@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" const="text/html;charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+    <title>Edit receipt</title>
+    <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.6.0/css/bootstrap.min.css} "/>
+
+</head>
+<body class="text-center">
+
+<main>
+    <div th:replace="parts/navbar.html :: navigation"></div>
+
+    <h1 class="h1 mb-3 font-weight-normal" style="padding-top: 60px">Receipt</h1>
+
+    <form class="row d-flex justify-content-center" th:action="@{/request-edit-receipt}" enctype="multipart/form-data"
+          method="post" style="padding-top: 10px">
+        <div class="col-lg-auto d-flex justify-content-center flex-column">
+            <input class="fields" type="hidden" id="receiptNumber" name="receiptNumber" th:value="*{receipt.receiptNumber}"
+                   placeholder="receiptNumber">
+
+
+            <span class="title">Employee ID</span>
+            <select class="limited-drop-down" id="employeeId" name="employeeId" th:value="*{receipt.employeeId}"
+                    style="width: 450px; height: 40px">
+                <option th:each="id : ${employeeIds}" th:value="${id}" th:text="${id}"
+                        th:selected="${id==receipt.employeeId}">
+                </option>
+            </select>
+
+            private Date printDate;
+            private double sumTotal;
+            private double vat;
+            <span class="title">Customer card number</span>
+            <select class="limited-drop-down" id="cardNumber" name="cardNumber" th:value="*{receipt.cardNumber}"
+                    style="width: 450px; height: 40px">
+                <option th:each="number : ${cardNumbers}" th:value="${number}" th:text="${number}"
+                        th:selected="${number==receipt.cardNumber}">
+                </option>
+            </select>
+
+            <span class="title">Date of transaction</span>
+            <input class="fields" type="date"  min="1991-01-01" max="2021-04-12" id="printDate" name="printDate" th:value="${receipt.printDate}"
+                   placeholder="Date of transaction">
+
+
+            <span class="title">Total sum(UAH)</span>
+            <input class="fields" type="number" min="0.01" max="9999999" step="0.01" id="sumTotal" name="sumTotal" th:value="${receipt.sumTotal}"
+                   placeholder="Total sum">
+
+            <span class="title">VAT(UAH)</span>
+            <input class="fields" type="number" min="0.01" max="9999999" step="0.01" id="vat" name="vat" th:value="${receipt.vat}"
+                   placeholder="VAT">
+
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Save</button>
+        </div>
+    </form>
+</main>
+</body>
+</html>

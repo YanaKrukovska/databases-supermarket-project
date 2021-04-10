@@ -165,6 +165,23 @@ public class ReceiptService {
         }
     }
 
+    public Response<List<Receipt>> findAll() {
+
+     String query = "SELECT * FROM receipt";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            ResultSet resultSet = statement.executeQuery();
+
+            List<Receipt> receiptList = new LinkedList<>();
+            while (resultSet.next()) {
+                receiptList.add(extractReceipt(resultSet));
+            }
+
+            return new Response<>(receiptList, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
     public Response<Double> sumAllReceiptsByEmployeeFromPeriod(String employeeId, java.util.Date startDate, java.util.Date endDate) {
 
         if (employeeService.findEmployeeById(employeeId) == null) {

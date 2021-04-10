@@ -60,16 +60,16 @@ public class EmployeeService {
         }
     }
 
-    public List<Employee> findAll() {
+    public Response<List<Employee>> findAll() {
         String query = "SELECT * FROM employee";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             ResultSet resultSet = statement.executeQuery();
             List<Employee> employeeList = new LinkedList<>();
             while (resultSet.next()) employeeList.add(employeeFromResultSet(resultSet));
-            return employeeList;
+            return new Response<>(employeeList, new LinkedList<>());
         } catch (SQLException e) {
-            return new LinkedList<>();
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
         }
     }
 

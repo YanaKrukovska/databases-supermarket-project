@@ -250,7 +250,7 @@ public class CustomerService {
         }
     }
 
-    public List<CustomerCard> findAll() {
+    public Response<List<CustomerCard>> findAll() {
         String query =
                 "SELECT * FROM customer_card";
         PreparedStatement statement;
@@ -261,9 +261,9 @@ public class CustomerService {
             while (resultSet.next()) {
                 customerCardList.add(customerCardFromResultSet(resultSet));
             }
-            return customerCardList;
+            return new Response<>(customerCardList, new LinkedList<>());
         } catch (SQLException e) {
-            return new LinkedList<>();
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
         }
     }
 
