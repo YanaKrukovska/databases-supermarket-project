@@ -10,6 +10,7 @@ import java.sql.*;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class StoreProductService {
@@ -153,18 +154,18 @@ public class StoreProductService {
         }
     }
 
-    public List<StoreProduct> findAll() {
+    public Response<List<StoreProduct>> findAll() {
         String query =
                 "SELECT * FROM store_product";
         PreparedStatement statement;
         try {
             statement = connection.prepareStatement(query);
             ResultSet resultSet = statement.executeQuery();
-            List<StoreProduct> storeProductList = new LinkedList<>();
-            while (resultSet.next()) storeProductList.add(extractStoreProduct(resultSet));
-            return storeProductList;
+            List<StoreProduct> storeProducts = new LinkedList<>();
+            while (resultSet.next()) storeProducts.add(extractStoreProduct(resultSet));
+            return new Response<>(storeProducts, new LinkedList<>());
         } catch (SQLException e) {
-            return new LinkedList<>();
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
         }
     }
 

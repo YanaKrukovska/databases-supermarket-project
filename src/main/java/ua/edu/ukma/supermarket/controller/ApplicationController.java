@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class ApplicationController {
@@ -231,9 +232,69 @@ public class ApplicationController {
 
     @GetMapping("/store-product")
     public String storeProductsPage(Model model) {
-        List<StoreProduct> storeProducts = storeProductService.findAll();
-        model.addAttribute("storeProducts", storeProducts);
+        Response<List<StoreProduct>> storeProductsResponse = storeProductService.findAll();
+
+
+        if (storeProductsResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", storeProductsResponse.getErrors());
+            return "error-page";
+        }
+        List<StoreProduct> storeProducts = storeProductsResponse.getObject();
+        LinkedHashMap<StoreProduct, String> storeProductsWithNames = new LinkedHashMap<>();
+        for (int i = 0; i < storeProducts.size(); i++) {
+            StoreProduct currentStoreProduct = storeProducts.get(i);
+            Response<Product> productResponse = productService.findProductById(currentStoreProduct.getProductId());
+            if (productResponse.getErrors().size() > 0) {
+                model.addAttribute("errors", productResponse.getErrors());
+                return "error-page";
+            }
+            Product currentProduct = productResponse.getObject();
+            storeProductsWithNames.put(currentStoreProduct, currentProduct.getProductName());
+        }
+        model.addAttribute("products", storeProductsWithNames);
         return "store-products";
+    }
+
+    @GetMapping("/edit-store-product")
+    public String editProduct(@ModelAttribute("upc") String upc, Model model) {
+        Response<StoreProduct> storeProductResponse = storeProductService.findStoreProductByUpc(upc);
+        if (storeProductResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", storeProductResponse.getErrors());
+            return "error-page";
+        }
+        StoreProduct storeProduct = storeProductResponse.getObject();
+        Response<List<StoreProduct>> storeProductListResponse = storeProductService.findAll();
+        if (storeProductListResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", storeProductListResponse.getErrors());
+            return "error-page";
+        }
+        List<StoreProduct> otherStoreProducts = storeProductListResponse.getObject();
+        List<String> otherUPCs=   otherStoreProducts.stream().filter(x -> !x.getUpc().equals(upc)).map(f->f.getUpc()).collect(Collectors.toList());
+        otherUPCs.add(0,null);
+        Response<List<Product>> productResponse = productService.findAll();
+        if (productResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", productResponse.getErrors());
+            return "error-page";
+        }
+        List<Product> products = productResponse.getObject();
+        LinkedHashMap<Boolean,String> promos=new LinkedHashMap<>();
+        promos.put(true,"Yes");
+        promos.put(false,"No");
+        model.addAttribute("storeProduct", storeProduct);
+        model.addAttribute("otherUPCs", otherUPCs);
+        model.addAttribute("products",products);
+        model.addAttribute("promos",promos);
+        return "store-product-edit";
+    }
+
+    @PostMapping("/request-edit-store-product")
+    public String requestEditStoreProduct(@ModelAttribute StoreProduct product, Model model) {
+        Response<StoreProduct> storeProductResponse = storeProductService.updateStoreProduct(product);
+        if (storeProductResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", storeProductResponse.getErrors());
+            return "error-page";
+        }
+        return "redirect:/store-product";
     }
 
     @PostMapping("/request-delete-store-product")
