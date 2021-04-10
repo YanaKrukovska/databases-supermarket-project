@@ -11,8 +11,12 @@
 
 <main>
 <div th:replace="parts/navbar.html :: navigation"></div>
-<form class="row d-flex justify-content-center" th:action="@{/request-edit-category}" enctype="multipart/form-data"
-      method="post" style="padding-top: 60px">
+
+    <h1 class="h1 mb-3 font-weight-normal" style="padding-top: 60px">Category</h1>
+
+
+    <form class="row d-flex justify-content-center" th:action="@{/request-edit-category}" enctype="multipart/form-data"
+      method="post" style="padding-top: 10px">
     <div class="col-lg-auto d-flex justify-content-center flex-column">
         <input class="fields" type="hidden" id="categoryNumber" name="categoryNumber" th:value="*{category.categoryNumber}"
                placeholder="id">

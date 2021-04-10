@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import ua.edu.ukma.supermarket.persistence.model.*;
 import ua.edu.ukma.supermarket.persistence.service.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -160,6 +162,44 @@ public class ApplicationController {
         List<Employee> employees = employeeService.findAll();
         model.addAttribute("employees", employees);
         return "employees";
+    }
+
+    @GetMapping("/edit-employee")
+    public String editEmployee(@ModelAttribute("employeeId") String id, Model model) {
+        Response<Employee> employeeResponse = employeeService.findEmployeeById(id);
+        if (employeeResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", employeeResponse.getErrors());
+            return "error-page";
+        }
+        String[] roles = {"Manager", "Cashier"};
+        model.addAttribute("employee", employeeResponse.getObject());
+        model.addAttribute("roles", roles);
+        return "employee-edit";
+    }
+
+    @PostMapping("/request-edit-employee")
+    public String requestEditEmployee(@ModelAttribute("employeeId") String employeeId,
+                                      @ModelAttribute("surname") String surname,
+                                      @ModelAttribute("name") String name,
+                                      @ModelAttribute("patronymic") String patronymic,
+                                      @ModelAttribute("role") String role,
+                                      @ModelAttribute("salary") Double salary,
+                                      @ModelAttribute("birthDate") String birthDate,
+                                      @ModelAttribute("startDate") String startDate,
+                                      @ModelAttribute("phoneNumber") String phoneNumber,
+                                      @ModelAttribute("city") String city,
+                                      @ModelAttribute("street") String street,
+                                      @ModelAttribute("zipCode") String zipCode, Model model) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date birthDateProper = formatter.parse(birthDate);
+        Date startDateProper = formatter.parse(startDate);
+        Employee employee = new Employee(employeeId, surname, name, patronymic, role, salary, birthDateProper, startDateProper, phoneNumber, city, street, zipCode);
+        Response<Employee> employeeResponse = employeeService.updateEmployee(employee);
+        if (employeeResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", employeeResponse.getErrors());
+            return "error-page";
+        }
+        return "redirect:/employee";
     }
 
     @PostMapping("/request-delete-employee")

@@ -53,8 +53,8 @@
                     </button>
                 </td>
             </form>
-            <form th:action="@{/}" method="get">
-                <td><input type="hidden" th:value="${1}" name="employeeID">
+            <form th:action="@{/edit-employee}" method="get">
+                <td><input type="hidden" th:value="${employee.employeeId}" name="employeeId">
                     <button type="submit" class="btn btn-primary btn-block" style="padding: 0px;">
                         Edit
                     </button>
