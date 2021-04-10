@@ -45,11 +45,11 @@ CREATE TABLE customer_card
 
 CREATE TABLE receipt
 (
-    check_number varchar(10) PRIMARY KEY,
+    check_number INT AUTO_INCREMENT PRIMARY KEY,
     print_date   date           not null,
     sum_total    decimal(13, 4) not null,
     vat          decimal(13, 4) not null,
-    id_employee  varchar(10)            not null,
+    id_employee  varchar(10)    not null,
     card_number  int null
 );
 
@@ -59,7 +59,7 @@ alter table if exists receipt add constraint card_number_fk foreign key (card_nu
 CREATE TABLE sale
 (
     upc            varchar(12)    not null,
-    check_number   varchar(10)    not null,
+    check_number   int            not null,
     PRIMARY KEY (upc, check_number),
     product_number int            not null,
     selling_price  decimal(13, 4) not null

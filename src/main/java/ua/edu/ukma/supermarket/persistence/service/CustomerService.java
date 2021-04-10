@@ -2,6 +2,7 @@ package ua.edu.ukma.supermarket.persistence.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ua.edu.ukma.supermarket.persistence.model.BasicCustomerCard;
 import ua.edu.ukma.supermarket.persistence.model.CustomerCard;
 import ua.edu.ukma.supermarket.persistence.model.Response;
 
@@ -266,6 +267,23 @@ public class CustomerService {
         }
     }
 
+    public Response<List<BasicCustomerCard>> getBasicCustomerInfo() {
+        String query =
+                "SELECT card_surname,card_name,card_patronymic,phone_number,city,street FROM customer_card";
+        PreparedStatement statement;
+        try {
+            statement = connection.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
+            List<BasicCustomerCard> customerCardList = new LinkedList<>();
+            while (resultSet.next()) {
+                customerCardList.add(basicCustomerCardFromResultSet(resultSet));
+            }
+            return new Response<>(customerCardList, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
     public Response<List<CustomerCard>> findCustomersCardBySurname(String surname) {
         String query = "SELECT * FROM customer_card WHERE card_surname = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -307,6 +325,16 @@ public class CustomerService {
         String zipCode = resultSet.getString("zip_code");
         int percent = resultSet.getInt("percent");
         return new CustomerCard(cardNumber, cardSur, cardName, cardPatr, phone, city, street, zipCode, percent);
+    }
+
+    private BasicCustomerCard basicCustomerCardFromResultSet(ResultSet resultSet) throws SQLException {
+        String cardSur = resultSet.getString("card_surname");
+        String cardName = resultSet.getString("card_name");
+        String cardPatr = resultSet.getString("card_patronymic");
+        String phone = resultSet.getString("phone_number");
+        String city = resultSet.getString("city");
+        String street = resultSet.getString("street");
+        return new BasicCustomerCard(cardSur, cardName, cardPatr, phone, city, street);
     }
 
     private List<String> validateCustomerCard(CustomerCard customerCard) {
