@@ -272,7 +272,8 @@ public class ApplicationController {
     public Response<List<StoreProduct>> getAllStoreProductsFromProduct(@PathVariable("productId") int productId) {
         return storeProductService.getAllStoreProductsFromProduct(productId);
     }
- // За UPC-товару знайти ціну продажу товару, кількість наявних одиниць товару.
+
+    // За UPC-товару знайти ціну продажу товару, кількість наявних одиниць товару.
     @SneakyThrows
     @GetMapping("/store-product/{upc}")
     @ResponseBody
@@ -335,14 +336,32 @@ public class ApplicationController {
         return receiptService.sumAllReceiptsByEmployeeFromPeriod(id, startDate, endDate);
     }
 
+    @SneakyThrows
+    @GetMapping("/receipt/detailed/{id}")
+    @ResponseBody
+    public Response<List<ReceiptDetailed>> findDetailedReceiptsOfEmployeeFromPeriod(@PathVariable("id") String id,
+                                                                                    @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                                                                                    @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        return receiptService.detailedReceiptsFromEmployeeFromPeriod(id, startDate, endDate);
+    }
+
+    @SneakyThrows
+    @GetMapping("/receipt/detailed")
+    @ResponseBody
+    public Response<List<ReceiptDetailed>> findAllDetailedReceiptsFromPeriod(
+            @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        return receiptService.findAllDetailedReceiptsFromPeriod(startDate, endDate);
+    }
+
     //Визначити загальну кількість одиниць певного товару, проданого за певний період часу NOT WORKING
 
     @SneakyThrows
     @GetMapping("/amount_of_sales_by_period")
     @ResponseBody
     public Response<Integer> getAmountOfSalesForPeriodByProductId(@RequestParam("id") int id,
-                                                              @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-                                                              @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+                                                                  @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                                                                  @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
         return productService.getAmountOfSalesForPeriodByProductId(id, startDate, endDate);
     }
 
@@ -375,6 +394,21 @@ public class ApplicationController {
     @ResponseBody
     public Response<List<StoreProduct>> getAllRegularStoreProductsSortedByAmount() {
         return storeProductService.findAllPromotionalSortedByAmount(false);
+    }
+
+
+    @SneakyThrows
+    @GetMapping("/store-product/regular/by-name")
+    @ResponseBody
+    public Response<List<StoreProductWithName>> getAllRegularStoreProductsSortedByName() {
+        return storeProductService.findAllSortedByName(false);
+    }
+
+    @SneakyThrows
+    @GetMapping("/store-product/promo/by-name")
+    @ResponseBody
+    public Response<List<StoreProductWithName>> getAllPromoStoreProductsSortedByName() {
+        return storeProductService.findAllSortedByName(true);
     }
 
 
