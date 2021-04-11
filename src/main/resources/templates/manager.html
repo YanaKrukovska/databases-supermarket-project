@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" const="text/html;charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+    <title>Manager queries</title>
+    <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.6.0/css/bootstrap.min.css} "/>
+
+</head>
+<body class="text-center">
+
+<main>
+
+
+    <div th:replace="parts/navbar.html :: navigation"></div>
+    <h1 class="h1 mb-3 font-weight-normal" style="padding-top: 60px">Manager queries</h1>
+<div class="row" style=" margin: 10px">
+    <p class="text font-italic "  >Скласти список працівників, що займають посаду касира, відсортованих за прізвищем</p>
+    <form th:action="@{/employee/cashiers}" method="get">
+        <button type="submit" class="btn  btn-success " style="margin: 3px" >⇛</button>
+    </form>
+</div>
+
+    <div class="row" style=" margin: 10px">
+        <p class="text font-italic "  >Скласти список усіх категорій, відсортованих за назвою</p>
+        <form th:action="@{/category/all}" method="get">
+            <button type="submit" class="btn  btn-success " style="margin: 3px" >⇛</button>
+        </form>
+    </div>
+
+
+    <div class="row" style=" margin: 10px">
+        <p class="text font-italic "  >За прізвищем працівника знайти його телефон та адресу</p>
+        <form th:action="@{/employee/contacts}" method="get">
+            <input class="fields" type="text" id="surname" name="surname"
+                   placeholder="Прізвище" required>
+            <button type="submit" class="btn  btn-success " style="margin: 3px" >⇛</button>
+        </form>
+    </div>
+
+
+    <div class="row" style=" margin: 10px">
+        <p class="text font-italic "  >Скласти список всіх товарів, що належать певній категорії</p>
+        <form th:action="@{/product/all/from-category}" method="get">
+            <select class="limited-drop-down" id="categoryNumber" name="categoryNumber"
+                    style="width: 450px; height: 40px">
+                <option th:each="category : ${categories}" th:value="${category.categoryNumber}" th:text="${category.categoryName}">
+                </option>
+            </select>
+            <button type="submit" class="btn  btn-success " style="margin: 3px" >⇛</button>
+        </form>
+    </div>
+
+
+
+</main>
+</body>
+</html>
