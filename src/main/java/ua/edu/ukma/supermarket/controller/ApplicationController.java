@@ -231,9 +231,30 @@ public class ApplicationController {
         return "customers";
     }
 
+    @GetMapping("/edit-customer")
+    public String editCustomer(@ModelAttribute("cardNumber") int id, Model model) {
+        Response<CustomerCard> customerCardResponse = customerService.findCustomerCardById(id);
+        if (customerCardResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", customerCardResponse.getErrors());
+            return "error-page";
+        }
+        model.addAttribute("customer", customerCardResponse.getObject());
+        return "customer-edit";
+    }
+
     @PostMapping("/request-delete-customer")
     public String removeCustomer(@ModelAttribute("cardNumber") int id, Model model) {
         Response<CustomerCard> customerCardResponse = customerService.deleteCustomerCard(id);
+        if (customerCardResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", customerCardResponse.getErrors());
+            return "error-page";
+        }
+        return "redirect:/customer";
+    }
+
+    @PostMapping("/request-edit-customer")
+    public String editCustomer(@ModelAttribute CustomerCard customerCard, Model model) {
+        Response<CustomerCard> customerCardResponse = customerService.updateCustomerCard(customerCard);
         if (customerCardResponse.getErrors().size() > 0) {
             model.addAttribute("errors", customerCardResponse.getErrors());
             return "error-page";

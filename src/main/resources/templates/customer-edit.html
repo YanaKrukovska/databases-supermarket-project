@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" const="text/html;charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+    <title>Edit customer card</title>
+    <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.6.0/css/bootstrap.min.css} "/>
+
+</head>
+<body class="text-center">
+
+<main>
+
+
+    <div th:replace="parts/navbar.html :: navigation"></div>
+    <h1 class="h1 mb-3 font-weight-normal" style="padding-top: 60px">Customer card</h1>
+
+    <form class="row d-flex justify-content-center" th:action="@{/request-edit-customer}" enctype="multipart/form-data"
+          method="post" style="padding-top: 10px">
+        <div class="col-lg-auto d-flex justify-content-center flex-column">
+            <input class="fields" type="hidden" id="cardNumber" name="cardNumber" th:value="${customer.cardNumber}"
+                   placeholder="cardNumber">
+
+
+
+
+
+            <span class="title">Surname</span>
+            <input class="fields" type="text" id="customerSurname" name="customerSurname" th:value="*{customer.customerSurname}"
+                   placeholder="Surname">
+            <span class="title">Name</span>
+            <input class="fields" type="text" id="customerName" name="customerName" th:value="*{customer.customerName}"
+                   placeholder="Name">
+            <span class="title">Patronymic</span>
+            <input class="fields" type="text" id="customerPatronymic" name="customerPatronymic" th:value="*{customer.customerPatronymic}"
+                   placeholder="Patronymic">
+            <span class="title">Phone number</span>
+            <input class="fields" type="text" id="phone" name="phone" th:value="*{customer.phone}"
+                   placeholder="Phone number">
+            <span class="title">City</span>
+            <input class="fields" type="text" id="city" name="city" th:value="*{customer.city}"
+                   placeholder="City">
+            <span class="title">Street</span>
+            <input class="fields" type="text" id="street" name="street" th:value="*{customer.street}"
+                   placeholder="Street">
+            <span class="title">Zip code</span>
+            <input class="fields" type="text" id="zipcode" name="zipcode" th:value="*{customer.zipcode}"
+                   placeholder="Zip code">
+
+            <span class="title">Discount(%)</span>
+            <input class="fields" type="number" min="1" max="99" step="1" id="salary" name="salary" th:value="${customer.percent}"
+                   placeholder="Discount">
+
+
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Save</button>
+        </div>
+    </form>
+</main>
+</body>
+</html>

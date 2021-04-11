@@ -47,7 +47,7 @@
                 </td>
             </form>
             <form th:action="@{/edit-customer}" method="get">
-                <td><input type="hidden" th:value="${1}" name="customerID">
+                <td><input type="hidden" th:value="${customer.cardNumber}" name="cardNumber">
                     <button type="submit" class="btn btn-primary btn-block" style="padding: 0px;">
                         Edit
                     </button>
