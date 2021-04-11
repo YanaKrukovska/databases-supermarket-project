@@ -309,6 +309,14 @@ public class ApplicationController {
         return receiptService.deleteReceipt(id);
     }
 
+    // вилучення відомостей про товари та їх к-сть, куплені у певному чеку.
+    @SneakyThrows
+    @DeleteMapping("/sale/of_check")
+    @ResponseBody
+    public Response<Receipt> deleteSaleInfoInReceipt(@RequestParam("id") Integer id) {
+        return receiptService.deleteSaleInfoInReceipt(id);
+    }
+
     @SneakyThrows
     @GetMapping("/receipt/{id}")
     @ResponseBody
@@ -351,6 +359,15 @@ public class ApplicationController {
     @ResponseBody
     public Response<List<StoreProduct>> getAllPromoStoreProductsSortedByAmount() {
         return storeProductService.findAllPromotionalSortedByAmount(true);
+    }
+
+    // За номером чека скласти список усіх товарів, інформація про продаж яких є у цьому чеку;
+
+    @SneakyThrows
+    @GetMapping("/product/from_check")
+    @ResponseBody
+    public Response<List<Product>> allProductsFromCheck(@RequestParam("id") int id) {
+        return productService.allProductsFromCheck(id);
     }
 
     @SneakyThrows
