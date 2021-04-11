@@ -283,6 +283,7 @@ public class ProductService {
             statement.setDate(2, new Date(startDate.getTime()));
             statement.setDate(3, new Date(endDate.getTime()));
             ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
             return new Response<>(Integer.valueOf(resultSet.getString(1)), new LinkedList<>());
         } catch (SQLException e) {
             return new Response<>(null, Collections.singletonList(e.getMessage()));

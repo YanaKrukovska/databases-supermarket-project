@@ -3,6 +3,7 @@ package ua.edu.ukma.supermarket.persistence.service;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import ua.edu.ukma.supermarket.persistence.model.Receipt;
+import ua.edu.ukma.supermarket.persistence.model.ReceiptDetailed;
 import ua.edu.ukma.supermarket.persistence.model.Response;
 
 import java.sql.*;
@@ -158,6 +159,27 @@ public class ReceiptService {
         }
     }
 
+    public Response<List<Receipt>> findAllReceiptsFromPeriod(java.util.Date startDate, java.util.Date endDate) {
+
+
+        String query = "SELECT * FROM receipt WHERE print_date BETWEEN ? AND ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setDate(1, new Date(startDate.getTime()));
+            statement.setDate(2, new Date(endDate.getTime()));
+
+            ResultSet resultSet = statement.executeQuery();
+
+            List<Receipt> receiptList = new LinkedList<>();
+            while (resultSet.next()) {
+                receiptList.add(extractReceipt(resultSet));
+            }
+
+            return new Response<>(receiptList, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
     public Response<List<Receipt>> findReceiptsOfEmployeeFromPeriod(String employeeId, java.util.Date startDate, java.util.Date endDate) {
 
         if (employeeService.findEmployeeById(employeeId) == null) {
@@ -237,6 +259,55 @@ public class ReceiptService {
         }
     }
 
+    public Response<List<ReceiptDetailed>> detailedReceiptsFromEmployeeFromPeriod(String employeeId, java.util.Date startDate, java.util.Date endDate) {
+
+        if (employeeService.findEmployeeById(employeeId) == null) {
+            return new Response<>(null, Collections.singletonList("Can't find receipts of nonexistent employee"));
+        }
+
+        List<ReceiptDetailed> result = new LinkedList<>();
+        List<Receipt> receipts = findReceiptsOfEmployeeFromPeriod(employeeId, startDate, endDate).getObject();
+
+        for (Receipt receipt : receipts) {
+            result.add(new ReceiptDetailed(receipt.getReceiptNumber(), receipt.getEmployeeId(),
+                    receipt.getCardNumber(), receipt.getPrintDate(), receipt.getSumTotal(),
+                    receipt.getVat(), findProductDetails(receipt)));
+        }
+        return new Response<>(result, new LinkedList<>());
+    }
+
+    public Response<List<ReceiptDetailed>> findAllDetailedReceiptsFromPeriod(java.util.Date startDate, java.util.Date endDate) {
+
+        List<ReceiptDetailed> result = new LinkedList<>();
+        List<Receipt> receipts = findAllReceiptsFromPeriod(startDate, endDate).getObject();
+
+        for (Receipt receipt : receipts) {
+            result.add(new ReceiptDetailed(receipt.getReceiptNumber(), receipt.getEmployeeId(),
+                    receipt.getCardNumber(), receipt.getPrintDate(), receipt.getSumTotal(),
+                    receipt.getVat(), findProductDetails(receipt)));
+        }
+        return new Response<>(result, new LinkedList<>());
+    }
+
+    private List<ReceiptDetailed.ProductDetails> findProductDetails(Receipt receipt) {
+        List<ReceiptDetailed.ProductDetails> productDetailsList = new LinkedList<>();
+
+        String query = "SELECT s.product_number, s.selling_price, p.product_name FROM receipt r " +
+                "INNER JOIN Sale s ON s.check_number = r.check_number INNER JOIN Store_Product sp ON sp.upc = s.upc " +
+                "INNER JOIN Product p ON sp.id_product = p.id_product WHERE r.check_number = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setInt(1, receipt.getReceiptNumber());
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                productDetailsList.add(extractDetailedReceipt(resultSet));
+            }
+        } catch (SQLException e) {
+            return new LinkedList<>();
+        }
+        return productDetailsList;
+    }
+
     private List<String> validateReceipt(Receipt receipt) {
         List<String> errors = new LinkedList<>();
 
@@ -266,5 +337,13 @@ public class ReceiptService {
         String employeeId = resultSet.getString("id_employee");
         Integer cardNumber = resultSet.getInt("card_number");
         return new Receipt(id, employeeId, cardNumber, printDate, sumTotal, vat);
+    }
+
+    @SneakyThrows
+    private ReceiptDetailed.ProductDetails extractDetailedReceipt(ResultSet resultSet) {
+        int productAmount = resultSet.getInt("product_number");
+        double sellingPrice = resultSet.getDouble("selling_price");
+        String productName = resultSet.getString("product_name");
+        return new ReceiptDetailed.ProductDetails(productName, productAmount, sellingPrice);
     }
 }
