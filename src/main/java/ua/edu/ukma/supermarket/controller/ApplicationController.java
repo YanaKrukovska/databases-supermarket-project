@@ -3,6 +3,9 @@ package ua.edu.ukma.supermarket.controller;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +18,7 @@ import ua.edu.ukma.supermarket.persistence.model.BasicStoredProduct;
 import javax.websocket.server.PathParam;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -758,16 +762,12 @@ public class ApplicationController {
     }
 
     // Скласти список усіх постійних клієнтів, що мають карту клієнта, по полях  ПІБ, телефон, адреса (якщо вказана)
-    @GetMapping({"/customer/all/basic"})
+    @SneakyThrows
+    @GetMapping("/customer/all/basic")
     @ResponseBody
     public Response<List<BasicCustomerCard>> getBasicCustomerInfo() {
-        try {
-            return this.customerService.getBasicCustomerInfo();
-        } catch (Throwable var2) {
-            throw var2;
-        }
+        return customerService.getBasicCustomerInfo();
     }
-
 
     @SneakyThrows
     @PostMapping("/store-product")
@@ -790,43 +790,27 @@ public class ApplicationController {
         return storeProductService.deleteStoreProduct(productUpc);
     }
 
-    @GetMapping({"/store-product/all/{productId}"})
+    @SneakyThrows
+    @GetMapping("/store-product/all/{productId}")
     @ResponseBody
     public Response<List<StoreProduct>> getAllStoreProductsFromProduct(@PathVariable("productId") int productId) {
-        try {
-            return this.storeProductService.getAllStoreProductsFromProduct(productId);
-        } catch (Throwable var3) {
-            throw var3;
-        }
+        return storeProductService.getAllStoreProductsFromProduct(productId);
     }
 
     // За UPC-товару знайти ціну продажу товару, кількість наявних одиниць товару.
-    @GetMapping({"/store-product/{upc}"})
+    @SneakyThrows
+    @GetMapping("/store-product/{upc}")
     @ResponseBody
     public Response<List<BasicStoredProduct>> getBasicStoredProductInfo(@PathVariable("upc") String upc) {
-        try {
-            return this.storeProductService.getBasicStoredProductInfo(upc);
-        } catch (Throwable var3) {
-            throw var3;
-        }
+        return storeProductService.getBasicStoredProductInfo(upc);
     }
 
     // За UPC-товару знайти ціну продажу товару, кількість наявних одиниць товару, назву та характеристики товару.
-    @GetMapping({"/store-product-advanced/{upc}"})
+    @SneakyThrows
+    @GetMapping("/store-product-advanced/{upc}")
     @ResponseBody
     public Response<List<AdvancedStoreProduct>> getAdvancedStoredProductInfo(@PathVariable("upc") String upc) {
-        try {
-            return this.storeProductService.getAdvancedStoredProductInfo(upc);
-        } catch (Throwable var3) {
-            throw var3;
-        }
-    }
-
-    @SneakyThrows
-    @GetMapping("/receipt/find")
-    @ResponseBody
-    public Response<Receipt> createReceipt(@RequestParam int id) {
-        return receiptService.findReceiptById(id);
+        return storeProductService.getAdvancedStoredProductInfo(upc);
     }
 
     @SneakyThrows
@@ -867,14 +851,13 @@ public class ApplicationController {
         return receiptService.findReceiptsOfEmployeeFromPeriod(id, startDate, endDate);
     }
 
-    @GetMapping({"/receipt/sum/{id}"})
+    @SneakyThrows
+    @GetMapping("/receipt/sum/{id}")
     @ResponseBody
-    public Response<Double> findSumEmployeeFromPeriod(@PathVariable("id") String id, @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate, @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
-        try {
-            return this.receiptService.sumAllReceiptsByEmployeeFromPeriod(id, startDate, endDate);
-        } catch (Throwable var5) {
-            throw var5;
-        }
+    public Response<Double> findSumEmployeeFromPeriod(@PathVariable("id") String id,
+                                                      @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                                                      @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        return receiptService.sumAllReceiptsByEmployeeFromPeriod(id, startDate, endDate);
     }
 
     @SneakyThrows
@@ -897,14 +880,13 @@ public class ApplicationController {
 
     //Визначити загальну кількість одиниць певного товару, проданого за певний період часу NOT WORKING
 
-    @GetMapping({"/amount_of_sales_by_period"})
+    @SneakyThrows
+    @GetMapping("/amount_of_sales_by_period")
     @ResponseBody
-    public Response<Integer> getAmountOfSalesForPeriodByProductId(@RequestParam("id") int id, @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate, @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
-        try {
-            return this.productService.getAmountOfSalesForPeriodByProductId(id, startDate, endDate);
-        } catch (Throwable var5) {
-            throw var5;
-        }
+    public Response<Integer> getAmountOfSalesForPeriodByProductId(@RequestParam("id") int id,
+                                                                  @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                                                                  @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        return productService.getAmountOfSalesForPeriodByProductId(id, startDate, endDate);
     }
 
     @SneakyThrows
@@ -1057,6 +1039,4 @@ public class ApplicationController {
     public Response<List<CustomerCard>> getCustomersWhoShopTheSameDaysAsSomeone(@RequestParam("id") int cardId) {
         return customerService.getTheSameDaysAsCustomer(cardId);
     }
-
-
 }
