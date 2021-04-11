@@ -12,6 +12,7 @@ import ua.edu.ukma.supermarket.persistence.model.AdvancedStoreProduct;
 import ua.edu.ukma.supermarket.persistence.model.BasicCustomerCard;
 import ua.edu.ukma.supermarket.persistence.model.BasicStoredProduct;
 
+import javax.websocket.server.PathParam;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -80,6 +81,7 @@ public class ApplicationController {
         return "products";
     }
 
+
     @GetMapping("/edit-product")
     public String editProduct(@ModelAttribute("productId") int id, Model model) {
         Response<Product> productResponse = productService.findProductById(id);
@@ -144,6 +146,7 @@ public class ApplicationController {
         return "redirect:/product";
     }
 
+
     @GetMapping("/category")
     public String categoriesPage(Model model) {
         Response<List<Category>> categoryResponse = categoryService.findAll();
@@ -153,6 +156,17 @@ public class ApplicationController {
         }
         model.addAttribute("categories", categoryResponse.getObject());
         return "categories";
+    }
+
+    @GetMapping("/category/products")
+    public String categoryProductsSorted(@ModelAttribute("categoryNumber") Integer id, Model model) {
+        Response<List<Product>> productsResponse = productService.getAllProductsFromCategorySortedByName(id);
+        if (!productsResponse.getErrors().isEmpty()) {
+            model.addAttribute("errors", productsResponse.getErrors());
+            return "error-page";
+        }
+        model.addAttribute("products", productsResponse.getObject());
+        return "category-products";
     }
 
     @GetMapping("/edit-category")

@@ -21,6 +21,7 @@
             <th scope="col">Name</th>
             <th scope="col"></th>
             <th scope="col"></th>
+            <th scope="col"></th>
         </tr>
         </thead>
 
@@ -46,7 +47,13 @@
                     </button>
                 </td>
             </form>
-
+            <form th:action="@{/category/products}" method="get">
+                <td><input type="hidden" th:value="${category.categoryNumber}" name="categoryNumber">
+                    <button type="submit" class="btn btn-light btn-block" style="padding: 0">
+                        See category products
+                    </button>
+                </td>
+            </form>
         </tbody>
     </table>
 </main>
