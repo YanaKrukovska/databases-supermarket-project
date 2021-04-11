@@ -89,6 +89,7 @@ public class ApplicationController {
         return "store-products";
     }
 
+
     @SneakyThrows
     @GetMapping("/category/{id}")
     @ResponseBody
@@ -240,6 +241,14 @@ public class ApplicationController {
         return customerService.findCustomersWithCertainPercent(percent);
     }
 
+    // Скласти список усіх постійних клієнтів, що мають карту клієнта, по полях  ПІБ, телефон, адреса (якщо вказана)
+    @SneakyThrows
+    @GetMapping("/customer/all/basic")
+    @ResponseBody
+    public Response<List<BasicCustomerCard>> getBasicCustomerInfo() {
+        return customerService.getBasicCustomerInfo();
+    }
+
     @SneakyThrows
     @PostMapping("/store-product")
     @ResponseBody
@@ -268,6 +277,22 @@ public class ApplicationController {
         return storeProductService.getAllStoreProductsFromProduct(productId);
     }
 
+    // За UPC-товару знайти ціну продажу товару, кількість наявних одиниць товару.
+    @SneakyThrows
+    @GetMapping("/store-product/{upc}")
+    @ResponseBody
+    public Response<List<BasicStoredProduct>> getBasicStoredProductInfo(@PathVariable("upc") String upc) {
+        return storeProductService.getBasicStoredProductInfo(upc);
+    }
+
+    // За UPC-товару знайти ціну продажу товару, кількість наявних одиниць товару, назву та характеристики товару.
+    @SneakyThrows
+    @GetMapping("/store-product-advanced/{upc}")
+    @ResponseBody
+    public Response<List<AdvancedStoreProduct>> getAdvancedStoredProductInfo(@PathVariable("upc") String upc) {
+        return storeProductService.getAdvancedStoredProductInfo(upc);
+    }
+
     @SneakyThrows
     @PostMapping("/receipt")
     @ResponseBody
@@ -289,6 +314,14 @@ public class ApplicationController {
         return receiptService.deleteReceipt(id);
     }
 
+    // вилучення відомостей про товари та їх к-сть, куплені у певному чеку.
+    @SneakyThrows
+    @DeleteMapping("/sale/of_check")
+    @ResponseBody
+    public Response<Receipt> deleteSaleInfoInReceipt(@RequestParam("id") Integer id) {
+        return receiptService.deleteSaleInfoInReceipt(id);
+    }
+
     @SneakyThrows
     @GetMapping("/receipt/{id}")
     @ResponseBody
@@ -308,6 +341,35 @@ public class ApplicationController {
     }
 
     @SneakyThrows
+    @GetMapping("/receipt/detailed/{id}")
+    @ResponseBody
+    public Response<List<ReceiptDetailed>> findDetailedReceiptsOfEmployeeFromPeriod(@PathVariable("id") String id,
+                                                                                    @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                                                                                    @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        return receiptService.detailedReceiptsFromEmployeeFromPeriod(id, startDate, endDate);
+    }
+
+    @SneakyThrows
+    @GetMapping("/receipt/detailed")
+    @ResponseBody
+    public Response<List<ReceiptDetailed>> findAllDetailedReceiptsFromPeriod(
+            @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        return receiptService.findAllDetailedReceiptsFromPeriod(startDate, endDate);
+    }
+
+    //Визначити загальну кількість одиниць певного товару, проданого за певний період часу NOT WORKING
+
+    @SneakyThrows
+    @GetMapping("/amount_of_sales_by_period")
+    @ResponseBody
+    public Response<Integer> getAmountOfSalesForPeriodByProductId(@RequestParam("id") int id,
+                                                                  @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                                                                  @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        return productService.getAmountOfSalesForPeriodByProductId(id, startDate, endDate);
+    }
+
+    @SneakyThrows
     @GetMapping("/receipt/sum")
     @ResponseBody
     public Response<Double> findSumFromPeriod(@RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
@@ -322,11 +384,35 @@ public class ApplicationController {
         return storeProductService.findAllPromotionalSortedByAmount(true);
     }
 
+    // За номером чека скласти список усіх товарів, інформація про продаж яких є у цьому чеку;
+
+    @SneakyThrows
+    @GetMapping("/product/from_check")
+    @ResponseBody
+    public Response<List<Product>> allProductsFromCheck(@RequestParam("id") int id) {
+        return productService.allProductsFromCheck(id);
+    }
+
     @SneakyThrows
     @GetMapping("/store-product/regular/by-amount")
     @ResponseBody
     public Response<List<StoreProduct>> getAllRegularStoreProductsSortedByAmount() {
         return storeProductService.findAllPromotionalSortedByAmount(false);
+    }
+
+
+    @SneakyThrows
+    @GetMapping("/store-product/regular/by-name")
+    @ResponseBody
+    public Response<List<StoreProductWithName>> getAllRegularStoreProductsSortedByName() {
+        return storeProductService.findAllSortedByName(false);
+    }
+
+    @SneakyThrows
+    @GetMapping("/store-product/promo/by-name")
+    @ResponseBody
+    public Response<List<StoreProductWithName>> getAllPromoStoreProductsSortedByName() {
+        return storeProductService.findAllSortedByName(true);
     }
 
 

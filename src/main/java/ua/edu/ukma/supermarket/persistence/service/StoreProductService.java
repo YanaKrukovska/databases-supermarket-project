@@ -3,8 +3,7 @@ package ua.edu.ukma.supermarket.persistence.service;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ua.edu.ukma.supermarket.persistence.model.Response;
-import ua.edu.ukma.supermarket.persistence.model.StoreProduct;
+import ua.edu.ukma.supermarket.persistence.model.*;
 
 import java.sql.*;
 import java.util.Collections;
@@ -153,6 +152,54 @@ public class StoreProductService {
         }
     }
 
+    public Response<List<BasicStoredProduct>> getBasicStoredProductInfo(String upc) {
+
+        if (upc.isBlank()) {
+            return new Response<>(null, Collections.singletonList("Category can't be null"));
+        }
+
+        PreparedStatement statement;
+        try {
+            String query = "SELECT selling_price,products_number FROM store_product WHERE upc=?";
+            statement = connection.prepareStatement(query);
+            statement.setString(1, upc);
+            ResultSet resultSet = statement.executeQuery();
+            List<BasicStoredProduct> storeProducts = new LinkedList<>();
+            while (resultSet.next()) {
+                storeProducts.add(new BasicStoredProduct(resultSet.getDouble("selling_price"),resultSet.getInt("products_number")));
+            }
+
+            return new Response<>(storeProducts, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
+    public Response<List<AdvancedStoreProduct>> getAdvancedStoredProductInfo(String upc) {
+
+        if (upc.isBlank()) {
+            return new Response<>(null, Collections.singletonList("Category can't be null"));
+        }
+        PreparedStatement statement;
+        try {
+            String query =
+                    "SELECT product_name,characteristics,selling_price,products_number " +
+                    "FROM store_product,product " +
+                    "WHERE store_product.upc=? AND product.id_product=store_product.id_product";
+            statement = connection.prepareStatement(query);
+            statement.setString(1, upc);
+            ResultSet resultSet = statement.executeQuery();
+            List<AdvancedStoreProduct> storeProducts = new LinkedList<>();
+            while (resultSet.next()) {
+                storeProducts.add(new AdvancedStoreProduct(resultSet.getString("product_name"),resultSet.getString("characteristics"),resultSet.getDouble("selling_price"),resultSet.getInt("products_number")));
+            }
+
+            return new Response<>(storeProducts, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
     public List<StoreProduct> findAll() {
         String query =
                 "SELECT * FROM store_product";
@@ -202,6 +249,23 @@ public class StoreProductService {
         }
     }
 
+    public Response<List<StoreProductWithName>> findAllSortedByName(boolean isPromo) {
+        String query = "SELECT p.product_name, sp.* FROM Store_product sp " +
+                "INNER JOIN Product p ON p.id_product = sp.id_product WHERE promotional_product = ? ORDER BY p.product_name";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setBoolean(1, isPromo);
+            ResultSet resultSet = statement.executeQuery();
+
+            List<StoreProductWithName> productList = new LinkedList<>();
+            while (resultSet.next()) {
+                productList.add(extractStoreProductWithName(resultSet));
+            }
+
+            return new Response<>(productList, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
 
     private List<String> validateStoreProduct(StoreProduct product) {
         List<String> errors = new LinkedList<>();
@@ -229,5 +293,19 @@ public class StoreProductService {
 
         return new StoreProduct(upc, upcPromo, productId, sellingPrice, productsNumber, isPromotionalProduct);
     }
+
+    @SneakyThrows
+    private StoreProductWithName extractStoreProductWithName(ResultSet resultSet) {
+        String upc = resultSet.getString("upc");
+        String upcPromo = resultSet.getString("upc_prom");
+        int productId = resultSet.getInt("id_product");
+        double sellingPrice = resultSet.getDouble("selling_price");
+        int productsNumber = resultSet.getInt("products_number");
+        boolean isPromotionalProduct = resultSet.getBoolean("promotional_product");
+        String productName = resultSet.getString("product_name");
+
+        return new StoreProductWithName(upc, upcPromo, productId, sellingPrice, productsNumber, isPromotionalProduct, productName);
+    }
+
 
 }
