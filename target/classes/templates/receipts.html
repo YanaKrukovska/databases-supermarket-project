@@ -9,8 +9,12 @@
 
 <div th:replace="parts/navbar.html :: navigation"></div>
 <main style="padding-top: 56px; padding-bottom: 60px;">
+    <p class="text-center font-weight-bold" style="font-size: 30px">Receipts</p>
+    <form th:action="@{/add-receipt}" method="get">
+        <button class="btn-success btn-block"  >Add new receipt</button>
+    </form>
     <table class="table">
-        <thead class="thead-light">
+        <thead class="thead-dark">
         <tr>
             <th scope="col">Number</th>
             <th scope="col">Employee ID</th>

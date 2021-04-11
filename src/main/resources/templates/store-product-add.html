@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" const="text/html;charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
-    <title>Edit store product</title>
+    <title>Add new store product</title>
     <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.6.0/css/bootstrap.min.css} "/>
 
 </head>
@@ -14,11 +14,12 @@
 
     <h1 class="h1 mb-3 font-weight-normal" style="padding-top: 60px">Store product</h1>
 
-    <form class="row d-flex justify-content-center" th:action="@{/request-edit-store-product}" enctype="multipart/form-data"
+    <form class="row d-flex justify-content-center" th:action="@{/request-add-store-product}" enctype="multipart/form-data"
           method="post" style="padding-top: 10px">
         <div class="col-lg-auto d-flex justify-content-center flex-column">
-            <input class="fields" type="hidden" id="upc" name="upc" th:value="*{storeProduct.upc}"
-                   placeholder="upc">
+            <span class="title">UPC</span>
+            <input class="fields" type="text" id="upc" name="upc" th:value="*{storeProduct.upc}"
+                   placeholder="Upc" required>
 
 
 

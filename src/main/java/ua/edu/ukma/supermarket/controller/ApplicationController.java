@@ -99,6 +99,31 @@ public class ApplicationController {
         return "product-edit";
     }
 
+    @GetMapping("/add-product")
+    public String addProduct(Model model) {
+
+        Product product = new Product(-1,null,null,0);
+        Response<List<Category>> categoryResponse = categoryService.findAll();
+        if (categoryResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", categoryResponse.getErrors());
+            return "error-page";
+        }
+        List<Category> categories = categoryResponse.getObject();
+        model.addAttribute("product", product);
+        model.addAttribute("categories", categories);
+        return "product-add";
+    }
+
+    @PostMapping("/request-add-product")
+    public String requestAddProduct(@ModelAttribute Product product, Model model) {
+        Response<Product> productResponse = productService.createProduct(product);
+        if (productResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", productResponse.getErrors());
+            return "error-page";
+        }
+        return "redirect:/product";
+    }
+
     @PostMapping("/request-edit-product")
     public String requestEditProduct(@ModelAttribute Product product, Model model) {
         Response<Product> productResponse = productService.updateProduct(product);
@@ -141,9 +166,27 @@ public class ApplicationController {
         return "category-edit";
     }
 
+    @GetMapping("/add-category")
+    public String addCategory(Model model) {
+        Category category = new Category(-1, null);
+        model.addAttribute("category", category);
+        return "category-add";
+    }
+
     @PostMapping("/request-edit-category")
     public String requestEditCategory(@ModelAttribute Category category, Model model) {
         Response<Category> categoryResponse = categoryService.updateCategory(category.getCategoryNumber(), category.getCategoryName());
+        if (categoryResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", categoryResponse.getErrors());
+            return "error-page";
+        }
+        return "redirect:/category";
+    }
+
+
+    @PostMapping("/request-add-category")
+    public String requestAddCategory(@ModelAttribute Category category, Model model) {
+        Response<Category> categoryResponse = categoryService.createCategory(category.getCategoryName());
         if (categoryResponse.getErrors().size() > 0) {
             model.addAttribute("errors", categoryResponse.getErrors());
             return "error-page";
@@ -183,6 +226,41 @@ public class ApplicationController {
         model.addAttribute("employee", employeeResponse.getObject());
         model.addAttribute("roles", roles);
         return "employee-edit";
+    }
+
+    @GetMapping("/add-employee")
+    public String addEmployee(Model model) {
+        Employee employee = new Employee(null, null, null, null, null,
+                null, null, null, null, null, null, null);
+        String[] roles = {"Manager", "Cashier"};
+        model.addAttribute("employee", employee);
+        model.addAttribute("roles", roles);
+        return "employee-add";
+    }
+
+    @PostMapping("/request-add-employee")
+    public String requestAddEmployee(@ModelAttribute("employeeId") String employeeId,
+                                      @ModelAttribute("surname") String surname,
+                                      @ModelAttribute("name") String name,
+                                      @ModelAttribute("patronymic") String patronymic,
+                                      @ModelAttribute("role") String role,
+                                      @ModelAttribute("salary") Double salary,
+                                      @ModelAttribute("birthDate") String birthDate,
+                                      @ModelAttribute("startDate") String startDate,
+                                      @ModelAttribute("phoneNumber") String phoneNumber,
+                                      @ModelAttribute("city") String city,
+                                      @ModelAttribute("street") String street,
+                                      @ModelAttribute("zipCode") String zipCode, Model model) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date birthDateProper = formatter.parse(birthDate);
+        Date startDateProper = formatter.parse(startDate);
+        Employee employee = new Employee(employeeId, surname, name, patronymic, role, salary, birthDateProper, startDateProper, phoneNumber, city, street, zipCode);
+        Response<Employee> employeeResponse = employeeService.createEmployee(employee);
+        if (employeeResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", employeeResponse.getErrors());
+            return "error-page";
+        }
+        return "redirect:/employee";
     }
 
     @PostMapping("/request-edit-employee")
@@ -242,6 +320,25 @@ public class ApplicationController {
         return "customer-edit";
     }
 
+    @GetMapping("/add-customer")
+    public String addCustomer( Model model) {
+
+        CustomerCard customerCard = new CustomerCard(0,null,null,null,null,null,null,null,1);
+        model.addAttribute("customer", customerCard);
+        return "customer-add";
+    }
+
+    @PostMapping("/request-add-customer")
+    public String requestAddCustomer(@ModelAttribute CustomerCard customerCard, Model model) {
+
+        Response<CustomerCard> customerCardResponse = customerService.createCustomerCard(customerCard);
+        if (customerCardResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", customerCardResponse.getErrors());
+            return "error-page";
+        }
+        return "redirect:/customer";
+    }
+
     @PostMapping("/request-delete-customer")
     public String removeCustomer(@ModelAttribute("cardNumber") int id, Model model) {
         Response<CustomerCard> customerCardResponse = customerService.deleteCustomerCard(id);
@@ -253,7 +350,7 @@ public class ApplicationController {
     }
 
     @PostMapping("/request-edit-customer")
-    public String editCustomer(@ModelAttribute CustomerCard customerCard, Model model) {
+    public String requestEditCustomer(@ModelAttribute CustomerCard customerCard, Model model) {
         Response<CustomerCard> customerCardResponse = customerService.updateCustomerCard(customerCard);
         if (customerCardResponse.getErrors().size() > 0) {
             model.addAttribute("errors", customerCardResponse.getErrors());
@@ -288,7 +385,7 @@ public class ApplicationController {
     }
 
     @GetMapping("/edit-store-product")
-    public String editProduct(@ModelAttribute("upc") String upc, Model model) {
+    public String editStoreProduct(@ModelAttribute("upc") String upc, Model model) {
         Response<StoreProduct> storeProductResponse = storeProductService.findStoreProductByUpc(upc);
         if (storeProductResponse.getErrors().size() > 0) {
             model.addAttribute("errors", storeProductResponse.getErrors());
@@ -317,6 +414,44 @@ public class ApplicationController {
         model.addAttribute("products", products);
         model.addAttribute("promos", promos);
         return "store-product-edit";
+    }
+
+    @GetMapping("/add-store-product")
+    public String addStoreProduct( Model model) {
+
+        StoreProduct storeProduct = new StoreProduct(null,null,0,0.01,0,false);
+        Response<List<StoreProduct>> storeProductListResponse = storeProductService.findAll();
+        if (storeProductListResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", storeProductListResponse.getErrors());
+            return "error-page";
+        }
+        List<StoreProduct> otherStoreProducts = storeProductListResponse.getObject();
+        List<String> otherUPCs = otherStoreProducts.stream().map(f -> f.getUpc()).collect(Collectors.toList());
+        otherUPCs.add(0, null);
+        Response<List<Product>> productResponse = productService.findAll();
+        if (productResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", productResponse.getErrors());
+            return "error-page";
+        }
+        List<Product> products = productResponse.getObject();
+        LinkedHashMap<Boolean, String> promos = new LinkedHashMap<>();
+        promos.put(true, "Yes");
+        promos.put(false, "No");
+        model.addAttribute("storeProduct", storeProduct);
+        model.addAttribute("otherUPCs", otherUPCs);
+        model.addAttribute("products", products);
+        model.addAttribute("promos", promos);
+        return "store-product-add";
+    }
+
+    @PostMapping("/request-add-store-product")
+    public String requestAddStoreProduct(@ModelAttribute StoreProduct product, Model model) {
+        Response<StoreProduct> storeProductResponse = storeProductService.createStoreProduct(product);
+        if (storeProductResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", storeProductResponse.getErrors());
+            return "error-page";
+        }
+        return "redirect:/store-product";
     }
 
     @PostMapping("/request-edit-store-product")
@@ -385,6 +520,50 @@ public class ApplicationController {
         model.addAttribute("cardNumbers", cardNumbers);
         model.addAttribute("receipt", receiptResponse.getObject());
         return "receipt-edit";
+    }
+
+
+    @GetMapping("add-receipt")
+    public String addReceipt( Model model) {
+
+        Response<List<CustomerCard>> customerCardResponse = customerService.findAll();
+        if (customerCardResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", customerCardResponse.getErrors());
+            return "error-page";
+        }
+        Response<List<Employee>> employeeResponse = employeeService.findAll();
+        if (employeeResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", employeeResponse.getErrors());
+            return "error-page";
+        }
+
+       Receipt receipt=new Receipt(null,null,null,null,0.05,0.01);
+        List<Employee> employees = employeeResponse.getObject();
+        List<CustomerCard> customerCards = customerCardResponse.getObject();
+        List<String> employeeIds = employees.stream().map(f -> f.getEmployeeId()).collect(Collectors.toList());
+        List<Integer> cardNumbers = customerCards.stream().map(f -> f.getCardNumber()).collect(Collectors.toList());
+        model.addAttribute("employeeIds", employeeIds);
+        model.addAttribute("cardNumbers", cardNumbers);
+        model.addAttribute("receipt", receipt);
+        return "receipt-add";
+    }
+
+    @PostMapping("/request-add-receipt")
+    public String requestAddReceipt(@ModelAttribute("employeeId") String employeeId,
+                                     @ModelAttribute("cardNumber") Integer cardNumber,
+                                     @ModelAttribute("printDate") String printDate,
+                                     @ModelAttribute("sumTotal") Double sumTotal,
+                                     @ModelAttribute("vat") Double vat,
+                                     Model model) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        Date dateProper = formatter.parse(printDate);
+        Receipt receipt = new Receipt(null, employeeId, cardNumber, dateProper, sumTotal, vat);
+        Response<Receipt> receiptResponse = receiptService.createReceipt(receipt);
+        if (receiptResponse.getErrors().size() > 0) {
+            model.addAttribute("errors", receiptResponse.getErrors());
+            return "error-page";
+        }
+        return "redirect:/receipt";
     }
 
     @PostMapping("/request-edit-receipt")

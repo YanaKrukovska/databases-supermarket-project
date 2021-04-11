@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" const="text/html;charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
-    <title>Edit category</title>
+    <title>Add new category</title>
     <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.6.0/css/bootstrap.min.css} "/>
 
 </head>
@@ -23,7 +23,7 @@
 
         <span class="title">Name</span>
         <input class="fields" type="text" id="categoryName" name="categoryName" th:value="*{category.categoryName}"
-               placeholder="Name">
+               placeholder="Name" required>
 
 
         <button class="btn btn-lg btn-primary btn-block" type="submit">Save</button>

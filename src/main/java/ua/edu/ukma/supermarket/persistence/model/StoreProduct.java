@@ -16,9 +16,6 @@ public class StoreProduct {
     private int productId;
     private double sellingPrice;
     private int productsNumber;
-
-
-
     private boolean isPromotionalProduct;
 
     public String getUpc() {

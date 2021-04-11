@@ -9,8 +9,12 @@
 
 <div th:replace="parts/navbar.html :: navigation"></div>
 <main style="padding-top: 56px; padding-bottom: 60px;">
+    <p class="text-center font-weight-bold" style="font-size: 30px">Products</p>
+    <form th:action="@{/add-product}" method="get">
+        <button class="btn-success btn-block"  >Add new product</button>
+    </form>
 <table class="table">
-    <thead class="thead-light">
+    <thead class="thead-dark">
     <tr>
         <th scope="col">ID</th>
         <th scope="col">Name</th>
