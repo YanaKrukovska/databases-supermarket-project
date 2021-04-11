@@ -1,0 +1,521 @@
+GET http://localhost:8080/receipt/0000000002?startDate=2020-04-02&endDate=2020-04-05
+
+<> 2021-04-11T115405.200.json
+
+###
+
+GET http://localhost:8080/city/stats
+
+<> 2021-04-11T115343.200.json
+
+###
+
+GET http://localhost:8080/employee/stats?sum=200
+
+<> 2021-04-11T115333.200.json
+
+###
+
+GET http://localhost:8080/employee/cashiers/most_valuable
+
+<> 2021-04-11T115329.200.json
+
+###
+
+GET http://localhost:8080/employee/contacts/Vynnyk
+
+<> 2021-04-11T115321.200.json
+
+###
+
+GET http://localhost:8080/employee/cashiers
+
+<> 2021-04-11T115309.200.json
+
+###
+
+DELETE http://localhost:8080/employee/0000000103
+
+<> 2021-04-11T115302.200.json
+
+###
+
+POST http://localhost:8080/employee/update
+Content-Type: application/json
+
+{
+  "employeeId": "0000000103",
+  "surname": "Yushchenko",
+  "name": "Viktor",
+  "patronymic": "Andriyovych",
+  "role": "Manager",
+  "salary": 14000,
+  "birthDate": "1954-02-23T00:00:00.000+0000",
+  "startDate": "2018-05-12T00:00:00.000+0000",
+  "phoneNumber": "+380677149882",
+  "city": "Khoruzhivka",
+  "street": "Medova St. 25",
+  "zipCode": "1234-5679"
+}
+
+<> 2021-04-11T115254.200.json
+
+###
+
+POST http://localhost:8080/employee
+Content-Type: application/json
+
+{
+  "employeeId": "0000000103",
+  "surname": "Yushchenko",
+  "name": "Viktor",
+  "patronymic": "Andriyovych",
+  "role": "Cashier",
+  "salary": 5500,
+  "birthDate": "1954-02-23T00:00:00.000+0000",
+  "startDate": "2018-05-12T00:00:00.000+0000",
+  "phoneNumber": "+380677149882",
+  "city": "Khoruzhivka",
+  "street": "Medova St. 14",
+  "zipCode": "1234-5679",
+  "username": "bees@gmail.com",
+  "password": "1",
+  "authority": {
+    "id": 1,
+    "name": "ROLE_MANAGER"
+  }
+}
+
+<> 2021-04-11T115239.200.json
+
+###
+
+POST http://localhost:8080/employee
+Content-Type: application/json
+
+{
+  "employeeId": "0000000103",
+  "surname": "Yushchenko",
+  "name": "Viktor",
+  "patronymic": "Andriyovych",
+  "role": "Cashier",
+  "salary": 5500,
+  "birthDate": "1954-02-23T00:00:00.000+0000",
+  "startDate": "2018-05-12T00:00:00.000+0000",
+  "phoneNumber": "+380677149882",
+  "city": "Khoruzhivka",
+  "street": "Medova St. 14",
+  "zipCode": "1234-5679",
+  "username": "bees@gmail.com",
+  "authority": {
+    "id": 1,
+    "name": "ROLE_MANAGER"
+  }
+}
+
+<> 2021-04-11T104803.500.json
+
+###
+
+GET http://localhost:8080/employee/0000000001
+
+<> 2021-04-11T104745.200.json
+
+###
+
+POST http://localhost:8080/employee
+Content-Type: application/json
+
+{
+  "employeeId": "0000000103",
+  "surname": "Yushchenko",
+  "name": "Viktor",
+  "patronymic": "Andriyovych",
+  "role": "Cashier",
+  "salary": 5500,
+  "birthDate": "1954-02-23T00:00:00.000+0000",
+  "startDate": "2018-05-12T00:00:00.000+0000",
+  "phoneNumber": "+380677149882",
+  "city": "Khoruzhivka",
+  "street": "Medova St. 14",
+  "zipCode": "1234-5679",
+  "username": "bees@gmail.com",
+  "authority": {
+    "id": 1,
+    "name": "ROLE_MANAGER"
+  }
+}
+
+<> 2021-04-11T104645.500.json
+
+###
+
+POST http://localhost:8080/employee
+Content-Type: application/json
+
+{
+  "employeeId": "0000000103",
+  "surname": "Yushchenko",
+  "name": "Viktor",
+  "patronymic": "Andriyovych",
+  "role": "Cashier",
+  "salary": 5500,
+  "birthDate": "1954-02-23T00:00:00.000+0000",
+  "startDate": "2018-05-12T00:00:00.000+0000",
+  "phoneNumber": "+380677149882",
+  "city": "Khoruzhivka",
+  "street": "Medova St. 14",
+  "zipCode": "1234-5679",
+  "username": "bees@gmail.com",
+  "authority": {
+    "id": 1,
+    "name": "ROLE_MANAGER"
+  }
+}
+
+<> 2021-04-11T104635.500.json
+
+###
+
+POST http://localhost:8080/employee
+Content-Type: application/json
+
+{
+  "employeeId": "0000000103",
+  "surname": "Yushchenko",
+  "name": "Viktor",
+  "patronymic": "Andriyovych",
+  "role": "Cashier",
+  "salary": 5500,
+  "birthDate": "1954-02-23T00:00:00.000+0000",
+  "startDate": "2018-05-12T00:00:00.000+0000",
+  "phoneNumber": "+380677149882",
+  "city": "Khoruzhivka",
+  "street": "Medova St. 14",
+  "zipCode": "1234-5679",
+  "username": "bees@gmail.com",
+  "authority": {
+    "id": 1,
+    "name": "ROLE_MANAGER"
+  }
+}
+
+<> 2021-04-11T104524.500.json
+
+###
+
+POST http://localhost:8080/employee
+Content-Type: application/json
+
+{
+  "employeeId": "0000000103",
+  "surname": "Yushchenko",
+  "name": "Viktor",
+  "patronymic": "Andriyovych",
+  "role": "Cashier",
+  "salary": 5500,
+  "birthDate": "1954-02-23T00:00:00.000+0000",
+  "startDate": "2018-05-12T00:00:00.000+0000",
+  "phoneNumber": "+380677149882",
+  "city": "Khoruzhivka",
+  "street": "Medova St. 14",
+  "zipCode": "1234-5679",
+  "username": "bees@gmail.com",
+  "authority": {
+    "id": 1,
+    "name": "ROLE_MANAGER"
+  }
+}
+
+<> 2021-04-11T103955.200.json
+
+###
+
+POST http://localhost:8080/employee
+Content-Type: application/json
+
+{
+  "employeeId": "0000000103",
+  "surname": "Yushchenko",
+  "name": "Viktor",
+  "patronymic": "Andriyovych",
+  "role": "Cashier",
+  "salary": 5500,
+  "birthDate": "1954-02-23T00:00:00.000+0000",
+  "startDate": "2018-05-12T00:00:00.000+0000",
+  "phoneNumber": "+380677149882",
+  "city": "Khoruzhivka",
+  "street": "Medova St. 14",
+  "zipCode": "1234-5679",
+  "authority": {
+    "id": 1,
+    "name": "ROLE_MANAGER"
+  }
+}
+
+<> 2021-04-11T103928.200.json
+
+###
+
+GET http://localhost:8080/employee/0000000001
+
+<> 2021-04-11T103827.200.json
+
+###
+
+GET http://localhost:8080/employee/0000000001
+
+<> 2021-04-11T103400.200.json
+
+###
+
+POST http://localhost:8080/category/1/Cats
+
+<> 2021-04-11T103355.200.json
+
+###
+
+POST http://localhost:8080/category/Medication
+
+Content-Type: application/json
+{
+  "categoryName": "Medication"
+}
+
+<> 2021-04-11T103352.200.json
+
+###
+
+GET http://localhost:8080/category/1
+
+<> 2021-04-11T103348.200.json
+
+###
+
+GET http://localhost:8080/category/1
+
+<> 2021-04-11T103337.200.json
+
+###
+
+GET http://localhost:8080/category/1
+
+<> 2021-04-11T103218.200.html
+
+###
+
+GET http://localhost:8080/receipt/sum?startDate=2020-04-02&endDate=2020-04-05
+
+<> 2021-04-09T175238.200.json
+
+###
+
+GET http://localhost:8080/receipt/sum/0000000002?startDate=2020-04-02&endDate=2020-04-05
+
+<> 2021-04-09T174903.200.json
+
+###
+
+GET http://localhost:8080/receipt/sum/0000000002?startDate=2020-04-02&endDate=2020-04-05
+
+<> 2021-04-09T174701.200.json
+
+###
+
+GET http://localhost:8080/receipt/sum/0000000002?startDate=2020-04-02&endDate=2020-04-05
+
+<> 2021-04-09T174657.200.json
+
+###
+
+GET http://localhost:8080/receipt/sum/0000000002?startDate=2020-04-02&endDate=2020-04-05
+
+<> 2021-04-09T174511.200.json
+
+###
+
+GET http://localhost:8080/receipt/sum/0000000002?startDate=2020-04-02&endDate=2020-04-05
+
+<> 2021-04-09T174418.200.json
+
+###
+
+GET http://localhost:8080/customer/discount/2
+
+<> 2021-04-09T173700.200.json
+
+###
+
+GET http://localhost:8080/customer/2
+
+<> 2021-04-09T173547.500.json
+
+###
+
+GET http://localhost:8080/customer/2
+
+<> 2021-04-09T173411.500.json
+
+###
+
+GET http://localhost:8080/receipt/0000000002?startDate=2020-04-02&endDate=2020-04-05
+
+<> 2021-04-09T173020.200.json
+
+###
+
+GET http://localhost:8080/receipt/0000000004?startDate=2020-04-02&endDate=2020-04-05
+
+<> 2021-04-09T172836.200.json
+
+###
+
+GET http://localhost:8080/receipt/0000000003?startDate=2020-04-02&endDate=2020-04-05
+
+<> 2021-04-09T172833.200.json
+
+###
+
+GET http://localhost:8080/receipt/0000000002?startDate=2020-04-02&endDate=2020-04-05
+
+<> 2021-04-09T172827.200.json
+
+###
+
+GET http://localhost:8080/receipt/0000000002?startDate=2020-04-02&endDate=2020-04-05
+
+<> 2021-04-09T172751.200.json
+
+###
+
+POST http://localhost:8080/receipt/update
+Content-Type: application/json
+
+{
+  "receiptNumber": 223,
+  "upc": "123456789123",
+  "printDate": "2021-04-01T10:02:43.000+0000",
+  "sumTotal": 43.5,
+  "vat": 8.7,
+  "employeeId": "0000000002",
+  "cardNumber": 2
+}
+
+<> 2021-04-09T172713.200.json
+
+###
+
+POST http://localhost:8080/receipt/update
+Content-Type: application/json
+
+{
+  "receiptNumber": 223,
+  "upc": "123456789123",
+  "printDate": "2021-04-01T10:02:43.000+0000",
+  "sumTotal": 43.5,
+  "vat": 8.7,
+  "employeeId": "0000000002",
+  "cardNumber": 2
+}
+
+<> 2021-04-09T172646.200.json
+
+###
+
+GET http://localhost:8080/receipt/0000000002?startDate=2020-04-02&endDate=2020-04-05
+
+<> 2021-04-09T172624.200.json
+
+###
+
+GET http://localhost:8080/receipt/0000000002?startDate=2020-04-02&endDate=2020-04-05
+
+<> 2021-04-09T172441.400.json
+
+###
+
+GET http://localhost:8080/customer/West
+
+<> 2021-04-09T170857.200.json
+
+###
+
+GET http://localhost:8080/store-product/regular/by-amount
+
+<> 2021-04-09T165713.200.json
+
+###
+
+GET http://localhost:8080/store-product/promo/by-amount
+
+<> 2021-04-09T165710.200.json
+
+###
+
+DELETE http://localhost:8080/receipt/23
+
+<> 2021-04-08T182558.200.json
+
+###
+
+POST http://localhost:8080/receipt/update
+Content-Type: application/json
+
+{
+  "receiptNumber": 223,
+  "upc": "123456789123",
+  "printDate": "2021-04-01T10:02:43.000+0000",
+  "sumTotal": 43.5,
+  "vat": 8.7,
+  "employeeId": "0000000002",
+  "cardNumber": 2
+}
+
+<> 2021-04-08T182555.200.json
+
+###
+
+POST http://localhost:8080/receipt
+Content-Type: application/json
+
+{
+  "upc": "123456789123",
+  "printDate": "2021-04-01T10:02:43.000+0000",
+  "sumTotal": 37.5,
+  "vat": 7.5,
+  "employeeId": "0000000002",
+  "cardNumber": 2
+}
+
+<> 2021-04-08T182553.200.json
+
+###
+
+GET http://localhost:8080/store-product/all/4
+
+<> 2021-04-08T182552.200.json
+
+###
+
+DELETE http://localhost:8080/store-product/123456789123
+
+<> 2021-04-08T182551.200.json
+
+###
+
+POST http://localhost:8080/store-product/update
+Content-Type: application/json
+
+{
+  "upc": "123456789123",
+  "upcPromo": null,
+  "productId": 3,
+  "sellingPrice": 5.5,
+  "productsNumber": 500,
+  "promotionalProduct": false
+}
+
+<> 2021-04-08T182549.200.json
+
+###
+

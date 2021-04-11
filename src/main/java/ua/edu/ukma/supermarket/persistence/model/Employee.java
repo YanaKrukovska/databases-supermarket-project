@@ -31,7 +31,7 @@ public class Employee implements UserDetails {
     private String zipCode;
     private String username;
     private String password;
-    private Role systemRole;
+    private Role authority;
 
     public Employee(String employeeId, String surname, String name, String patronymic, String role, Double salary,
                     Date birthDate, Date startDate, String phoneNumber, String city, String street, String zipCode) {
@@ -47,6 +47,24 @@ public class Employee implements UserDetails {
         this.city = city;
         this.street = street;
         this.zipCode = zipCode;
+    }
+
+    public Employee(String employeeId, String surname, String name, String patronymic, String role, Double salary, Date
+            birthDate, Date startDate, String phoneNumber, String city, String street, String zipCode, String username, Role authority) {
+        this.employeeId = employeeId;
+        this.surname = surname;
+        this.name = name;
+        this.patronymic = patronymic;
+        this.role = role;
+        this.salary = salary;
+        this.birthDate = birthDate;
+        this.startDate = startDate;
+        this.phoneNumber = phoneNumber;
+        this.city = city;
+        this.street = street;
+        this.zipCode = zipCode;
+        this.username = username;
+        this.authority = authority;
     }
 
     public String getEmployeeId() {
@@ -99,7 +117,7 @@ public class Employee implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(systemRole);
+        return Collections.singleton(authority);
     }
 
     @Override

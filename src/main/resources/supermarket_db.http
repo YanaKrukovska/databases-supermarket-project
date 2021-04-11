@@ -40,7 +40,13 @@ Content-Type: application/json
   "phoneNumber": "+380677149882",
   "city": "Khoruzhivka",
   "street": "Medova St. 14",
-  "zipCode": "1234-5679"
+  "zipCode": "1234-5679",
+  "username": "bees@gmail.com",
+  "password": "1",
+  "authority": {
+    "id": 1,
+    "name": "ROLE_MANAGER"
+  }
 }
 
 ###  Update employee

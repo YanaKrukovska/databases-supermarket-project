@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import ua.edu.ukma.supermarket.persistence.model.Employee;
 import ua.edu.ukma.supermarket.persistence.model.EmployeeStatistic;
 import ua.edu.ukma.supermarket.persistence.model.Response;
+import ua.edu.ukma.supermarket.persistence.model.Role;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -20,11 +21,13 @@ public class EmployeeService implements UserDetailsService {
 
     private final Connection connection;
     private final RoleService roleService;
+    private final PasswordService passwordService;
 
     @Autowired
-    public EmployeeService(Connection connection, RoleService roleService) {
+    public EmployeeService(Connection connection, RoleService roleService, PasswordService passwordService) {
         this.connection = connection;
         this.roleService = roleService;
+        this.passwordService = passwordService;
     }
 
 
@@ -35,9 +38,11 @@ public class EmployeeService implements UserDetailsService {
             return new Response<>(null, employeeErrors);
         }
 
+        employee.setPassword(passwordService.encodePassword(employee.getPassword()));
+
         String query = "INSERT INTO employee (id_employee, empl_surname, empl_name, empl_patronymic, " +
-                "empl_role, salary, date_of_birth, date_of_start, phone_number, city, street, zip_code) " +
-                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+                "empl_role, salary, date_of_birth, date_of_start, phone_number, city, street, zip_code, username, " +
+                "password, id_role) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?, ?)";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
 
@@ -53,6 +58,9 @@ public class EmployeeService implements UserDetailsService {
             statement.setString(10, employee.getCity());
             statement.setString(11, employee.getStreet());
             statement.setString(12, employee.getZipCode());
+            statement.setString(13, employee.getUsername());
+            statement.setString(14, employee.getPassword());
+            statement.setLong(15, employee.getAuthority().getId());
             int rows = statement.executeUpdate();
 
             if (rows == 0) {
@@ -246,7 +254,7 @@ public class EmployeeService implements UserDetailsService {
             Employee employee = employeeFromResultSet(resultSet);
             employee.setPassword(resultSet.getString("password"));
             employee.setUsername(resultSet.getString("username"));
-            employee.setSystemRole(roleService.findRoleById(resultSet.getLong("id_role")).getObject());
+            employee.setAuthority(roleService.findRoleById(resultSet.getLong("id_role")).getObject());
             return new Response<>(employee, new LinkedList<>());
         } catch (SQLException e) {
             return new Response<>(null, Collections.singletonList(e.getMessage()));
@@ -357,8 +365,12 @@ public class EmployeeService implements UserDetailsService {
         String city = resultSet.getString("city");
         String street = resultSet.getString("street");
         String zipCode = resultSet.getString("zip_code");
+        String username = resultSet.getString("username");
+        String password = resultSet.getString("password");
+        Long roleId = resultSet.getLong("id_role");
+        Role authority = roleService.findRoleById(roleId).getObject();
 
-        return new Employee(id, surname, name, patronymic, role, salary, birthDate, startDate, phoneNumber, city, street, zipCode);
+        return new Employee(id, surname, name, patronymic, role, salary, birthDate, startDate, phoneNumber, city, street, zipCode, username, password, authority);
     }
 
     @Override
