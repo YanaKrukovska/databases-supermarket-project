@@ -140,6 +140,24 @@ public class ReceiptService {
         }
     }
 
+    public Response<Receipt> deleteSaleInfoInReceipt(int receiptId) {
+
+        if (findReceiptById(receiptId).getObject() == null) {
+            return new Response<>(null, Collections.singletonList("Can't delete sales of nonexistent receipt"));
+        }
+
+        String query = "DELETE FROM sale WHERE check_number = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setInt(1, receiptId);
+            statement.execute();
+
+            return new Response<>(null, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
     public Response<List<Receipt>> findReceiptsOfEmployeeFromPeriod(String employeeId, java.util.Date startDate, java.util.Date endDate) {
 
         if (employeeService.findEmployeeById(employeeId) == null) {
