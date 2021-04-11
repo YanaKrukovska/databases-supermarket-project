@@ -11,7 +11,7 @@
 <main style="padding-top: 56px; padding-bottom: 60px;">
     <p class="text-center font-weight-bold" style="font-size: 30px">Store products</p>
     <form th:action="@{/add-store-product}" method="get">
-        <button class="btn-success btn-block"  >Add new store product</button>
+        <button class="btn-success btn-block">Add new store product</button>
     </form>
     <table class="table">
         <thead class="thead-dark">
@@ -35,7 +35,8 @@
             <td class="align-middle"><span class="align-middle" th:text="${product.value}"></span></td>
             <td class="align-middle"><span class="align-middle" th:text="${product.key.sellingPrice}"></span></td>
             <td class="align-middle"><span class="align-middle" th:text="${product.key.productsNumber}"></span></td>
-            <td class="align-middle"><span class="align-middle" th:text="${product.key.isPromotionalProductString()}"></span></td>
+            <td class="align-middle"><span class="align-middle"
+                                           th:text="${product.key.isPromotionalProductString()}"></span></td>
             <form th:action="@{/request-delete-store-product}" method="post">
                 <td><input type="hidden" th:value="${product.key.upc}" name="upc">
                     <button type="submit" class="font-weight-bold btn btn-danger btn-block" style="padding: 0px;"
@@ -55,6 +56,49 @@
         </tbody>
     </table>
 </main>
+
+<div id="search-store-product">
+    <div style="margin-left: 100px; margin-bottom: 100px">
+        <label for="store-product-search-input" id="store-product-search-input-label">Search:</label>
+        <input type="text" id="store-product-search-input" name="store-product-search" placeholder="Enter UPC"
+               minlength="0"
+               required>
+        <button type="submit" class="btn btn-primary" id="search-button">Search</button>
+
+        <div id="search-results" style="margin-top: 10px">
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+    $('#search-button').click(function () {
+        let $searchResult = $('#search-results');
+        $searchResult.empty();
+
+        let upc = ($("#store-product-search-input")).val();
+        $.ajax({
+            type: 'GET',
+            url: '/store-product/' + upc,
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Content-Type', 'application/json');
+            },
+            success: function (response) {
+                $('[id="search-results"]').show();
+
+                if (response.errors.length > 0) {
+                    $searchResult.append('<p> No store product </p>');
+                } else {
+                    let product = response.object;
+                    console.log(product)
+                    $searchResult.append('<p> Upc: ' + upc + '. Price: ' + product.sellingPrice +
+                        '. Amount: ' + product.productsNumber + '</p>');
+                }
+                $("#store-product-search-input").val('');
+            }
+        });
+    });
+
+</script>
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
 <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
 <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>

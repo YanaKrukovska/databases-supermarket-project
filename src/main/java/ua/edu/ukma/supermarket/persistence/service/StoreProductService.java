@@ -153,7 +153,7 @@ public class StoreProductService {
         }
     }
 
-    public Response<List<BasicStoredProduct>> getBasicStoredProductInfo(String upc) {
+    public Response<BasicStoredProduct> getBasicStoredProductInfo(String upc) {
 
         if (upc.isBlank()) {
             return new Response<>(null, Collections.singletonList("Category can't be null"));
@@ -165,12 +165,8 @@ public class StoreProductService {
             statement = connection.prepareStatement(query);
             statement.setString(1, upc);
             ResultSet resultSet = statement.executeQuery();
-            List<BasicStoredProduct> storeProducts = new LinkedList<>();
-            while (resultSet.next()) {
-                storeProducts.add(new BasicStoredProduct(resultSet.getDouble("selling_price"),resultSet.getInt("products_number")));
-            }
-
-            return new Response<>(storeProducts, new LinkedList<>());
+            resultSet.next();
+            return new Response<>(new BasicStoredProduct(resultSet.getDouble("selling_price"), resultSet.getInt("products_number")), new LinkedList<>());
         } catch (SQLException e) {
             return new Response<>(null, Collections.singletonList(e.getMessage()));
         }
@@ -185,14 +181,14 @@ public class StoreProductService {
         try {
             String query =
                     "SELECT product_name,characteristics,selling_price,products_number " +
-                    "FROM store_product,product " +
-                    "WHERE store_product.upc=? AND product.id_product=store_product.id_product";
+                            "FROM store_product,product " +
+                            "WHERE store_product.upc=? AND product.id_product=store_product.id_product";
             statement = connection.prepareStatement(query);
             statement.setString(1, upc);
             ResultSet resultSet = statement.executeQuery();
             List<AdvancedStoreProduct> storeProducts = new LinkedList<>();
             while (resultSet.next()) {
-                storeProducts.add(new AdvancedStoreProduct(resultSet.getString("product_name"),resultSet.getString("characteristics"),resultSet.getDouble("selling_price"),resultSet.getInt("products_number")));
+                storeProducts.add(new AdvancedStoreProduct(resultSet.getString("product_name"), resultSet.getString("characteristics"), resultSet.getDouble("selling_price"), resultSet.getInt("products_number")));
             }
 
             return new Response<>(storeProducts, new LinkedList<>());
@@ -233,15 +229,33 @@ public class StoreProductService {
         }
     }
 
-    public Response<List<StoreProduct>> findAllPromotionalSortedByAmount(boolean isPromo) {
-        String query = "SELECT * FROM store_product WHERE promotional_product  = ? ORDER BY products_number";
+    public Response<List<StoreProductWithName>> findAllWithName() {
+        String query = "SELECT p.product_name, sp.* FROM Store_product sp " +
+                "INNER JOIN Product p ON p.id_product = sp.id_product ";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            ResultSet resultSet = statement.executeQuery();
+
+            List<StoreProductWithName> productList = new LinkedList<>();
+            while (resultSet.next()) {
+                productList.add(extractStoreProductWithName(resultSet));
+            }
+
+            return new Response<>(productList, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
+    public Response<List<StoreProductWithName>> findAllPromotionalSortedByAmount(boolean isPromo) {
+        String query = "SELECT p.product_name, sp.* FROM Store_product sp " +
+                "INNER JOIN Product p ON p.id_product = sp.id_product WHERE promotional_product = ? ORDER BY sp.products_number";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setBoolean(1, isPromo);
             ResultSet resultSet = statement.executeQuery();
 
-            List<StoreProduct> productList = new LinkedList<>();
+            List<StoreProductWithName> productList = new LinkedList<>();
             while (resultSet.next()) {
-                productList.add(extractStoreProduct(resultSet));
+                productList.add(extractStoreProductWithName(resultSet));
             }
 
             return new Response<>(productList, new LinkedList<>());

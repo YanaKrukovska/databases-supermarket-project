@@ -1,3 +1,9 @@
+GET http://localhost:8080/store-product/761303463013
+
+<> 2021-04-12T013001.200.json
+
+###
+
 GET http://localhost:8080/receipt/0000000002?startDate=2020-04-02&endDate=2020-04-05
 
 <> 2021-04-11T115405.200.json
@@ -500,22 +506,6 @@ GET http://localhost:8080/store-product/all/4
 DELETE http://localhost:8080/store-product/123456789123
 
 <> 2021-04-08T182551.200.json
-
-###
-
-POST http://localhost:8080/store-product/update
-Content-Type: application/json
-
-{
-  "upc": "123456789123",
-  "upcPromo": null,
-  "productId": 3,
-  "sellingPrice": 5.5,
-  "productsNumber": 500,
-  "promotionalProduct": false
-}
-
-<> 2021-04-08T182549.200.json
 
 ###
 

@@ -3,6 +3,7 @@ package ua.edu.ukma.supermarket.controller;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -54,10 +55,26 @@ public class ApplicationController {
     @GetMapping("/product")
     public String productsPage(Model model) {
         Response<List<Product>> productsResponse = productService.findAll();
-        if (productsResponse.getErrors().size() > 0) {
-            model.addAttribute("errors", productsResponse.getErrors());
+        LinkedHashMap<Product, String> productsWithCategories = addCategoriesToProducts(model, productsResponse);
+        if (productsWithCategories == null) {
             return "error-page";
         }
+        model.addAttribute("products", productsWithCategories);
+        return "products";
+    }
+
+    @GetMapping("product/sort")
+    public String productSort(Model model) {
+        Response<List<Product>> productsResponse = productService.getAllProductsSortedByName();
+        LinkedHashMap<Product, String> productsWithCategories = addCategoriesToProducts(model, productsResponse);
+        if (productsWithCategories == null){
+            return "error-page";
+        }
+        model.addAttribute("products", productsWithCategories);
+        return "products";
+    }
+
+    private LinkedHashMap<Product, String> addCategoriesToProducts(Model model, Response<List<Product>> productsResponse) {
         List<Product> products = productsResponse.getObject();
         LinkedHashMap<Product, String> productsWithCategories = new LinkedHashMap<>();
         for (int i = 0; i < products.size(); i++) {
@@ -65,13 +82,12 @@ public class ApplicationController {
             Response<Category> categoryResponse = categoryService.findCategoryById(currentProduct.getCategoryNumber());
             if (categoryResponse.getErrors().size() > 0) {
                 model.addAttribute("errors", categoryResponse.getErrors());
-                return "error-page";
+                return null;
             }
             Category currentCategory = categoryResponse.getObject();
             productsWithCategories.put(currentProduct, currentCategory.getCategoryName());
         }
-        model.addAttribute("products", productsWithCategories);
-        return "products";
+        return productsWithCategories;
     }
 
 
@@ -638,23 +654,22 @@ public class ApplicationController {
     //Скласти список усіх категорій, відсортованих за назвою
     @GetMapping("/category/all")
     public String getAllCategoriesSorted(Model model) {
-        String[] categoryColumnNames=new String[]{"ID","Name"};
-        Response<List<Category>> categoryResponse=categoryService.getCategoriesSortedByName();
+        String[] categoryColumnNames = new String[]{"ID", "Name"};
+        Response<List<Category>> categoryResponse = categoryService.getCategoriesSortedByName();
         if (categoryResponse.getErrors().size() > 0) {
             model.addAttribute("errors", categoryResponse.getErrors());
             return "error-page";
         }
-        List<Category> categories=categoryResponse.getObject();
+        List<Category> categories = categoryResponse.getObject();
         List<String[]> values = new LinkedList<>();
-        for (Category value: categories) {
-            values.add(new String[]{String.valueOf(value.getCategoryNumber()),value.getCategoryName()});
+        for (Category value : categories) {
+            values.add(new String[]{String.valueOf(value.getCategoryNumber()), value.getCategoryName()});
         }
-        model.addAttribute("queryText","Скласти список усіх категорій, відсортованих за назвою");
+        model.addAttribute("queryText", "Скласти список усіх категорій, відсортованих за назвою");
         model.addAttribute("columnNames", categoryColumnNames);
         model.addAttribute("values", values);
         return "base-table";
     }
-
 
 
     // Employee methods
@@ -715,7 +730,7 @@ public class ApplicationController {
 
     // За прізвищем працівника знайти його телефон та адресу;
     @GetMapping("/employee/contacts")
-    public String findEmployeeNumberAddressBySurname(@ModelAttribute("surname") String surname,Model model) {
+    public String findEmployeeNumberAddressBySurname(@ModelAttribute("surname") String surname, Model model) {
         String[] employeeColumnNames = new String[]{"Phone number", "City", "Street", "Zip code"};
         Response<List<Employee>> employeeResponse = employeeService.findPhoneNumberAndAddressBySurname(surname);
         if (employeeResponse.getErrors().size() > 0) {
@@ -728,7 +743,7 @@ public class ApplicationController {
             String[] fields = new String[]{cashier.getPhoneNumber(), cashier.getCity(), cashier.getStreet(), cashier.getZipCode()};
             values.add(fields);
         }
-        model.addAttribute("queryText", "За прізвищем працівника знайти його телефон та адресу: "+surname);
+        model.addAttribute("queryText", "За прізвищем працівника знайти його телефон та адресу: " + surname);
         model.addAttribute("columnNames", employeeColumnNames);
         model.addAttribute("values", values);
         return "base-table";
@@ -763,9 +778,9 @@ public class ApplicationController {
         return productService.getAllProductsSortedByName();
     }
 
-//Скласти список всіх товарів, що належать певній категорії
+    //Скласти список всіх товарів, що належать певній категорії
     @GetMapping("/product/all/from-category")
-    public String getAllProductsInCategorySorted(@ModelAttribute("categoryNumber") int categoryNumber,Model model) {
+    public String getAllProductsInCategorySorted(@ModelAttribute("categoryNumber") int categoryNumber, Model model) {
         String[] productColumnNames = new String[]{"ID", "Name", "Characteristics", "Category number"};
         Response<List<Product>> productResponse = productService.getAllProductsFromCategorySortedByName(categoryNumber);
         if (productResponse.getErrors().size() > 0) {
@@ -778,10 +793,10 @@ public class ApplicationController {
             String[] fields = new String[]{String.valueOf(product.getProductId()), product.getProductName(), product.getCharacteristics(), String.valueOf(product.getCategoryNumber())};
             values.add(fields);
         }
-        model.addAttribute("queryText", "Скласти список всіх товарів, що належать певній категорії: "+categoryNumber);
+        model.addAttribute("queryText", "Скласти список всіх товарів, що належать певній категорії: " + categoryNumber);
         model.addAttribute("columnNames", productColumnNames);
         model.addAttribute("values", values);
-        return  "base-table";
+        return "base-table";
     }
 
     @SneakyThrows
@@ -859,7 +874,7 @@ public class ApplicationController {
     @SneakyThrows
     @GetMapping("/store-product/{upc}")
     @ResponseBody
-    public Response<List<BasicStoredProduct>> getBasicStoredProductInfo(@PathVariable("upc") String upc) {
+    public Response<BasicStoredProduct> getBasicStoredProductInfo(@PathVariable("upc") String upc) {
         return storeProductService.getBasicStoredProductInfo(upc);
     }
 
@@ -958,7 +973,7 @@ public class ApplicationController {
     @SneakyThrows
     @GetMapping("/store-product/promo/by-amount")
     @ResponseBody
-    public Response<List<StoreProduct>> getAllPromoStoreProductsSortedByAmount() {
+    public Response<List<StoreProductWithName>> getAllPromoStoreProductsSortedByAmount() {
         return storeProductService.findAllPromotionalSortedByAmount(true);
     }
 
@@ -974,7 +989,7 @@ public class ApplicationController {
     @SneakyThrows
     @GetMapping("/store-product/regular/by-amount")
     @ResponseBody
-    public Response<List<StoreProduct>> getAllRegularStoreProductsSortedByAmount() {
+    public Response<List<StoreProductWithName>> getAllRegularStoreProductsSortedByAmount() {
         return storeProductService.findAllPromotionalSortedByAmount(false);
     }
 
@@ -1100,8 +1115,8 @@ public class ApplicationController {
 
     @GetMapping("/manager")
     public String managerPage(Model model) {
-        model.addAttribute("categories",categoryService.findAll().getObject());
-        model.addAttribute("products",productService.findAll().getObject());
+        model.addAttribute("categories", categoryService.findAll().getObject());
+        model.addAttribute("products", productService.findAll().getObject());
         return "manager";
     }
 
@@ -1161,5 +1176,59 @@ int sum=0;
         model.addAttribute("check",finalCheck);
         return "check-print";
 }
+
+    @GetMapping("/cashier")
+    public String cashierPage(Model model) {
+        Employee employee = (Employee) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        model.addAttribute("employee", employeeService.findEmployeeById(employee.getEmployeeId()).getObject());
+        return "cashier";
+    }
+
+    @SneakyThrows
+    @GetMapping("/cashier/receipts")
+    public String cashierReceiptsPage(@ModelAttribute("start") String start, @ModelAttribute("end") String end,
+                                      Model model) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+
+        Employee employee = (Employee) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<Receipt> receipts = receiptService.findReceiptsOfEmployeeFromPeriod(employee.getEmployeeId(),
+                formatter.parse(start), formatter.parse(end)).getObject();
+        model.addAttribute("receipts", receipts);
+        return "cashier-receipts";
+    }
+
+    @GetMapping("/product-sorted")
+    public String productSortPage(Model model) {
+        Response<List<StoreProductWithName>> productsResponse = storeProductService.findAllWithName();
+        if (!productsResponse.getErrors().isEmpty()) {
+            model.addAttribute("errors", productsResponse.getErrors());
+            return "error-page";
+        }
+
+        model.addAttribute("products", productsResponse.getObject());
+        return "products-sorted";
+    }
+
+    @GetMapping("/store/products/sort")
+    public String storeProductSort(@ModelAttribute("sort") String sort, Model model) {
+        Response<List<StoreProductWithName>> productsResponse;
+        switch (sort) {
+            case "promo-amount":
+                productsResponse = storeProductService.findAllPromotionalSortedByAmount(true);
+                break;
+            case "regular-amount":
+                productsResponse = storeProductService.findAllPromotionalSortedByAmount(false);
+                break;
+            case "promo-name":
+                productsResponse = storeProductService.findAllSortedByName(true);
+                break;
+            default:
+                productsResponse = storeProductService.findAllSortedByName(false);
+                break;
+        }
+
+        model.addAttribute("products", productsResponse.getObject());
+        return "products-sorted";
+    }
 
 }

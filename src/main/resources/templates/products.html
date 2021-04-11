@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <title>Products</title>
     <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.6.0/css/bootstrap.min.css} "/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+        .forms form {
+            display: inline-block;
+        }
+        .forms {
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
 
@@ -11,47 +22,53 @@
 <main style="padding-top: 56px; padding-bottom: 60px;">
     <p class="text-center font-weight-bold" style="font-size: 30px">Products</p>
     <form th:action="@{/add-product}" method="get">
-        <button class="btn-success btn-block"  >Add new product</button>
+        <button class="btn-success btn-block">Add new product</button>
     </form>
-<table class="table">
-    <thead class="thead-dark">
-    <tr>
-        <th scope="col">ID</th>
-        <th scope="col">Name</th>
-        <th scope="col">Characteristics</th>
-        <th scope="col">Category</th>
-        <th scope="col"></th>
-        <th scope="col"></th>
-    </tr>
-    </thead>
-
-    <tbody>
-
-    <tr th:each="product : ${products}">
-        <td class="align-middle"><span class="align-middle" th:text="${product.key.productId}"></span></td>
-        <td class="align-middle"><span class="align-middle" th:text="${product.key.productName}"></span></td>
-        <td class="align-middle"><span class="align-middle" th:text="${product.key.characteristics}"></span></td>
-        <td class="align-middle"><span class="align-middle" th:text="${product.value}"></span></td>
-
-
-        <form th:action="@{/request-delete-product}" method="post">
-            <td><input type="hidden" th:value="${product.key.productId}" name="productId">
-                <button type="submit" class="font-weight-bold btn btn-danger btn-block" style="padding: 0px;"
-                        onclick="return confirm('Are you sure you want to delete this product?')">
-                    Remove
-                </button>
-            </td>
+    <div class="forms">
+        <form th:action="@{/product}" method="get">
+            <button class="btn-success">Sort by id</button>
         </form>
-        <form th:action="@{/edit-product}" method="get">
-            <td><input type="hidden" th:value="${product.key.productId}" name="productId">
-                <button type="submit" class="btn btn-primary btn-block" style="padding: 0px;">
-                    Edit
-                </button>
-            </td>
+        <form th:action="@{/product/sort}" method="get">
+            <button class="btn-success">Sort by name</button>
         </form>
+    </div>
+    <table class="table">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">Characteristics</th>
+            <th scope="col">Category</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="product : ${products}">
+            <td class="align-middle"><span class="align-middle" th:text="${product.key.productId}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${product.key.productName}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${product.key.characteristics}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${product.value}"></span></td>
 
-    </tbody>
-</table>
+
+            <form th:action="@{/request-delete-product}" method="post">
+                <td><input type="hidden" th:value="${product.key.productId}" name="productId">
+                    <button type="submit" class="font-weight-bold btn btn-danger btn-block" style="padding: 0px;"
+                            onclick="return confirm('Are you sure you want to delete this product?')">
+                        Remove
+                    </button>
+                </td>
+            </form>
+            <form th:action="@{/edit-product}" method="get">
+                <td><input type="hidden" th:value="${product.key.productId}" name="productId">
+                    <button type="submit" class="btn btn-primary btn-block" style="padding: 0px;">
+                        Edit
+                    </button>
+                </td>
+            </form>
+
+        </tbody>
+    </table>
 </main>
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
 <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
