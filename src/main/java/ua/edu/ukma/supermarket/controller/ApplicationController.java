@@ -600,6 +600,13 @@ public class ApplicationController {
     }
 
     @SneakyThrows
+    @GetMapping("/receipt/find")
+    @ResponseBody
+    public Response<Receipt> createReceipt(@RequestParam int id) {
+        return receiptService.findReceiptById(id);
+    }
+
+    @SneakyThrows
     @GetMapping("/category/{id}")
     @ResponseBody
     public Response<Category> getCategoryById(@PathVariable("id") int id) {
