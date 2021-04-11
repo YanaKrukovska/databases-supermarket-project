@@ -51,6 +51,18 @@
         </form>
     </div>
 
+    <div class="row" style=" margin: 10px">
+        <p class="text font-italic "  >Скласти список товарів у магазині, що належать певному товару</p>
+        <form th:action="@{/store-products/from-product}" method="get">
+            <select class="limited-drop-down" id="productId" name="productId"
+                    style="width: 450px; height: 40px">
+                <option th:each="product : ${products}" th:value="${product.productId}" th:text="${product.productName}">
+                </option>
+            </select>
+            <button type="submit" class="btn  btn-success " style="margin: 3px" >⇛</button>
+        </form>
+    </div>
+
 
 
 </main>

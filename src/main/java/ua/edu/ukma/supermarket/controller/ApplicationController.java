@@ -1105,6 +1105,27 @@ public class ApplicationController {
         return "manager";
     }
 
+    // Скласти список товарів у магазині, що належать певному товару
+    @GetMapping("/store-products/from-product")
+    public String storeProductsFromProduct(@ModelAttribute("productId") int productId,Model model){
+        List<StoreProduct> products=storeProductService.findAll().getObject();
+
+        String[] storeProductColumnNames = new String[]{"UPC", "Promo UPC", "Product ID", "Selling price",
+        "Products number","Is promotional product"};
+products=products.stream().filter(x->x.getProductId()==productId).collect(Collectors.toList());
+        List<String[]> values = new LinkedList<>();
+        for (StoreProduct product : products) {
+            String[] fields = new String[]{product.getUpc(),product.getUpcPromo(), String.valueOf(product.getProductId()),
+            product.getSellingPrice()+"UAH", String.valueOf(product.getProductsNumber()),
+            product.isPromotionalProductString()};
+            values.add(fields);
+        }
+        model.addAttribute("queryText", "Скласти список товарів у магазині, що належать певному товару: "+productService.findProductById(productId).getObject().getProductName());
+        model.addAttribute("columnNames", storeProductColumnNames);
+        model.addAttribute("values", values);
+        return "base-table";
+    }
+
 @GetMapping("/print-check")
     public String printCheck(@ModelAttribute("receiptNumber") int receiptNumber,Model model){
         Receipt receipt=receiptService.findReceiptById(receiptNumber).getObject();
