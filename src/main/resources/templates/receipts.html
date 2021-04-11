@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Receipts</title>
     <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.6.0/css/bootstrap.min.css} "/>
+
 </head>
 <body>
 
@@ -11,7 +12,7 @@
 <main style="padding-top: 56px; padding-bottom: 60px;">
     <p class="text-center font-weight-bold" style="font-size: 30px">Receipts</p>
     <form th:action="@{/add-receipt}" method="get">
-        <button class="btn-success btn-block"  >Add new receipt</button>
+        <button class="btn-success btn-block">Add new receipt</button>
     </form>
     <table class="table">
         <thead class="thead-dark">
@@ -25,11 +26,10 @@
             <th scope="col"></th>
             <th scope="col"></th>
             <th scope="col"></th>
+            <th scope="col"></th>
         </tr>
         </thead>
-
         <tbody>
-
         <tr th:each="receipt : ${receipts}">
             <td class="align-middle"><span class="align-middle" th:text="${receipt.receiptNumber}"></span></td>
             <td class="align-middle"><span class="align-middle" th:text="${receipt.employeeId}"></span></td>
@@ -53,14 +53,60 @@
                     </button>
                 </td>
             </form>
-            <td><button  class="btn btn-success btn-block" style="padding: 0px;">
-                Print
-            </button> </td>
+            <form th:action="@{/receipt/products}" method="get">
+                <td><input type="hidden" th:value="${receipt.receiptNumber}" name="receiptNumber">
+                    <button type="submit" class="btn btn-light btn-block" style="padding: 0">
+                        See products
+                    </button>
+                </td>
+            </form>
+            <td>
+                <button class="btn btn-success btn-block" style="padding: 0px;">
+                    Print
+                </button>
+            </td>
         </tbody>
     </table>
 </main>
-<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
-<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
-<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+<div id="search-receipt">
+    <div style="margin-left: 100px; margin-bottom: 100px">
+        <label for="receipt-search-input" id="receipt-search-input-label">Search:</label>
+        <input type="number" id="receipt-search-input" name="receipt-search" placeholder="Enter receipt id" min="0"
+               required>
+        <button type="submit" class="btn btn-primary" id="search-button">Search</button>
+
+        <div id="search-results" style="margin-top: 10px">
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+    $('#search-button').click(function () {
+        let $searchResult = $('#search-results');
+        $searchResult.empty();
+
+        $.ajax({
+            type: 'GET',
+            url: '/receipt/find?id=' + ($("#receipt-search-input")).val(),
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Content-Type', 'application/json');
+            },
+            success: function (response) {
+                $('[id="search-results"]').show();
+
+                if (response.errors.length > 0) {
+                    $searchResult.append('<p> No receipt </p>');
+                } else {
+                    let receipt = response.object;
+                    $searchResult.append('<p> Employee: ' + receipt.employeeId + '. Card number: ' + receipt.cardNumber
+                        + '. Print date: ' + receipt.printDate + '. Sum total: ' + receipt.sumTotal + '. Vat: ' + receipt.vat +
+                        '</p>');
+                }
+                $("#receipt-search-input").val('');
+            }
+        });
+    });
+
+</script>
 </body>
 </html>

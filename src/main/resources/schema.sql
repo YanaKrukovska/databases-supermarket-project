@@ -14,6 +14,12 @@ CREATE TABLE product
 
 alter table if exists product add constraint category_number_fk foreign key (category_number) references category ON DELETE NO ACTION ON UPDATE CASCADE;
 
+CREATE TABLE role
+(
+    id_role INT AUTO_INCREMENT PRIMARY KEY,
+    name    varchar(50) not null
+);
+
 CREATE TABLE employee
 (
     id_employee     varchar(10) PRIMARY KEY,
@@ -27,8 +33,14 @@ CREATE TABLE employee
     phone_number    varchar(13)    not null,
     city            varchar(50)    not null,
     street          varchar(50)    not null,
-    zip_code        varchar(9)     not null
+    zip_code        varchar(9)     not null,
+    username        varchar(255)   not null,
+    password        varchar(255)   not null,
+    id_role         int            not null
 );
+
+alter table if exists employee add constraint id_role_fk foreign key (id_role) references role ON DELETE NO ACTION ON UPDATE CASCADE;
+
 
 CREATE TABLE customer_card
 (
@@ -80,4 +92,5 @@ alter table if exists store_product add constraint id_product_fk foreign key (id
 
 alter table if exists sale add constraint upc_fk foreign key (upc) references store_product ON UPDATE CASCADE ON DELETE NO ACTION;
 alter table if exists sale add constraint check_number_fk foreign key (check_number) references receipt ON UPDATE CASCADE ON DELETE CASCADE;
+
 

@@ -8,9 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ua.edu.ukma.supermarket.persistence.model.*;
 import ua.edu.ukma.supermarket.persistence.service.*;
-import ua.edu.ukma.supermarket.persistence.model.AdvancedStoreProduct;
-import ua.edu.ukma.supermarket.persistence.model.BasicCustomerCard;
-import ua.edu.ukma.supermarket.persistence.model.BasicStoredProduct;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -77,6 +74,7 @@ public class ApplicationController {
         return "products";
     }
 
+
     @GetMapping("/edit-product")
     public String editProduct(@ModelAttribute("productId") int id, Model model) {
         Response<Product> productResponse = productService.findProductById(id);
@@ -141,6 +139,7 @@ public class ApplicationController {
         return "redirect:/product";
     }
 
+
     @GetMapping("/category")
     public String categoriesPage(Model model) {
         Response<List<Category>> categoryResponse = categoryService.findAll();
@@ -150,6 +149,17 @@ public class ApplicationController {
         }
         model.addAttribute("categories", categoryResponse.getObject());
         return "categories";
+    }
+
+    @GetMapping("/category/products")
+    public String categoryProductsSorted(@ModelAttribute("categoryNumber") Integer id, Model model) {
+        Response<List<Product>> productsResponse = productService.getAllProductsFromCategorySortedByName(id);
+        if (!productsResponse.getErrors().isEmpty()) {
+            model.addAttribute("errors", productsResponse.getErrors());
+            return "error-page";
+        }
+        model.addAttribute("products", productsResponse.getObject());
+        return "category-products";
     }
 
     @GetMapping("/edit-category")
@@ -582,6 +592,13 @@ public class ApplicationController {
         return "redirect:/receipt";
     }
 
+    @GetMapping("receipt/products")
+    public String seeReceiptProducts(@ModelAttribute("receiptNumber") Integer receiptNumber, Model model) {
+        List<Product> products = productService.allProductsFromCheck(receiptNumber).getObject();
+        model.addAttribute("products", products);
+        return "receipt-products";
+    }
+
     @SneakyThrows
     @GetMapping("/category/{id}")
     @ResponseBody
@@ -796,16 +813,12 @@ public class ApplicationController {
     }
 
     // Скласти список усіх постійних клієнтів, що мають карту клієнта, по полях  ПІБ, телефон, адреса (якщо вказана)
-    @GetMapping({"/customer/all/basic"})
+    @SneakyThrows
+    @GetMapping("/customer/all/basic")
     @ResponseBody
     public Response<List<BasicCustomerCard>> getBasicCustomerInfo() {
-        try {
-            return this.customerService.getBasicCustomerInfo();
-        } catch (Throwable var2) {
-            throw var2;
-        }
+        return customerService.getBasicCustomerInfo();
     }
-
 
     @SneakyThrows
     @PostMapping("/store-product")
@@ -828,36 +841,27 @@ public class ApplicationController {
         return storeProductService.deleteStoreProduct(productUpc);
     }
 
-    @GetMapping({"/store-product/all/{productId}"})
+    @SneakyThrows
+    @GetMapping("/store-product/all/{productId}")
     @ResponseBody
     public Response<List<StoreProduct>> getAllStoreProductsFromProduct(@PathVariable("productId") int productId) {
-        try {
-            return this.storeProductService.getAllStoreProductsFromProduct(productId);
-        } catch (Throwable var3) {
-            throw var3;
-        }
+        return storeProductService.getAllStoreProductsFromProduct(productId);
     }
 
     // За UPC-товару знайти ціну продажу товару, кількість наявних одиниць товару.
-    @GetMapping({"/store-product/{upc}"})
+    @SneakyThrows
+    @GetMapping("/store-product/{upc}")
     @ResponseBody
     public Response<List<BasicStoredProduct>> getBasicStoredProductInfo(@PathVariable("upc") String upc) {
-        try {
-            return this.storeProductService.getBasicStoredProductInfo(upc);
-        } catch (Throwable var3) {
-            throw var3;
-        }
+        return storeProductService.getBasicStoredProductInfo(upc);
     }
 
     // За UPC-товару знайти ціну продажу товару, кількість наявних одиниць товару, назву та характеристики товару.
-    @GetMapping({"/store-product-advanced/{upc}"})
+    @SneakyThrows
+    @GetMapping("/store-product-advanced/{upc}")
     @ResponseBody
     public Response<List<AdvancedStoreProduct>> getAdvancedStoredProductInfo(@PathVariable("upc") String upc) {
-        try {
-            return this.storeProductService.getAdvancedStoredProductInfo(upc);
-        } catch (Throwable var3) {
-            throw var3;
-        }
+        return storeProductService.getAdvancedStoredProductInfo(upc);
     }
 
     @SneakyThrows
@@ -898,14 +902,13 @@ public class ApplicationController {
         return receiptService.findReceiptsOfEmployeeFromPeriod(id, startDate, endDate);
     }
 
-    @GetMapping({"/receipt/sum/{id}"})
+    @SneakyThrows
+    @GetMapping("/receipt/sum/{id}")
     @ResponseBody
-    public Response<Double> findSumEmployeeFromPeriod(@PathVariable("id") String id, @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate, @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
-        try {
-            return this.receiptService.sumAllReceiptsByEmployeeFromPeriod(id, startDate, endDate);
-        } catch (Throwable var5) {
-            throw var5;
-        }
+    public Response<Double> findSumEmployeeFromPeriod(@PathVariable("id") String id,
+                                                      @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                                                      @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        return receiptService.sumAllReceiptsByEmployeeFromPeriod(id, startDate, endDate);
     }
 
     @SneakyThrows
@@ -928,14 +931,13 @@ public class ApplicationController {
 
     //Визначити загальну кількість одиниць певного товару, проданого за певний період часу NOT WORKING
 
-    @GetMapping({"/amount_of_sales_by_period"})
+    @SneakyThrows
+    @GetMapping("/amount_of_sales_by_period")
     @ResponseBody
-    public Response<Integer> getAmountOfSalesForPeriodByProductId(@RequestParam("id") int id, @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate, @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
-        try {
-            return this.productService.getAmountOfSalesForPeriodByProductId(id, startDate, endDate);
-        } catch (Throwable var5) {
-            throw var5;
-        }
+    public Response<Integer> getAmountOfSalesForPeriodByProductId(@RequestParam("id") int id,
+                                                                  @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                                                                  @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        return productService.getAmountOfSalesForPeriodByProductId(id, startDate, endDate);
     }
 
     @SneakyThrows
