@@ -289,7 +289,7 @@ public class ReceiptService {
         return new Response<>(result, new LinkedList<>());
     }
 
-    private List<ReceiptDetailed.ProductDetails> findProductDetails(Receipt receipt) {
+    public List<ReceiptDetailed.ProductDetails> findProductDetails(Receipt receipt) {
         List<ReceiptDetailed.ProductDetails> productDetailsList = new LinkedList<>();
 
         String query = "SELECT s.product_number, s.selling_price, p.product_name FROM receipt r " +

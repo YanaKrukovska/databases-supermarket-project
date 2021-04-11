@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cheque</title>
+    <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.6.0/css/bootstrap.min.css} "/>
+</head>
+<body>
+<textarea  th:text="${check}" style="width: 500px; height: 500px" readonly></textarea>
+<button class="btn-success btn-block"  style="width: 200px" onclick="window.print()">Print</button>
+</body>
+<script>
+
+    
+</script>
+</html>

@@ -44,7 +44,7 @@ public class AuthenticationController {
             return "login";
         }
 
-        return "redirect:/";
+        return "redirect:/product";
     }
 
 }

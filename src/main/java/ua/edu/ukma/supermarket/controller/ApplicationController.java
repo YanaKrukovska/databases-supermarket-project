@@ -48,7 +48,7 @@ public class ApplicationController {
     public String basePage(Model model) {
         Category sampleCategory = new Category(23, "Weapons");
         model.addAttribute("category", sampleCategory);
-        return "index";
+        return "redirect:/login";
     }
 
     @GetMapping("/product")
@@ -1104,5 +1104,41 @@ public class ApplicationController {
         model.addAttribute("products",productService.findAll().getObject());
         return "manager";
     }
+
+@GetMapping("/print-check")
+    public String printCheck(@ModelAttribute("receiptNumber") int receiptNumber,Model model){
+        Receipt receipt=receiptService.findReceiptById(receiptNumber).getObject();
+     List<ReceiptDetailed.ProductDetails> details=receiptService.findProductDetails(receipt);
+        String check1="+-------------------------------------+\n" +
+                "|                                     |\n" +
+                "|            FIESTA MARKET            |\n" +
+                "|                                     |\n" +
+                "|          3015 Adams Avenue          |\n" +
+                "|          "+receipt.getPrintDate().toString()+"          |\n" +
+                "|         San Diego, CA 92116         |\n" +
+                "|           00000000000"+receiptNumber+"            |\n" +
+                "|                                     |\n" ;
+
+             /*   "|  Family PK Pork Chops       2.94 F  |\n" +
+                "|  Beef Chuck Steadk          3.73 F  |\n" +
+                "|  Rosarita Refried 40.5 OZ   1.79 F  |\n" +
+                "|  Rosarita Refried 40.5 OZ   1.79 F  |\n" +
+                "|  Durkey Party Taco Season   1.79 F  |\n" +*/
+int sum=0;
+        for (ReceiptDetailed.ProductDetails item: details){
+            check1+="|  "+item.getProductName()+"       "+item.getProductAmount()+"*"+item.getProductPrice()+" UAH  |\n";
+        sum+=item.getProductAmount()*item.getProductPrice();
+        }
+    String check2=   "|                                     |\n" +
+            "|  Subtotal                  "+sum+" UAH    |\n" +
+            "|                                     |\n" +
+            "|  TOTAL                     "+sum+" UAH    |\n" +
+            "|                                     |\n" +
+            "|             THANK YOU!         :F_P:|\n" +
+            "+-------------------------------------+";
+        String finalCheck=check1+check2;
+        model.addAttribute("check",finalCheck);
+        return "check-print";
+}
 
 }
