@@ -11,7 +11,7 @@
 <main style="padding-top: 56px; padding-bottom: 60px;">
     <p class="text-center font-weight-bold" style="font-size: 30px">Customer cards</p>
     <form th:action="@{/add-customer}" method="get">
-        <button class="btn-success btn-block"  >Add new customer card</button>
+        <button class="btn-success btn-block">Add new customer card</button>
     </form>
     <table class="table">
         <thead class="thead-dark">
@@ -61,8 +61,87 @@
         </tbody>
     </table>
 </main>
+
+<div id="search-customer">
+    <div style="margin-left: 100px; margin-bottom: 100px">
+        <label for="customer-search-input" id="customer-search-input-label">Search:</label>
+        <input type="text" id="customer-search-input" name="customer-search" placeholder="Enter customer surname" minlength="1"
+               required>
+        <button type="submit" class="btn btn-primary" id="search-button">Search</button>
+        <div id="search-results" style="margin-top: 10px">
+        </div>
+    </div>
+    <div style="margin-left: 100px; margin-bottom: 100px">
+        <label for="discount-search-input" id="discount-search-input-label">Search:</label>
+        <input type="number" id="discount-search-input" name="customer-search" placeholder="Discount" min="0" max="100"
+               required>
+        <button type="submit" class="btn btn-primary" id="discount-search-button">Search</button>
+        <div id="discount-search-results" style="margin-top: 10px">
+        </div>
+    </div>
+</div>
+
 <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
 <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
 <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+    function printCustomer(response, resultField) {
+        let customers = response.object;
+        customers.forEach(function (customer) {
+
+            let city = customer.city == null ? "" : customer.city;
+            let street = customer.street == null ? "" : customer.street;
+            let zipcode = customer.zipcode == null ? "" : customer.zipcode;
+
+            resultField.append('<p> #' + customer.cardNumber + ' ' + customer.customerSurname
+                + ' ' + customer.customerName + ' ' + customer.customerPatronymic + '. Phone: ' + customer.phone +
+                '. Discount: ' + customer.discount + '. Address: ' + city + ' ' + street + ', ' + zipcode + '</p>');
+        })
+    }
+
+    $('#search-button').click(function () {
+        let $searchResult = $('#search-results');
+        $searchResult.empty();
+
+        $.ajax({
+            type: 'GET',
+            url: '/customer/' + ($("#customer-search-input")).val(),
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Content-Type', 'application/json');
+            },
+            success: function (response) {
+                if (response.errors.length > 0 || response.object.length === 0) {
+                    $searchResult.append('<p> No such customer </p>');
+                } else {
+                    printCustomer(response, $searchResult);
+                }
+                $("#customer-search-input").val('');
+            }
+        });
+    });
+
+    $('#discount-search-button').click(function () {
+        let $discountSearchResult = $('#discount-search-results');
+        $discountSearchResult.empty();
+
+        $.ajax({
+            type: 'GET',
+            url: '/customer/discount/' + ($("#discount-search-input")).val(),
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Content-Type', 'application/json');
+            },
+            success: function (response) {
+                if (response.errors.length > 0 || response.object.length === 0) {
+                    $discountSearchResult.append('<p> No such customer </p>');
+                } else {
+                    printCustomer(response, $discountSearchResult);
+                }
+                $("#discount-search-input").val('');
+            }
+        });
+    });
+
+</script>
 </body>
 </html>

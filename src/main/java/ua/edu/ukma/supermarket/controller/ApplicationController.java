@@ -102,7 +102,7 @@ public class ApplicationController {
     @GetMapping("/add-product")
     public String addProduct(Model model) {
 
-        Product product = new Product(-1,null,null,0);
+        Product product = new Product(-1, null, null, 0);
         Response<List<Category>> categoryResponse = categoryService.findAll();
         if (categoryResponse.getErrors().size() > 0) {
             model.addAttribute("errors", categoryResponse.getErrors());
@@ -240,17 +240,17 @@ public class ApplicationController {
 
     @PostMapping("/request-add-employee")
     public String requestAddEmployee(@ModelAttribute("employeeId") String employeeId,
-                                      @ModelAttribute("surname") String surname,
-                                      @ModelAttribute("name") String name,
-                                      @ModelAttribute("patronymic") String patronymic,
-                                      @ModelAttribute("role") String role,
-                                      @ModelAttribute("salary") Double salary,
-                                      @ModelAttribute("birthDate") String birthDate,
-                                      @ModelAttribute("startDate") String startDate,
-                                      @ModelAttribute("phoneNumber") String phoneNumber,
-                                      @ModelAttribute("city") String city,
-                                      @ModelAttribute("street") String street,
-                                      @ModelAttribute("zipCode") String zipCode, Model model) throws ParseException {
+                                     @ModelAttribute("surname") String surname,
+                                     @ModelAttribute("name") String name,
+                                     @ModelAttribute("patronymic") String patronymic,
+                                     @ModelAttribute("role") String role,
+                                     @ModelAttribute("salary") Double salary,
+                                     @ModelAttribute("birthDate") String birthDate,
+                                     @ModelAttribute("startDate") String startDate,
+                                     @ModelAttribute("phoneNumber") String phoneNumber,
+                                     @ModelAttribute("city") String city,
+                                     @ModelAttribute("street") String street,
+                                     @ModelAttribute("zipCode") String zipCode, Model model) throws ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date birthDateProper = formatter.parse(birthDate);
         Date startDateProper = formatter.parse(startDate);
@@ -321,9 +321,9 @@ public class ApplicationController {
     }
 
     @GetMapping("/add-customer")
-    public String addCustomer( Model model) {
+    public String addCustomer(Model model) {
 
-        CustomerCard customerCard = new CustomerCard(0,null,null,null,null,null,null,null,1);
+        CustomerCard customerCard = new CustomerCard(0, null, null, null, null, null, null, null, 1);
         model.addAttribute("customer", customerCard);
         return "customer-add";
     }
@@ -417,9 +417,9 @@ public class ApplicationController {
     }
 
     @GetMapping("/add-store-product")
-    public String addStoreProduct( Model model) {
+    public String addStoreProduct(Model model) {
 
-        StoreProduct storeProduct = new StoreProduct(null,null,0,0.01,0,false);
+        StoreProduct storeProduct = new StoreProduct(null, null, 0, 0.01, 0, false);
         Response<List<StoreProduct>> storeProductListResponse = storeProductService.findAll();
         if (storeProductListResponse.getErrors().size() > 0) {
             model.addAttribute("errors", storeProductListResponse.getErrors());
@@ -524,7 +524,7 @@ public class ApplicationController {
 
 
     @GetMapping("add-receipt")
-    public String addReceipt( Model model) {
+    public String addReceipt(Model model) {
 
         Response<List<CustomerCard>> customerCardResponse = customerService.findAll();
         if (customerCardResponse.getErrors().size() > 0) {
@@ -537,7 +537,7 @@ public class ApplicationController {
             return "error-page";
         }
 
-       Receipt receipt=new Receipt(null,null,null,null,0.05,0.01);
+        Receipt receipt = new Receipt(null, null, null, null, 0.05, 0.01);
         List<Employee> employees = employeeResponse.getObject();
         List<CustomerCard> customerCards = customerCardResponse.getObject();
         List<String> employeeIds = employees.stream().map(f -> f.getEmployeeId()).collect(Collectors.toList());
@@ -550,11 +550,11 @@ public class ApplicationController {
 
     @PostMapping("/request-add-receipt")
     public String requestAddReceipt(@ModelAttribute("employeeId") String employeeId,
-                                     @ModelAttribute("cardNumber") Integer cardNumber,
-                                     @ModelAttribute("printDate") String printDate,
-                                     @ModelAttribute("sumTotal") Double sumTotal,
-                                     @ModelAttribute("vat") Double vat,
-                                     Model model) throws ParseException {
+                                    @ModelAttribute("cardNumber") Integer cardNumber,
+                                    @ModelAttribute("printDate") String printDate,
+                                    @ModelAttribute("sumTotal") Double sumTotal,
+                                    @ModelAttribute("vat") Double vat,
+                                    Model model) throws ParseException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date dateProper = formatter.parse(printDate);
         Receipt receipt = new Receipt(null, employeeId, cardNumber, dateProper, sumTotal, vat);
@@ -583,6 +583,13 @@ public class ApplicationController {
             return "error-page";
         }
         return "redirect:/receipt";
+    }
+
+    @GetMapping("receipt/products")
+    public String seeReceiptProducts(@ModelAttribute("receiptNumber") Integer receiptNumber, Model model) {
+        List<Product> products = productService.allProductsFromCheck(receiptNumber).getObject();
+        model.addAttribute("products", products);
+        return "receipt-products";
     }
 
     @SneakyThrows
@@ -799,6 +806,13 @@ public class ApplicationController {
         } catch (Throwable var3) {
             throw var3;
         }
+    }
+
+    @SneakyThrows
+    @GetMapping("/receipt/find")
+    @ResponseBody
+    public Response<Receipt> createReceipt(@RequestParam int id) {
+        return receiptService.findReceiptById(id);
     }
 
     @SneakyThrows
@@ -1029,4 +1043,6 @@ public class ApplicationController {
     public Response<List<CustomerCard>> getCustomersWhoShopTheSameDaysAsSomeone(@RequestParam("id") int cardId) {
         return customerService.getTheSameDaysAsCustomer(cardId);
     }
+
+
 }
