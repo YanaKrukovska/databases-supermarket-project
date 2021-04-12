@@ -2,7 +2,6 @@ package ua.edu.ukma.supermarket.persistence.service;
 
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
-import ua.edu.ukma.supermarket.persistence.model.Product;
 import ua.edu.ukma.supermarket.persistence.model.Response;
 import ua.edu.ukma.supermarket.persistence.model.Sale;
 import ua.edu.ukma.supermarket.persistence.model.StoreProduct;
@@ -34,6 +33,14 @@ public class SaleService {
         if (storeProduct == null) {
             return new Response<>(null, Collections.singletonList("No store product with such UPC"));
         }
+        int initialAmount = storeProduct.getProductsNumber();
+        if (initialAmount < sale.getProductNumber()) {
+            return new Response<>(null, Collections.singletonList("You can't sell more than you have"));
+        }
+
+        storeProduct.setProductsNumber(initialAmount - storeProduct.getProductsNumber());
+        storeProductService.updateStoreProduct(storeProduct);
+
         sale.setSellingPrice(storeProduct.getSellingPrice());
 
         String query = "INSERT INTO sale (upc, check_number, product_number, selling_price) VALUES (?,?,?,?)";
