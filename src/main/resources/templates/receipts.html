@@ -4,7 +4,13 @@
     <meta charset="UTF-8">
     <title>Receipts</title>
     <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.6.0/css/bootstrap.min.css} "/>
-
+    <style>
+        @media print {
+            button, input, label {
+                display: none !important;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -61,11 +67,11 @@
                 </td>
             </form>
             <form th:action="@{/print-check}" method="get">
-            <td><input type="hidden" th:value="${receipt.receiptNumber}" name="receiptNumber">
-                <button class="btn btn-success btn-block" style="padding: 0px;">
-                    Print
-                </button>
-            </td>
+                <td><input type="hidden" th:value="${receipt.receiptNumber}" name="receiptNumber">
+                    <button class="btn btn-success btn-block" style="padding: 0px;">
+                        Print
+                    </button>
+                </td>
             </form>
         </tbody>
     </table>
