@@ -63,7 +63,18 @@
         </form>
     </div>
 
-
+    <div class="row" style=" margin: 10px">
+        <p class="text font-italic "  >Скласти список чеків, видрукуваних усіма касирами за певний період часу</p>
+        <form th:action="@{/receipt/detailed}" method="get">
+            <span class="title">Початок</span>
+            <input class="fields" type="date"  min="1991-01-01" max="2021-04-11" id="startDate" name="startDate"
+                   placeholder="Date of start" required>
+            <span class="title">Кінець</span>
+            <input class="fields" type="date"  min="1991-01-01" max="2021-04-11" id="endDate" name="endDate"
+                   placeholder="Date of end" required>
+            <button type="submit" class="btn  btn-success " style="margin: 3px" >⇛</button>
+        </form>
+    </div>
 
 </main>
 </body>

@@ -942,13 +942,36 @@ public class ApplicationController {
         return receiptService.detailedReceiptsFromEmployeeFromPeriod(id, startDate, endDate);
     }
 
-    @SneakyThrows
+    // Скласти список чеків, видрукуваних усіма касирами за певний період часу
+
     @GetMapping("/receipt/detailed")
-    @ResponseBody
-    public Response<List<ReceiptDetailed>> findAllDetailedReceiptsFromPeriod(
-            @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-            @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
-        return receiptService.findAllDetailedReceiptsFromPeriod(startDate, endDate);
+    public String findAllDetailedReceiptsFromPeriod(
+            @ModelAttribute("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+            @ModelAttribute("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,Model model) {
+
+       List<ReceiptDetailed> receipts=receiptService.findAllDetailedReceiptsFromPeriod(startDate, endDate).getObject();
+//Integer receiptNumber, String employeeId, Integer cardNumber, Date printDate, double sumTotal,
+//                           double vat, List<ProductDetails> productDetailsList
+
+        //     private String productName;
+        //        private int productAmount;
+        //        private double productPrice;
+        String[] receiptColumnNames = new String[]{"Receipt ID", "Employee ID", "Card number", "Print date",
+                "Total sum","VAT","Product name","Product amount","Product price"};
+        List<String[]> values = new LinkedList<>();
+        for (ReceiptDetailed receipt : receipts) {
+            for (ReceiptDetailed.ProductDetails detail: receipt.getProductDetailsList()){
+                String[] fields = new String[]{String.valueOf(receipt.getReceiptNumber()),receipt.getEmployeeId(),receipt.getCardNumber().toString(),
+                receipt.getPrintDate().toString(), String.valueOf(receipt.getSumTotal()), String.valueOf(receipt.getVat()),
+                detail.getProductName(), String.valueOf(detail.getProductAmount()), String.valueOf(detail.getProductPrice())};
+                values.add(fields);
+            }
+
+        }
+        model.addAttribute("queryText", "Скласти список чеків, видрукуваних усіма касирами за певний період часу: "+startDate.toString()+" - "+endDate.toString());
+        model.addAttribute("columnNames", receiptColumnNames);
+        model.addAttribute("values", values);
+        return "base-table";
     }
 
     //Визначити загальну кількість одиниць певного товару, проданого за певний період часу NOT WORKING

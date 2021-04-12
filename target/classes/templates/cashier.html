@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My profile</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+        .info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 15%;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="parts/navbar.html :: navigation"></div>
+<div class="info">
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title"
+                th:text="${employee.surname} + ' ' + ${employee.name} + ' ' + ${employee.patronymic}"></h5>
+            <h6 class="card-subtitle mb-2 text-muted" th:text="${employee.employeeId}">>Card subtitle</h6>
+            <p class="card-text" th:text="${employee.city} + ' ' + ${employee.street} + ' ' + ${employee.zipCode}"></p>
+            <p class="card-item" th:text="${employee.birthDate} + ': birth date'"></p>
+            <p class="card-item" th:text="${employee.role}"></p>
+            <p class="card-item" th:text="${employee.startDate} + ': start date'"></p>
+            <p class="card-item" th:text="${employee.salary} + ' hrn'"></p>
+        </div>
+        <hr>
+        <form th:action="@{/cashier/receipts}" method="get">
+            <label for="start" style="margin-left: 10px;">Find my receipts from and to</label>
+            <br>
+            <input type="date" id="start" name="start" value="2020-01-01" style="margin-left: 20px; margin-bottom: 5px">
+            <input type="date" id="end" name="end" value="2021-12-31" style="margin-left: 20px; margin-bottom: 10px">
+            <button class="btn-success btn-block">Find my receipts</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
