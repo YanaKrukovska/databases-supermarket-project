@@ -980,12 +980,6 @@ public class ApplicationController {
                                                            @ModelAttribute("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
                                                            @ModelAttribute("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate, Model model) {
         List<ReceiptDetailed> receipts = receiptService.detailedReceiptsFromEmployeeFromPeriod(employeeId, startDate, endDate).getObject();
-//Integer receiptNumber, String employeeId, Integer cardNumber, Date printDate, double sumTotal,
-//                           double vat, List<ProductDetails> productDetailsList
-
-        //     private String productName;
-        //        private int productAmount;
-        //        private double productPrice;
         String[] receiptColumnNames = new String[]{"Receipt ID", "Employee ID", "Card number", "Print date",
                 "Total sum", "VAT", "Product name", "Product amount", "Product price"};
         List<String[]> values = new LinkedList<>();
@@ -1013,12 +1007,6 @@ public class ApplicationController {
             @ModelAttribute("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate, Model model) {
 
         List<ReceiptDetailed> receipts = receiptService.findAllDetailedReceiptsFromPeriod(startDate, endDate).getObject();
-//Integer receiptNumber, String employeeId, Integer cardNumber, Date printDate, double sumTotal,
-//                           double vat, List<ProductDetails> productDetailsList
-
-        //     private String productName;
-        //        private int productAmount;
-        //        private double productPrice;
         String[] receiptColumnNames = new String[]{"Receipt ID", "Employee ID", "Card number", "Print date",
                 "Total sum", "VAT", "Product name", "Product amount", "Product price"};
         List<String[]> values = new LinkedList<>();
@@ -1253,12 +1241,6 @@ public class ApplicationController {
                 "|         San Diego, CA 92116         |\n" +
                 "|           00000000000" + receiptNumber + "            |\n" +
                 "|                                     |\n";
-
-             /*   "|  Family PK Pork Chops       2.94 F  |\n" +
-                "|  Beef Chuck Steadk          3.73 F  |\n" +
-                "|  Rosarita Refried 40.5 OZ   1.79 F  |\n" +
-                "|  Rosarita Refried 40.5 OZ   1.79 F  |\n" +
-                "|  Durkey Party Taco Season   1.79 F  |\n" +*/
         int sum = 0;
         for (ReceiptDetailed.ProductDetails item : details) {
             check1 += "|  " + item.getProductName() + "       " + item.getProductAmount() + "*" + item.getProductPrice() + " UAH  |\n";
