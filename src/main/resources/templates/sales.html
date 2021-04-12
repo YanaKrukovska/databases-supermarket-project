@@ -4,37 +4,30 @@
     <meta charset="UTF-8">
     <title>Sales</title>
     <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.6.0/css/bootstrap.min.css} "/>
-
 </head>
 <body>
 
 <div th:replace="parts/navbar.html :: navigation"></div>
 <main style="padding-top: 56px; padding-bottom: 60px;">
     <p class="text-center font-weight-bold" style="font-size: 30px">Sales</p>
-    <form th:action="@{/add-sale}" method="get" >
+    <form th:action="@{/add-sale}" method="get" sec:authorize="hasRole('ROLE_MANAGER')">
         <button class="btn-success btn-block">Add new sale</button>
     </form>
     <table class="table">
         <thead class="thead-dark">
         <tr>
-
             <th scope="col">Store product UPC</th>
             <th scope="col">Receipt number</th>
             <th scope="col">Product amount</th>
             <th scope="col">Selling price</th>
-
         </tr>
         </thead>
         <tbody>
         <tr th:each="sale : ${sales}">
-
-
             <td class="align-middle"><span class="align-middle" th:text="${sale.upc}"></span></td>
             <td class="align-middle"><span class="align-middle" th:text="${sale.receiptNumber}"></span></td>
             <td class="align-middle"><span class="align-middle" th:text="${sale.productNumber}"></span></td>
             <td class="align-middle"><span class="align-middle" th:text="${sale.sellingPrice}"></span></td>
-
-
         </tbody>
     </table>
 </main>

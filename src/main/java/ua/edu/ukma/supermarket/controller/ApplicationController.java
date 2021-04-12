@@ -1317,40 +1317,44 @@ public class ApplicationController {
     }
 
     @GetMapping("/sale")
-    public String salesPage(Model model){
-        Response<List<Sale>> salesResponse=saleService.findAll();
+    public String salesPage(Model model) {
+        Response<List<Sale>> salesResponse = saleService.findAll();
         if (!salesResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", salesResponse.getErrors());
             return "error-page";
         }
-        model.addAttribute("sales",salesResponse.getObject());
+        model.addAttribute("sales", salesResponse.getObject());
         return "sales";
     }
 
     @GetMapping("/add-sale")
-    public String addSale(Model model){
-        Response<List<StoreProduct>> storeProductResponse=storeProductService.findAll();
+    public String addSale(Model model) {
+        Response<List<StoreProduct>> storeProductResponse = storeProductService.findAll();
         if (!storeProductResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", storeProductResponse.getErrors());
             return "error-page";
         }
-        Response<List<Receipt>> receiptResponse=receiptService.findAll();
+        Response<List<Receipt>> receiptResponse = receiptService.findAll();
         if (!receiptResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", receiptResponse.getErrors());
             return "error-page";
         }
-        Sale sale=new Sale(null,null,0,0);
-        model.addAttribute("storeProducts",storeProductResponse.getObject());
-        model.addAttribute("receipts",receiptResponse.getObject());
-        model.addAttribute("sale",sale);
+        Sale sale = new Sale(null, null, 0, 0);
+        model.addAttribute("storeProducts", storeProductResponse.getObject());
+        model.addAttribute("receipts", receiptResponse.getObject());
+        model.addAttribute("sale", sale);
         return "sale-add";
     }
 
     @PostMapping("/request-add-sale")
- public String requestAddSale(@ModelAttribute Sale sale,Model model){
-        Response<Sale> saleResponse=saleService.createSale(sale);
+    public String requestAddSale(@ModelAttribute Sale sale, Model model) {
+        Response<Sale> saleResponse = saleService.createSale(sale);
+        Response<Receipt> updateReceiptResponse = receiptService.updateReceipt(receiptService.findReceiptById(Integer.valueOf(sale.getReceiptNumber())).getObject());
         if (!saleResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", saleResponse.getErrors());
+            return "error-page";
+        } else if (!updateReceiptResponse.getErrors().isEmpty()) {
+            model.addAttribute("errors", updateReceiptResponse.getErrors());
             return "error-page";
         }
         return "redirect:/sale";

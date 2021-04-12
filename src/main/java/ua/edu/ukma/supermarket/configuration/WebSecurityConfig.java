@@ -38,7 +38,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/add-employee", "/add-receipt", "/add-customer",
                         "/edit-category", "/edit-product", "/edit-store-product", "/edit-employee"
                 ).hasRole("MANAGER")
-                .antMatchers("/**").hasAnyRole("CASHIER", "MANAGER")
+                .antMatchers("/**").authenticated()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -46,7 +46,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .failureForwardUrl("/login-processing")
                 .loginProcessingUrl("/login-processing")
                 .defaultSuccessUrl("/employee", true)
-                .permitAll();
+                .permitAll()
+                .and()
+                .logout()
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login");;
 
         httpSecurity.headers().frameOptions().disable();
     }

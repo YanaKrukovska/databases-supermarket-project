@@ -2,9 +2,9 @@ package ua.edu.ukma.supermarket.persistence.service;
 
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
-import ua.edu.ukma.supermarket.persistence.model.Receipt;
 import ua.edu.ukma.supermarket.persistence.model.Response;
 import ua.edu.ukma.supermarket.persistence.model.Sale;
+import ua.edu.ukma.supermarket.persistence.model.StoreProduct;
 
 import java.sql.*;
 import java.util.Collections;
@@ -15,9 +15,11 @@ import java.util.List;
 public class SaleService {
 
     private final Connection connection;
+    private final StoreProductService storeProductService;
 
-    public SaleService(Connection connection) {
+    public SaleService(Connection connection, StoreProductService storeProductService) {
         this.connection = connection;
+        this.storeProductService = storeProductService;
     }
 
     public Response<Sale> createSale(Sale sale) {
@@ -26,6 +28,12 @@ public class SaleService {
         if (!saleErrors.isEmpty()) {
             return new Response<>(null, saleErrors);
         }
+
+        StoreProduct storeProduct = storeProductService.findStoreProductByUpc(sale.getUpc()).getObject();
+        if (storeProduct == null) {
+            return new Response<>(null, Collections.singletonList("No store product with such UPC"));
+        }
+        sale.setSellingPrice(storeProduct.getSellingPrice());
 
         String query = "INSERT INTO sale (upc, check_number, product_number, selling_price) VALUES (?,?,?,?)";
 
@@ -50,15 +58,10 @@ public class SaleService {
 
     public Response<List<Sale>> findAll() {
 
-
-
         String query = "SELECT * FROM sale";
 
         try (PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-
-
             ResultSet resultSet = statement.executeQuery();
-
             List<Sale> saleList = new LinkedList<>();
             while (resultSet.next()) {
                 saleList.add(extractSale(resultSet));
@@ -101,9 +104,7 @@ public class SaleService {
         if (sale.getProductNumber() < 0) {
             errors.add("Amount can't be less than 0");
         }
-        if (sale.getSellingPrice() < 0) {
-            errors.add("Price can't be less than 0");
-        }
+
         return errors;
     }
 
