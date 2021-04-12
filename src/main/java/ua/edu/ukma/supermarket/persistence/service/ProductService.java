@@ -114,7 +114,7 @@ public class ProductService {
 
             return new Response<>(null, new LinkedList<>());
         } catch (SQLException e) {
-            return new Response<>(null, Collections.singletonList(e.getMessage()));
+            return new Response<>(null, Collections.singletonList("Can't delete this product"));
         }
     }
 

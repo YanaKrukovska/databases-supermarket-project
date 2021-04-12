@@ -146,7 +146,7 @@ public class EmployeeService implements UserDetailsService {
             statement.execute();
             return new Response<>(null, new LinkedList<>());
         } catch (SQLException e) {
-            return new Response<>(null, Collections.singletonList(e.getMessage()));
+            return new Response<>(null, Collections.singletonList("Couldn't delete this employee"));
         }
     }
 

@@ -2,6 +2,7 @@ package ua.edu.ukma.supermarket.persistence.service;
 
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
+import ua.edu.ukma.supermarket.persistence.model.Product;
 import ua.edu.ukma.supermarket.persistence.model.Response;
 import ua.edu.ukma.supermarket.persistence.model.Sale;
 import ua.edu.ukma.supermarket.persistence.model.StoreProduct;
@@ -75,7 +76,7 @@ public class SaleService {
     public Response<Double> getReceiptSum(Integer receiptId) {
 
         if (receiptId == null) {
-            return new Response<>(null,  Collections.singletonList("Receipt id can't be null"));
+            return new Response<>(null, Collections.singletonList("Receipt id can't be null"));
         }
 
         String query = "SELECT SUM(product_number * selling_price) FROM sale WHERE check_number = ?";
