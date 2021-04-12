@@ -43,13 +43,13 @@
                    placeholder="Date of transaction">
 
 
-            <span class="title">Total sum(UAH)</span>
-            <input class="fields" type="number" min="0.01" max="9999999" step="0.01" id="sumTotal" name="sumTotal" th:value="${receipt.sumTotal}"
-                   placeholder="Total sum">
 
-            <span class="title">VAT(UAH)</span>
-            <input class="fields" type="number" min="0.01" max="9999999" step="0.01" id="vat" name="vat" th:value="${receipt.vat}"
-                   placeholder="VAT">
+            <input class="fields" type="hidden" id="sumTotal" name="sumTotal" th:value="*{receipt.sumTotal}"
+                   placeholder="receiptNumber">
+
+
+            <input class="fields" type="hidden" id="vat" name="vat" th:value="*{receipt.vat}"
+                   placeholder="receiptNumber">
 
             <button class="btn btn-lg btn-primary btn-block" type="submit">Save</button>
         </div>

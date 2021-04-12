@@ -603,7 +603,7 @@ public class ApplicationController {
             return "error-page";
         }
 
-        Receipt receipt = new Receipt(null, null, null, null, 0.05, 0.01);
+        Receipt receipt = new Receipt(null, null, null, null, 0.0, 0.0);
         List<Employee> employees = employeeResponse.getObject();
         List<CustomerCard> customerCards = customerCardResponse.getObject();
         List<String> employeeIds = employees.stream().map(Employee::getEmployeeId).collect(Collectors.toList());
@@ -1324,9 +1324,36 @@ public class ApplicationController {
             return "error-page";
         }
         model.addAttribute("sales",salesResponse.getObject());
-        model.addAttribute("storeProducts",storeProductService.findAll().getObject());
-        model.addAttribute("receipts",receiptService.findAll().getObject());
         return "sales";
+    }
+
+    @GetMapping("/add-sale")
+    public String addSale(Model model){
+        Response<List<StoreProduct>> storeProductResponse=storeProductService.findAll();
+        if (!storeProductResponse.getErrors().isEmpty()) {
+            model.addAttribute("errors", storeProductResponse.getErrors());
+            return "error-page";
+        }
+        Response<List<Receipt>> receiptResponse=receiptService.findAll();
+        if (!receiptResponse.getErrors().isEmpty()) {
+            model.addAttribute("errors", receiptResponse.getErrors());
+            return "error-page";
+        }
+        Sale sale=new Sale(null,null,0,0);
+        model.addAttribute("storeProducts",storeProductResponse.getObject());
+        model.addAttribute("receipts",receiptResponse.getObject());
+        model.addAttribute("sale",sale);
+        return "sale-add";
+    }
+
+    @PostMapping("/request-add-sale")
+ public String requestAddSale(@ModelAttribute Sale sale,Model model){
+        Response<Sale> saleResponse=saleService.createSale(sale);
+        if (!saleResponse.getErrors().isEmpty()) {
+            model.addAttribute("errors", saleResponse.getErrors());
+            return "error-page";
+        }
+        return "redirect:/sale";
     }
 
 }
