@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer cards</title>
+    <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.6.0/css/bootstrap.min.css} "/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+
+<div th:replace="parts/navbar.html :: navigation"></div>
+<main style="padding-top: 56px; padding-bottom: 60px;">
+    <p class="text-center font-weight-bold" style="font-size: 30px">Basic customer information</p>
+
+    <table class="table">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">Surname</th>
+            <th scope="col">Name</th>
+            <th scope="col">Patronymic</th>
+            <th scope="col">Phone number</th>
+            <th scope="col">City</th>
+            <th scope="col">Street</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="customer : ${customers}">
+            <td class="align-middle"><span class="align-middle" th:text="${customer.customerSurname}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${customer.customerName}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${customer.customerPatronymic}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${customer.phone}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${customer.city}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${customer.street}"></span></td>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>
