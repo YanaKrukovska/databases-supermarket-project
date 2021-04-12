@@ -26,7 +26,6 @@ public class SaleService {
             return new Response<>(null, saleErrors);
         }
 
-
         String query = "INSERT INTO sale (upc, check_number, product_number, selling_price) VALUES (?,?,?,?)";
 
         try (PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -43,6 +42,26 @@ public class SaleService {
             }
 
             return new Response<>(sale, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
+    public Response<Double> getReceiptSum(Integer receiptId) {
+
+        if (receiptId == null) {
+            return new Response<>(null,  Collections.singletonList("Receipt id can't be null"));
+        }
+
+        String query = "SELECT SUM(product_number * selling_price) FROM sale WHERE check_number = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            statement.setInt(1, receiptId);
+
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+
+            return new Response<>(resultSet.getDouble(1), new LinkedList<>());
         } catch (SQLException e) {
             return new Response<>(null, Collections.singletonList(e.getMessage()));
         }
@@ -70,9 +89,8 @@ public class SaleService {
     private Sale extractSale(ResultSet resultSet) {
         String upc = resultSet.getString("upc");
         String checkNumber = resultSet.getString("check_number");
-        Integer productNumber = resultSet.getInt("product_number");
-        Double sellingPrice = resultSet.getDouble("selling_price");
-
+        int productNumber = resultSet.getInt("product_number");
+        double sellingPrice = resultSet.getDouble("selling_price");
         return new Sale(upc, checkNumber, productNumber, sellingPrice);
     }
 
