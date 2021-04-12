@@ -944,13 +944,36 @@ public class ApplicationController {
         return receiptService.sumAllReceiptsByEmployeeFromPeriod(id, startDate, endDate);
     }
 
-    @SneakyThrows
-    @GetMapping("/receipt/detailed/{id}")
-    @ResponseBody
-    public Response<List<ReceiptDetailed>> findDetailedReceiptsOfEmployeeFromPeriod(@PathVariable("id") String id,
-                                                                                    @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-                                                                                    @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
-        return receiptService.detailedReceiptsFromEmployeeFromPeriod(id, startDate, endDate);
+
+    //Скласти список чеків, видрукуваних певним касиром за певний період часу
+    @GetMapping("/receipt/detailed/from-employee")
+    public String findDetailedReceiptsOfEmployeeFromPeriod(@ModelAttribute("employeeId") String employeeId,
+                                                                                    @ModelAttribute("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                                                                                    @ModelAttribute("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,Model model) {
+        List<ReceiptDetailed> receipts=receiptService.detailedReceiptsFromEmployeeFromPeriod(employeeId, startDate, endDate).getObject();
+//Integer receiptNumber, String employeeId, Integer cardNumber, Date printDate, double sumTotal,
+//                           double vat, List<ProductDetails> productDetailsList
+
+        //     private String productName;
+        //        private int productAmount;
+        //        private double productPrice;
+        String[] receiptColumnNames = new String[]{"Receipt ID", "Employee ID", "Card number", "Print date",
+                "Total sum","VAT","Product name","Product amount","Product price"};
+        List<String[]> values = new LinkedList<>();
+        for (ReceiptDetailed receipt : receipts) {
+            for (ReceiptDetailed.ProductDetails detail: receipt.getProductDetailsList()){
+                String[] fields = new String[]{String.valueOf(receipt.getReceiptNumber()),receipt.getEmployeeId(),receipt.getCardNumber().toString(),
+                        receipt.getPrintDate().toString(), String.valueOf(receipt.getSumTotal()), String.valueOf(receipt.getVat()),
+                        detail.getProductName(), String.valueOf(detail.getProductAmount()), String.valueOf(detail.getProductPrice())};
+                values.add(fields);
+            }
+
+        }
+        model.addAttribute("queryText", "Скласти список чеків, видрукуваних певним касиром за певний період часу: "+employeeService.findEmployeeById(employeeId).getObject().getName()+
+                "   "+employeeService.findEmployeeById(employeeId).getObject().getSurname()+"  "+startDate.toString()+" - "+endDate.toString());
+        model.addAttribute("columnNames", receiptColumnNames);
+        model.addAttribute("values", values);
+        return "base-table";
     }
 
     // Скласти список чеків, видрукуваних усіма касирами за певний період часу

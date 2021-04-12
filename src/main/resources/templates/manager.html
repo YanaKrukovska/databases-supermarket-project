@@ -111,6 +111,26 @@
         </form>
     </div>
 
+
+
+    <div class="row" style=" margin: 10px">
+        <p class="text font-italic ">  Скласти список чеків, видрукуваних певним касиром за певний період часу</p>
+        <form th:action="@{/receipt/detailed/from-employee}" method="get">
+        <select class="limited-drop-down" id="employeeId" name="employeeId"
+                style="width: 450px; height: 40px">
+            <option th:each="employee : ${employees}" th:value="${employee.employeeId}"
+                    th:text="${employee.surname} + ' ' + ${employee.name}">
+            </option>
+        </select>
+        <span class="title">Початок</span>
+        <input class="fields" type="date"  min="1991-01-01" max="2021-04-11" id="startDate" name="startDate"
+               placeholder="Date of start" required>
+        <span class="title">Кінець</span>
+        <input class="fields" type="date"  min="1991-01-01" max="2021-04-11" id="endDate" name="endDate"
+               placeholder="Date of end" required> <button type="submit" id="search-sum-button" class="btn  btn-success " style="margin: 3px">⇛</button>
+        </form>
+    </div>
+
 </main>
 
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
