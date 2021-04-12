@@ -237,7 +237,12 @@ public class ReceiptService {
             ResultSet resultSet = statement.executeQuery();
             resultSet.next();
 
-            return new Response<>(Double.valueOf(resultSet.getString(1)), new LinkedList<>());
+            String res = resultSet.getString(1);
+            if (res == null){
+                return new Response<>(null, new LinkedList<>());
+            }
+
+            return new Response<>(Double.valueOf(res), new LinkedList<>());
         } catch (SQLException e) {
             return new Response<>(null, Collections.singletonList(e.getMessage()));
         }

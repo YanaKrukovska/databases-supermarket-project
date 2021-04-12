@@ -332,6 +332,17 @@ public class ApplicationController {
         return "customers";
     }
 
+    @GetMapping("/customer/basic")
+    public String customerBasicPage(Model model) {
+        Response<List<BasicCustomerCard>> customerCardResponse = customerService.getBasicCustomerInfo();
+        if (!customerCardResponse.getErrors().isEmpty()) {
+            model.addAttribute("errors", customerCardResponse.getErrors());
+            return "error-page";
+        }
+        model.addAttribute("customers", customerCardResponse.getObject());
+        return "basic-customers";
+    }
+
     @GetMapping("/edit-customer")
     public String editCustomer(@ModelAttribute("cardNumber") int id, Model model) {
         Response<CustomerCard> customerCardResponse = customerService.findCustomerCardById(id);
@@ -882,7 +893,7 @@ public class ApplicationController {
     @SneakyThrows
     @GetMapping("/store-product-advanced/{upc}")
     @ResponseBody
-    public Response<List<AdvancedStoreProduct>> getAdvancedStoredProductInfo(@PathVariable("upc") String upc) {
+    public Response<AdvancedStoreProduct> getAdvancedStoredProductInfo(@PathVariable("upc") String upc) {
         return storeProductService.getAdvancedStoredProductInfo(upc);
     }
 
@@ -1140,6 +1151,7 @@ public class ApplicationController {
     public String managerPage(Model model) {
         model.addAttribute("categories", categoryService.findAll().getObject());
         model.addAttribute("products", productService.findAll().getObject());
+        model.addAttribute("employees", employeeService.findAll().getObject());
         return "manager";
     }
 
