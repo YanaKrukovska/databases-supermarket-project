@@ -12,6 +12,10 @@ public class ReceiptDetailed extends Receipt {
 
     private List<ProductDetails> productDetailsList;
 
+    public List<ProductDetails> getProductDetailsList() {
+        return productDetailsList;
+    }
+
     public ReceiptDetailed(Integer receiptNumber, String employeeId, Integer cardNumber, Date printDate, double sumTotal,
                            double vat, List<ProductDetails> productDetailsList) {
         super(receiptNumber, employeeId, cardNumber, printDate, sumTotal, vat);
@@ -30,6 +34,7 @@ public class ReceiptDetailed extends Receipt {
             this.productAmount = productAmount;
             this.productPrice = productPrice;
         }
+
     }
 
 }

@@ -65,7 +65,7 @@ public class ReceiptService {
             statement.setNull(1, Types.NULL);
             statement.setDate(2, new Date(receipt.getPrintDate().getTime()));
             statement.setDouble(3, receipt.getSumTotal());
-            statement.setDouble(4, receipt.getVat());
+            statement.setDouble(4, (receipt.getSumTotal() * 0.2) / 1.2);
             statement.setString(5, receipt.getEmployeeId());
             statement.setInt(6, receipt.getCardNumber());
             int rows = statement.executeUpdate();
@@ -106,7 +106,7 @@ public class ReceiptService {
 
             statement.setDate(1, new Date(receipt.getPrintDate().getTime()));
             statement.setDouble(2, receipt.getSumTotal());
-            statement.setDouble(3, receipt.getVat());
+            statement.setDouble(3, (receipt.getSumTotal() * 0.2) / 1.2);
             statement.setString(4, receipt.getEmployeeId());
             statement.setInt(5, receipt.getCardNumber());
             statement.setInt(6, receipt.getReceiptNumber());
@@ -205,6 +205,23 @@ public class ReceiptService {
         }
     }
 
+    public Response<List<Receipt>> findAll() {
+
+        String query = "SELECT * FROM receipt";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            ResultSet resultSet = statement.executeQuery();
+
+            List<Receipt> receiptList = new LinkedList<>();
+            while (resultSet.next()) {
+                receiptList.add(extractReceipt(resultSet));
+            }
+
+            return new Response<>(receiptList, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
     public Response<Double> sumAllReceiptsByEmployeeFromPeriod(String employeeId, java.util.Date startDate, java.util.Date endDate) {
 
         if (employeeService.findEmployeeById(employeeId) == null) {
@@ -220,7 +237,12 @@ public class ReceiptService {
             ResultSet resultSet = statement.executeQuery();
             resultSet.next();
 
-            return new Response<>(Double.valueOf(resultSet.getString(1)), new LinkedList<>());
+            String res = resultSet.getString(1);
+            if (res == null) {
+                return new Response<>(null, new LinkedList<>());
+            }
+
+            return new Response<>(Double.valueOf(res), new LinkedList<>());
         } catch (SQLException e) {
             return new Response<>(null, Collections.singletonList(e.getMessage()));
         }
@@ -272,7 +294,7 @@ public class ReceiptService {
         return new Response<>(result, new LinkedList<>());
     }
 
-    private List<ReceiptDetailed.ProductDetails> findProductDetails(Receipt receipt) {
+    public List<ReceiptDetailed.ProductDetails> findProductDetails(Receipt receipt) {
         List<ReceiptDetailed.ProductDetails> productDetailsList = new LinkedList<>();
 
         String query = "SELECT s.product_number, s.selling_price, p.product_name FROM receipt r " +
@@ -303,10 +325,6 @@ public class ReceiptService {
 
         if (receipt.getSumTotal() < 0) {
             errors.add("Total sum can't be less than 0");
-        }
-
-        if (receipt.getVat() < 0) {
-            errors.add("Vat can't be less than 0");
         }
         return errors;
     }

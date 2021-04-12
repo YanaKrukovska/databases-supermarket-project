@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" const="text/html;charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+    <title>Error</title>
+    <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.6.0/css/bootstrap.min.css} "/>
+</head>
+<body>
+<div th:replace="parts/navbar.html :: navigation"></div>
+<table class="table" style="padding-top: 60px">
+    <thead class="thead-light">
+    <tr>
+        <th scope="col">Error details</th>
+
+    </tr>
+    </thead>
+
+    <tbody>
+
+    <tr th:each="error : ${errors}">
+        <td class="align-middle"><span class="align-middle" th:text="${error}"></span></td>
+
+
+    </tbody>
+</table>
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Receipts</title>
+    <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.6.0/css/bootstrap.min.css} "/>
+
+</head>
+<body>
+
+<div th:replace="parts/navbar.html :: navigation"></div>
+<main style="padding-top: 56px; padding-bottom: 60px;">
+    <p class="text-center font-weight-bold" style="font-size: 30px">Receipts</p>
+    <form th:action="@{/add-receipt}" method="get" sec:authorize="hasRole('ROLE_MANAGER')">
+        <button class="btn-success btn-block">Add new receipt</button>
+    </form>
+    <table class="table">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">Number</th>
+            <th scope="col">Employee ID</th>
+            <th scope="col">Customer card number</th>
+            <th scope="col">Print date</th>
+            <th scope="col">Total sum</th>
+            <th scope="col">VAT</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="receipt : ${receipts}">
+            <td class="align-middle"><span class="align-middle" th:text="${receipt.receiptNumber}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${receipt.employeeId}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${receipt.cardNumber}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${receipt.printDate}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${receipt.sumTotal}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${receipt.vat}"></span></td>
+
+            <form th:action="@{/request-delete-receipt}" method="post" sec:authorize="hasRole('ROLE_MANAGER')">
+                <td><input type="hidden" th:value="${receipt.receiptNumber}" name="receiptNumber">
+                    <button type="submit" class="font-weight-bold btn btn-danger btn-block" style="padding: 0px;"
+                            onclick="return confirm('Are you sure you want to delete this receipt?')">
+                        Remove
+                    </button>
+                </td>
+            </form>
+            <form th:action="@{/edit-receipt}" method="get">
+                <td><input type="hidden" th:value="${receipt.receiptNumber}" name="receiptNumber">
+                    <button type="submit" class="btn btn-primary btn-block" style="padding: 0px;">
+                        Edit
+                    </button>
+                </td>
+            </form>
+            <form th:action="@{/receipt/products}" method="get">
+                <td><input type="hidden" th:value="${receipt.receiptNumber}" name="receiptNumber">
+                    <button type="submit" class="btn btn-light btn-block" style="padding: 0">
+                        See products
+                    </button>
+                </td>
+            </form>
+            <form th:action="@{/print-check}" method="get">
+            <td><input type="hidden" th:value="${receipt.receiptNumber}" name="receiptNumber">
+                <button class="btn btn-success btn-block" style="padding: 0px;">
+                    Print
+                </button>
+            </td>
+            </form>
+        </tbody>
+    </table>
+</main>
+<div id="search-receipt" sec:authorize="hasRole('ROLE_CASHIER')">
+    <div style="margin-left: 100px; margin-bottom: 100px">
+        <label for="receipt-search-input" id="receipt-search-input-label">Search:</label>
+        <input type="number" id="receipt-search-input" name="receipt-search" placeholder="Enter receipt id" min="0"
+               required>
+        <button type="submit" class="btn btn-primary" id="search-button">Search</button>
+
+        <div id="search-results" style="margin-top: 10px">
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+    $('#search-button').click(function () {
+        let $searchResult = $('#search-results');
+        $searchResult.empty();
+
+        $.ajax({
+            type: 'GET',
+            url: '/receipt/find?id=' + ($("#receipt-search-input")).val(),
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Content-Type', 'application/json');
+            },
+            success: function (response) {
+                $('[id="search-results"]').show();
+
+                if (response.errors.length > 0) {
+                    $searchResult.append('<p> No receipt </p>');
+                } else {
+                    let receipt = response.object;
+                    $searchResult.append('<p> Employee: ' + receipt.employeeId + '. Card number: ' + receipt.cardNumber
+                        + '. Print date: ' + receipt.printDate + '. Sum total: ' + receipt.sumTotal + '. Vat: ' + receipt.vat +
+                        '</p>');
+                }
+                $("#receipt-search-input").val('');
+            }
+        });
+    });
+
+</script>
+</body>
+</html>

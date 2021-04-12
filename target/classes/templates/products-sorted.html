@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Products</title>
+    <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.6.0/css/bootstrap.min.css} "/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+        form {
+            display: inline-block;
+        }
+        .forms {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="parts/navbar.html :: navigation"></div>
+<main style="padding-top: 56px; padding-bottom: 60px;">
+    <p class="text-center font-weight-bold" style="font-size: 30px">Sort store products</p>
+    <div class="forms">
+        <form th:action="@{/store/products/sort}" method="get">
+            <input type="hidden" name="sort" value="promo-name" >
+            <button class="btn-success btn-outline-danger">Sort promo by name</button>
+        </form>
+        <form th:action="@{/store/products/sort}" method="get">
+            <input type="hidden" name="sort" value="promo-amount" >
+            <button class="btn-success btn-outline-danger">Sort promo by product amount</button>
+        </form>
+        <form th:action="@{/store/products/sort}" method="get">
+            <input type="hidden" name="sort" value="regular-name" >
+            <button class="btn-success btn-outline-success">Sort regular by name</button>
+        </form>
+        <form th:action="@{/store/products/sort}" method="get">
+            <input type="hidden" name="sort" value="regular-amount" >
+            <button class="btn-success btn-outline-success">Sort regular by product amount</button>
+        </form>
+    </div>
+<table class="table">
+    <thead class="thead-dark">
+    <tr>
+        <th scope="col">Product Name</th>
+        <th scope="col">UPC</th>
+        <th scope="col">UPC promo</th>
+        <th scope="col">Product ID</th>
+        <th scope="col">Selling Price</th>
+        <th scope="col">Amount</th>
+        <th scope="col">Is promo</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="product : ${products}">
+        <td class="align-middle"><span class="align-middle" th:text="${product.productName}"></span></td>
+        <td class="align-middle"><span class="align-middle" th:text="${product.upc}"></span></td>
+        <td class="align-middle"><span class="align-middle" th:text="${product.upcPromo}"></span></td>
+        <td class="align-middle"><span class="align-middle" th:text="${product.productId}"></span></td>
+        <td class="align-middle"><span class="align-middle" th:text="${product.sellingPrice}"></span></td>
+        <td class="align-middle"><span class="align-middle" th:text="${product.productsNumber}"></span></td>
+        <td class="align-middle"><span class="align-middle" th:text="${product.isPromotionalProductString()}"></span></td>
+    </tbody>
+</table>
+</main>
+</body>
+</html>

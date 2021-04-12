@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Store products</title>
+    <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.6.0/css/bootstrap.min.css} "/>
+</head>
+<body>
+
+<div th:replace="parts/navbar.html :: navigation"></div>
+<main style="padding-top: 56px; padding-bottom: 60px;">
+    <p class="text-center font-weight-bold" style="font-size: 30px">Store products</p>
+    <form th:action="@{/add-store-product}" method="get">
+        <button class="btn-success btn-block">Add new store product</button>
+    </form>
+    <table class="table">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">UPC</th>
+            <th scope="col">UPC Promo</th>
+            <th scope="col">Product</th>
+            <th scope="col">Price</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Promotional product</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr th:each="product : ${products}">
+            <td class="align-middle"><span class="align-middle" th:text="${product.key.upc}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${product.key.upcPromo}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${product.value}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${product.key.sellingPrice}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${product.key.productsNumber}"></span></td>
+            <td class="align-middle"><span class="align-middle"
+                                           th:text="${product.key.isPromotionalProductString()}"></span></td>
+            <form th:action="@{/request-delete-store-product}" method="post">
+                <td><input type="hidden" th:value="${product.key.upc}" name="upc">
+                    <button type="submit" class="font-weight-bold btn btn-danger btn-block" style="padding: 0px;"
+                            onclick="return confirm('Are you sure you want to delete this store product?')">
+                        Remove
+                    </button>
+                </td>
+            </form>
+            <form th:action="@{/edit-store-product}" method="get">
+                <td><input type="hidden" th:value="${product.key.upc}" name="upc">
+                    <button type="submit" class="btn btn-primary btn-block" style="padding: 0px;">
+                        Edit
+                    </button>
+                </td>
+            </form>
+
+        </tbody>
+    </table>
+</main>
+<div id="detailed-store-product">
+    <div style="margin-left: 100px; margin-bottom: 100px">
+        <label for="store-product-search-input" id="detailed-search-input-label">Search detailed product:</label>
+        <input type="text" id="detailed-search-input" name="detailed-store-product-search" placeholder="Enter UPC"
+               minlength="0"
+               required>
+        <button type="submit" class="btn btn-primary" id="detailed-search-button">Search</button>
+
+        <div id="detailed-search-results" style="margin-top: 10px">
+        </div>
+    </div>
+</div>
+<div id="search-store-product">
+    <div style="margin-left: 100px; margin-bottom: 100px">
+        <label for="store-product-search-input" id="store-product-search-input-label">Search amount and price of product:</label>
+        <input type="text" id="store-product-search-input" name="store-product-search" placeholder="Enter UPC"
+               minlength="0"
+               required>
+        <button type="submit" class="btn btn-primary" id="search-button">Search</button>
+
+        <div id="search-results" style="margin-top: 10px">
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+    $('#detailed-search-button').click(function () {
+        let $searchResult = $('#detailed-search-results');
+        $searchResult.empty();
+
+        let upc = ($("#detailed-search-input")).val();
+        $.ajax({
+            type: 'GET',
+            url: '/store-product-advanced/' + upc,
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Content-Type', 'application/json');
+            },
+            success: function (response) {
+                $('[id="detailed-search-results"]').show();
+
+                if (response.errors.length > 0) {
+                    $searchResult.append('<p> No store product </p>');
+                } else {
+                    let product = response.object;
+                    console.log(product)
+                    $searchResult.append('<p> Upc: ' + upc + '. Name: ' + product.productName +'. Price: ' + product.sellingPrice +
+                        '. Amount: ' + product.productsNumber + '. Characteristics: ' + product.characteristics + '</p>');
+                }
+                $("#detailed-search-input").val('');
+            }
+        });
+    });
+
+    $('#search-button').click(function () {
+        let $searchResult = $('#search-results');
+        $searchResult.empty();
+
+        let upc = ($("#store-product-search-input")).val();
+        $.ajax({
+            type: 'GET',
+            url: '/store-product/' + upc,
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Content-Type', 'application/json');
+            },
+            success: function (response) {
+                $('[id="search-results"]').show();
+
+                if (response.errors.length > 0) {
+                    $searchResult.append('<p> No store product </p>');
+                } else {
+                    let product = response.object;
+                    $searchResult.append('<p> Upc: ' + upc + '. Price: ' + product.sellingPrice +
+                        '. Amount: ' + product.productsNumber + '</p>');
+                }
+                $("#store-product-search-input").val('');
+            }
+        });
+    });
+
+</script>
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Query result</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+
+<div th:replace="parts/navbar.html :: navigation"></div>
+<main style="padding-top: 56px; padding-bottom: 60px;">
+    <span class="align-middle" th:text="${queryText}"></span>
+    <table class="table">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col" th:each="column : ${columnNames}">
+                <span class="align-middle" th:text="${column}"></span>
+            </th>
+
+        </tr>
+
+        </thead>
+
+        <tbody>
+
+        <tr th:each="value : ${values}">
+            <td class="align-middle" th:each="data : ${value}">
+                <span class="align-middle" th:text="${data}"></span>
+            </td>
+
+        </tr>
+
+        </tbody>
+    </table>
+</main>
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+</body>
+</html>

@@ -1,10 +1,14 @@
 package ua.edu.ukma.supermarket.persistence.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ua.edu.ukma.supermarket.persistence.model.Employee;
 import ua.edu.ukma.supermarket.persistence.model.EmployeeStatistic;
 import ua.edu.ukma.supermarket.persistence.model.Response;
+import ua.edu.ukma.supermarket.persistence.model.Role;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,13 +17,17 @@ import java.sql.SQLException;
 import java.util.*;
 
 @Service
-public class EmployeeService {
+public class EmployeeService implements UserDetailsService {
 
     private final Connection connection;
+    private final RoleService roleService;
+    private final PasswordService passwordService;
 
     @Autowired
-    public EmployeeService(Connection connection) {
+    public EmployeeService(Connection connection, RoleService roleService, PasswordService passwordService) {
         this.connection = connection;
+        this.roleService = roleService;
+        this.passwordService = passwordService;
     }
 
 
@@ -30,11 +38,19 @@ public class EmployeeService {
             return new Response<>(null, employeeErrors);
         }
 
-        String query = "INSERT INTO employee (id_employee, empl_surname, empl_name, empl_patronymic, " +
-                "empl_role, salary, date_of_birth, date_of_start, phone_number, city, street, zip_code) " +
-                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+        employee.setPassword(passwordService.encodePassword(employee.getPassword()));
 
-        try (PreparedStatement statement = connection.prepareStatement(query)){
+        if (employee.getRole().equals("Manager")) {
+            employee.setAuthority(new Role(1L, "ROLE_MANAGER"));
+        } else {
+            employee.setAuthority(new Role(2L, "ROLE_CASHIER"));
+        }
+
+        String query = "INSERT INTO employee (id_employee, empl_surname, empl_name, empl_patronymic, " +
+                "empl_role, salary, date_of_birth, date_of_start, phone_number, city, street, zip_code, username, " +
+                "password, id_role) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?, ?)";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
 
             statement.setString(1, employee.getEmployeeId());
             statement.setString(2, employee.getSurname());
@@ -48,6 +64,9 @@ public class EmployeeService {
             statement.setString(10, employee.getCity());
             statement.setString(11, employee.getStreet());
             statement.setString(12, employee.getZipCode());
+            statement.setString(13, employee.getUsername());
+            statement.setString(14, employee.getPassword());
+            statement.setLong(15, employee.getAuthority().getId());
             int rows = statement.executeUpdate();
 
             if (rows == 0) {
@@ -60,16 +79,16 @@ public class EmployeeService {
         }
     }
 
-    public List<Employee> findAll() {
+    public Response<List<Employee>> findAll() {
         String query = "SELECT * FROM employee";
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             ResultSet resultSet = statement.executeQuery();
             List<Employee> employeeList = new LinkedList<>();
             while (resultSet.next()) employeeList.add(employeeFromResultSet(resultSet));
-            return employeeList;
+            return new Response<>(employeeList, new LinkedList<>());
         } catch (SQLException e) {
-            return new LinkedList<>();
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
         }
     }
 
@@ -227,6 +246,27 @@ public class EmployeeService {
         }
     }
 
+    public Response<Employee> findEmployeeByUsername(String username) {
+
+        if (username == null || username.isBlank()) {
+            return new Response<>(null, Collections.singletonList("Username can't be null"));
+        }
+        String query = "SELECT * FROM EMPLOYEE WHERE username=?";
+
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, username);
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+            Employee employee = employeeFromResultSet(resultSet);
+            employee.setPassword(resultSet.getString("password"));
+            employee.setUsername(resultSet.getString("username"));
+            employee.setAuthority(roleService.findRoleById(resultSet.getLong("id_role")).getObject());
+            return new Response<>(employee, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
 
     public Response<List<EmployeeStatistic>> getEmployeeReceiptSumStats(double sum) {
         String query = "SELECT e.id_employee, e.empl_surname, print_date AS date, COUNT(*) AS receipt_amount FROM Receipt r " +
@@ -331,9 +371,21 @@ public class EmployeeService {
         String city = resultSet.getString("city");
         String street = resultSet.getString("street");
         String zipCode = resultSet.getString("zip_code");
+        String username = resultSet.getString("username");
+        String password = resultSet.getString("password");
+        Long roleId = resultSet.getLong("id_role");
+        Role authority = roleService.findRoleById(roleId).getObject();
 
-        return new Employee(id, surname, name, patronymic, role, salary, birthDate, startDate, phoneNumber, city, street, zipCode);
+        return new Employee(id, surname, name, patronymic, role, salary, birthDate, startDate, phoneNumber, city, street, zipCode, username, password, authority);
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+        Employee employee = findEmployeeByUsername(s).getObject();
 
+        if (employee == null) {
+            throw new UsernameNotFoundException("User not found");
+        }
+        return employee;
+    }
 }

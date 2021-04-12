@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Products</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+
+<div th:replace="parts/navbar.html :: navigation"></div>
+<main style="padding-top: 56px; padding-bottom: 60px;">
+    <p class="text-center font-weight-bold" style="font-size: 30px">Products in category sorted by name</p>
+
+    <table class="table">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">Product ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">Characteristics</th>
+            <th scope="col">Category number</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="product : ${products}">
+            <td class="align-middle"><span class="align-middle" th:text="${product.productId}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${product.productName}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${product.characteristics}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${product.categoryNumber}"></span></td>
+        </tbody>
+    </table>
+</main>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+</body>
+</html>

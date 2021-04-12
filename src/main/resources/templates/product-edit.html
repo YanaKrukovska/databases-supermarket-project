@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" const="text/html;charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+    <title>Edit product</title>
+    <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.6.0/css/bootstrap.min.css} "/>
+
+</head>
+<body class="text-center">
+
+<main>
+    <div th:replace="parts/navbar.html :: navigation"></div>
+
+    <h1 class="h1 mb-3 font-weight-normal" style="padding-top: 60px">Product</h1>
+
+    <form class="row d-flex justify-content-center" th:action="@{/request-edit-product}" enctype="multipart/form-data"
+          method="post" style="padding-top: 10px">
+        <div class="col-lg-auto d-flex justify-content-center flex-column">
+            <input class="fields" type="hidden" id="productId" name="productId" th:value="*{product.productId}"
+                   placeholder="id">
+
+            <span class="title">Name</span>
+            <input class="fields" type="text" id="productName" name="productName" th:value="*{product.productName}"
+                   placeholder="Name">
+
+            <span class="title">Characteristics</span>
+            <input class="fields" type="text" id="characteristics" name="characteristics" th:value="*{product.characteristics}"
+                   placeholder="Characteristics">
+
+            <span class="title">Category</span>
+            <select class="limited-drop-down" id="categoryNumber" name="categoryNumber" th:value="*{product.categoryNumber}"
+                    style="width: 450px; height: 40px">
+                <option th:each="category : ${categories}" th:value="${category.categoryNumber}" th:text="${category.categoryName}"
+                        th:selected="${category.categoryNumber==product.categoryNumber}">
+                </option>
+            </select>
+
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Save</button>
+        </div>
+    </form>
+</main>
+</body>
+</html>

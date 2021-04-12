@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" const="text/html;charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+    <title>Manager queries</title>
+    <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.6.0/css/bootstrap.min.css} "/>
+
+</head>
+<body class="text-center">
+
+<main>
+
+
+    <div th:replace="parts/navbar.html :: navigation"></div>
+    <h1 class="h1 mb-3 font-weight-normal" style="padding-top: 60px">Manager queries</h1>
+    <div class="row" style=" margin: 10px">
+        <p class="text font-italic ">Скласти список працівників, що займають посаду касира, відсортованих за
+            прізвищем</p>
+        <form th:action="@{/employee/cashiers}" method="get">
+            <button type="submit" class="btn  btn-success " style="margin: 3px">⇛</button>
+        </form>
+    </div>
+
+    <div class="row" style=" margin: 10px">
+        <p class="text font-italic ">Скласти список усіх категорій, відсортованих за назвою</p>
+        <form th:action="@{/category/all}" method="get">
+            <button type="submit" class="btn  btn-success " style="margin: 3px">⇛</button>
+        </form>
+    </div>
+
+
+    <div class="row" style=" margin: 10px">
+        <p class="text font-italic ">За прізвищем працівника знайти його телефон та адресу</p>
+        <form th:action="@{/employee/contacts}" method="get">
+            <input class="fields" type="text" id="surname" name="surname"
+                   placeholder="Прізвище" required>
+            <button type="submit" class="btn  btn-success " style="margin: 3px">⇛</button>
+        </form>
+    </div>
+
+
+    <div class="row" style=" margin: 10px">
+        <p class="text font-italic ">Скласти список всіх товарів, що належать певній категорії</p>
+        <form th:action="@{/product/all/from-category}" method="get">
+            <select class="limited-drop-down" id="categoryNumber" name="categoryNumber"
+                    style="width: 450px; height: 40px">
+                <option th:each="category : ${categories}" th:value="${category.categoryNumber}"
+                        th:text="${category.categoryName}">
+                </option>
+            </select>
+            <button type="submit" class="btn  btn-success " style="margin: 3px">⇛</button>
+        </form>
+    </div>
+
+    <div class="row" style=" margin: 10px">
+        <p class="text font-italic ">Знайти всі товари в магазині, що не належать певній категорії</p>
+        <form th:action="@{/store-product/all/except}" method="get">
+            <select class="limited-drop-down" id="categoryName" name="categoryName"
+                    style="width: 450px; height: 40px">
+                <option th:each="category : ${categories}" th:value="${category.categoryName}"
+                        th:text="${category.categoryName}">
+                </option>
+            </select>
+            <button type="submit" class="btn  btn-success " style="margin: 3px">⇛</button>
+        </form>
+    </div>
+
+    <div class="row" style=" margin: 10px">
+        <p class="text font-italic ">Скласти список товарів у магазині, що належать певному товару</p>
+        <form th:action="@{/store-products/from-product}" method="get">
+            <select class="limited-drop-down" id="productId" name="productId"
+                    style="width: 450px; height: 40px">
+                <option th:each="product : ${products}" th:value="${product.productId}"
+                        th:text="${product.productName}">
+                </option>
+            </select>
+            <button type="submit" class="btn  btn-success " style="margin: 3px">⇛</button>
+        </form>
+    </div>
+    <div class="row" style=" margin: 10px">
+        <p class="text font-italic "> Кількість одиниць певного товару, проданого за певний період часу</p>
+        <select class="limited-drop-down" id="productSearchId" name="productSearchId"
+                style="width: 450px; height: 40px">
+            <option th:each="product : ${products}" th:value="${product.productId}" th:text="${product.productName}">
+            </option>
+        </select>
+        <input type="date" id="start" name="start" value="2020-01-01" style="margin-left: 20px; margin-bottom: 5px">
+        <input type="date" id="end" name="end" value="2021-12-31" style="margin-left: 20px; margin-bottom: 10px">
+        <button type="submit" id="search-amount-button" class="btn  btn-success " style="margin: 3px">⇛</button>
+        <div id="search-results" style="margin-top: 10px; margin-left: 15px"></div>
+    </div>
+    <div class="row" style=" margin: 10px">
+        <p class="text font-italic ">Загальна сума проданих товарів з чеків, видрукуваних усіма касиром за певний період часу</p>
+        <input type="date" id="employeeAllStart" name="start" value="2020-01-01" style="margin-left: 20px; margin-bottom: 5px">
+        <input type="date" id="employeeAllEnd" name="end" value="2021-12-31" style="margin-left: 20px; margin-bottom: 10px">
+        <button type="submit" id="search-sum-all-button" class="btn  btn-success " style="margin: 3px">⇛</button>
+        <div id="sum-all-results" style="margin-top: 10px; margin-left: 15px"></div>
+    </div>
+    <div class="row" style=" margin: 10px">
+        <p class="text font-italic "> Загальна сума проданих товарів з чеків, видрукуваних певним касиром за певний період часу</p>
+        <select class="limited-drop-down" id="employeeId" name="employeeId"
+                style="width: 450px; height: 40px">
+            <option th:each="employee : ${employees}" th:value="${employee.employeeId}"
+                    th:text="${employee.surname} + ' ' + ${employee.name}">
+            </option>
+        </select>
+        <input type="date" id="employeeStart" name="start" value="2020-01-01" style="margin-left: 20px; margin-bottom: 5px">
+        <input type="date" id="employeeEnd" name="end" value="2021-12-31" style="margin-left: 20px; margin-bottom: 10px">
+        <button type="submit" id="search-sum-button" class="btn  btn-success " style="margin: 3px">⇛</button>
+        <div id="sum-results" style="margin-top: 10px; margin-left: 15px"></div>
+    </div>
+
+    <div class="row" style=" margin: 10px">
+        <p class="text font-italic "  >Скласти список чеків, видрукуваних усіма касирами за певний період часу</p>
+        <form th:action="@{/receipt/detailed}" method="get">
+            <span class="title">Початок</span>
+            <input class="fields" type="date"  min="1991-01-01" max="2021-04-11" id="startDate" name="startDate"
+                   placeholder="Date of start" required>
+            <span class="title">Кінець</span>
+            <input class="fields" type="date"  min="1991-01-01" max="2021-04-11" id="endDate" name="endDate"
+                   placeholder="Date of end" required>
+            <button type="submit" class="btn  btn-success " style="margin: 3px" >⇛</button>
+        </form>
+    </div>
+
+
+
+    <div class="row" style=" margin: 10px">
+        <p class="text font-italic ">  Скласти список чеків, видрукуваних певним касиром за певний період часу</p>
+        <form th:action="@{/receipt/detailed/from-employee}" method="get">
+        <select class="limited-drop-down" id="employeeId" name="employeeId"
+                style="width: 450px; height: 40px">
+            <option th:each="employee : ${employees}" th:value="${employee.employeeId}"
+                    th:text="${employee.surname} + ' ' + ${employee.name}">
+            </option>
+        </select>
+        <span class="title">Початок</span>
+        <input class="fields" type="date"  min="1991-01-01" max="2021-04-11" id="startDate" name="startDate"
+               placeholder="Date of start" required>
+        <span class="title">Кінець</span>
+        <input class="fields" type="date"  min="1991-01-01" max="2021-04-11" id="endDate" name="endDate"
+               placeholder="Date of end" required> <button type="submit" id="search-sum-button" class="btn  btn-success " style="margin: 3px">⇛</button>
+        </form>
+    </div>
+
+</main>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+    $('#search-amount-button').click(function () {
+        let $searchResult = $('#search-results');
+        $searchResult.empty();
+        let url = '/amount_of_sales_by_period?id=' + ($("#productSearchId")).val()
+            + '&startDate=' + ($("#start")).val() + '&endDate=' + ($("#end")).val();
+        $.ajax({
+            type: 'GET',
+            url: url,
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Content-Type', 'application/json');
+            },
+            success: function (response) {
+                $('[id="search-results"]').show();
+
+                if (response.errors.length > 0) {
+                    $searchResult.append('<p> No data </p>');
+                } else {
+                    $searchResult.append('<p> Total amount: ' + response.object + '</p>');
+                }
+            }
+        });
+    });
+    $('#search-sum-all-button').click(function () {
+        let $searchResult = $('#sum-all-results');
+        $searchResult.empty();
+        $.ajax({
+            type: 'GET',
+            url: '/receipt/sum?startDate=' +  ($("#employeeAllStart")).val() + '&endDate=' + ($("#employeeAllEnd")).val(),
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Content-Type', 'application/json');
+            },
+            success: function (response) {
+                $('[id="sum-all-results"]').show();
+                if (response.errors.length > 0) {
+                    $searchResult.append('<p> No data </p>');
+                } else {
+                    $searchResult.append('<p> Total sum: ' + response.object + '</p>');
+                }
+            }
+        });
+    });
+
+    $('#search-sum-button').click(function () {
+        let $searchResult = $('#sum-results');
+        $searchResult.empty();
+        $.ajax({
+            type: 'GET',
+            url: '/receipt/sum/' + ($("#employeeId")).val() + '?startDate=' + ($("#employeeStart")).val() + '&endDate=' + ($("#employeeEnd")).val(),
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Content-Type', 'application/json');
+            },
+            success: function (response) {
+                $('[id="sum-results"]').show();
+                if (response.errors.length > 0 || response.object == null) {
+                    $searchResult.append('<p> No data </p>');
+                } else {
+                    $searchResult.append('<p> Total sum: ' + response.object + '</p>');
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>

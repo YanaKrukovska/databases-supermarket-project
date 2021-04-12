@@ -40,7 +40,13 @@ Content-Type: application/json
   "phoneNumber": "+380677149882",
   "city": "Khoruzhivka",
   "street": "Medova St. 14",
-  "zipCode": "1234-5679"
+  "zipCode": "1234-5679",
+  "username": "bees@gmail.com",
+  "password": "1",
+  "authority": {
+    "id": 1,
+    "name": "ROLE_MANAGER"
+  }
 }
 
 ###  Update employee
@@ -252,17 +258,38 @@ GET http://localhost:8080/receipt/sum/0000000002?startDate=2020-04-02&endDate=20
 ###  Get sum of all receipts by all employees between dates
 GET http://localhost:8080/receipt/sum?startDate=2020-04-02&endDate=2020-04-05
 
+### Get all receipts by employee between dates with product detailes
+GET http://localhost:8080/receipt/detailed/0000000009?startDate=2020-04-01&endDate=2020-05-05
+
+### Get all receipts by all employees between dates with product detailes
+GET http://localhost:8080/receipt/detailed?startDate=2020-04-01&endDate=2020-05-05
+
 ### Get all promo store products sorted by amount
 GET http://localhost:8080/store-product/promo/by-amount
 
 ### Get all not promo store products sorted by amount
 GET http://localhost:8080/store-product/regular/by-amount
 
+### Get all promo store products sorted by product name
+GET http://localhost:8080/store-product/promo/by-name
+
+### Get all not regular store products sorted by product amount
+GET http://localhost:8080/store-product/regular/by-name
+
 ### Get basic cust info
 GET http://localhost:8080/customer/all/basic
 
 ###  Get amount of sold product of certain id between dates
-GET http://localhost:8080/amount_of_sales_by_period?id=1&startDate=2020-03-01&endDate=2020-04-05
+GET http://localhost:8080/amount_of_sales_by_period?id=8&startDate=2020-04-01&endDate=2020-05-06
+
+###  Get  Get price and amount, name and characteristics of stored product from UPC
+GET http://localhost:8080/store-product-advanced/761303463013
+
+###  Delete info about sales in check with id 2
+DELETE http://localhost:8080/sale/of_check?id=2
+
+###  Get info about products sold in check with id 2
+GET http://localhost:8080/product/from_check?id=4
 
 ###
 

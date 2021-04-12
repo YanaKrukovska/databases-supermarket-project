@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Receipts</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+
+<div th:replace="parts/navbar.html :: navigation"></div>
+<main style="padding-top: 56px; padding-bottom: 60px;">
+    <p class="text-center font-weight-bold" style="font-size: 30px">My Receipts</p>
+
+    <table class="table">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">Number</th>
+            <th scope="col">Employee ID</th>
+            <th scope="col">Customer card number</th>
+            <th scope="col">Print date</th>
+            <th scope="col">Total sum</th>
+            <th scope="col">VAT</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="receipt : ${receipts}">
+            <td class="align-middle"><span class="align-middle" th:text="${receipt.receiptNumber}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${receipt.employeeId}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${receipt.cardNumber}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${receipt.printDate}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${receipt.sumTotal}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${receipt.vat}"></span></td>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

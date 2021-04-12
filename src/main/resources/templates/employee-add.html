@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" const="text/html;charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+    <title>Add new employee</title>
+    <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.6.0/css/bootstrap.min.css} "/>
+
+</head>
+<body class="text-center">
+
+<main>
+
+
+    <div th:replace="parts/navbar.html :: navigation"></div>
+    <h1 class="h1 mb-3 font-weight-normal" style="padding-top: 60px">Employee</h1>
+
+    <form class="row d-flex justify-content-center" th:action="@{/request-add-employee}" enctype="multipart/form-data"
+          method="post" style="padding-top: 10px">
+        <div class="col-lg-auto d-flex justify-content-center flex-column">
+            <span class="title">ID</span>
+            <input class="fields" type="text" id="employeeId" name="employeeId" th:value="${employee.employeeId}"
+                   placeholder="Employee ID" required>
+
+            <span class="title">Surname</span>
+            <input class="fields" type="text" id="surname" name="surname" th:value="${employee.surname}"
+                   placeholder="Surname" required>
+            <span class="title">Name</span>
+            <input class="fields" type="text" id="name" name="name" th:value="${employee.name}"
+                   placeholder="Name" required>
+            <span class="title">Patronymic</span>
+            <input class="fields" type="text" id="patronymic" name="patronymic" th:value="${employee.patronymic}"
+                   placeholder="Patronymic" required>
+            <span class="title">Role</span>
+            <select class="limited-drop-down" id="categoryNumber" name="role" th:value="${employee.role}"
+                    style="width: 450px; height: 40px">
+                <option th:each="role : ${roles}" th:value="${role}" th:text="${role}"
+                        th:selected="${role==employee.role}">
+                </option>
+            </select>
+            <span class="title">Salary(UAH)</span>
+            <input class="fields" type="number" min="6000" max="500000" step="1" id="salary" name="salary" th:value="${employee.salary}"
+                   placeholder="Salary" required>
+
+            <span class="title">Date of birth</span>
+            <input class="fields" type="date"  min="1901-01-01" max="2003-04-11" id="birthDate" name="birthDate" th:value="${employee.birthDate}"
+                   placeholder="Date of birth" required>
+
+            <span class="title">Date of start</span>
+            <input class="fields" type="date"  min="1991-01-01" max="2021-04-11" id="startDate" name="startDate" th:value="${employee.startDate}"
+                   placeholder="Date of start" required>
+
+            <span class="title">Phone number</span>
+            <input class="fields" type="text" id="phoneNumber" name="phoneNumber" th:value="${employee.phoneNumber}"
+                   placeholder="Phone number" required>
+
+            <span class="title">City</span>
+            <input class="fields" type="text" id="city" name="city" th:value="${employee.city}"
+                   placeholder="City" required>
+
+            <span class="title">Street</span>
+            <input class="fields" type="text" id="street" name="street" th:value="${employee.street}"
+                   placeholder="Street" required>
+
+            <span class="title">Zip code</span>
+            <input class="fields" type="text" id="zipCode" name="zipCode" th:value="${employee.zipCode}"
+                   placeholder="Zip code" required>
+
+            <span class="title">Mail</span>
+            <input class="fields" type="text" id="username" name="username" th:value="${employee.username}"
+                   placeholder="Mail" required>
+
+            <span class="title">Password</span>
+            <input class="fields" type="password" id="password" name="password" th:value="${employee.password}"
+                   placeholder="Password" required>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Save</button>
+        </div>
+    </form>
+</main>
+</body>
+</html>
