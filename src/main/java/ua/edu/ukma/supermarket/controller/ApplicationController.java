@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import ua.edu.ukma.supermarket.persistence.model.*;
 import ua.edu.ukma.supermarket.persistence.service.*;
 
+import javax.annotation.security.RolesAllowed;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -77,10 +78,9 @@ public class ApplicationController {
     private LinkedHashMap<Product, String> addCategoriesToProducts(Model model, Response<List<Product>> productsResponse) {
         List<Product> products = productsResponse.getObject();
         LinkedHashMap<Product, String> productsWithCategories = new LinkedHashMap<>();
-        for (int i = 0; i < products.size(); i++) {
-            Product currentProduct = products.get(i);
+        for (Product currentProduct : products) {
             Response<Category> categoryResponse = categoryService.findCategoryById(currentProduct.getCategoryNumber());
-            if (categoryResponse.getErrors().size() > 0) {
+            if (!categoryResponse.getErrors().isEmpty()) {
                 model.addAttribute("errors", categoryResponse.getErrors());
                 return null;
             }
@@ -110,6 +110,7 @@ public class ApplicationController {
         return "product-edit";
     }
 
+    @RolesAllowed({"ROLE_MANAGER"})
     @GetMapping("/add-product")
     public String addProduct(Model model) {
 
@@ -125,6 +126,7 @@ public class ApplicationController {
         return "product-add";
     }
 
+    @RolesAllowed({"ROLE_MANAGER"})
     @PostMapping("/request-add-product")
     public String requestAddProduct(@ModelAttribute Product product, Model model) {
         Response<Product> productResponse = productService.createProduct(product);
@@ -134,7 +136,7 @@ public class ApplicationController {
         }
         return "redirect:/product";
     }
-
+    @RolesAllowed({"ROLE_MANAGER"})
     @PostMapping("/request-edit-product")
     public String requestEditProduct(@ModelAttribute Product product, Model model) {
         Response<Product> productResponse = productService.updateProduct(product);
@@ -145,6 +147,7 @@ public class ApplicationController {
         return "redirect:/product";
     }
 
+    @RolesAllowed({"ROLE_MANAGER"})
     @PostMapping("/request-delete-product")
     public String removeProduct(@ModelAttribute("productId") int id, Model model) {
         Response<Product> productResponse = productService.deleteProduct(id);
@@ -178,6 +181,7 @@ public class ApplicationController {
         return "category-products";
     }
 
+    @RolesAllowed({"ROLE_MANAGER"})
     @GetMapping("/edit-category")
     public String editCategory(@ModelAttribute("categoryNumber") int id, Model model) {
         Response<Category> categoryResponse = categoryService.findCategoryById(id);
@@ -189,6 +193,7 @@ public class ApplicationController {
         return "category-edit";
     }
 
+    @RolesAllowed({"ROLE_MANAGER"})
     @GetMapping("/add-category")
     public String addCategory(Model model) {
         Category category = new Category(-1, null);
@@ -196,6 +201,7 @@ public class ApplicationController {
         return "category-add";
     }
 
+    @RolesAllowed({"ROLE_MANAGER"})
     @PostMapping("/request-edit-category")
     public String requestEditCategory(@ModelAttribute Category category, Model model) {
         Response<Category> categoryResponse = categoryService.updateCategory(category.getCategoryNumber(), category.getCategoryName());
@@ -207,6 +213,7 @@ public class ApplicationController {
     }
 
 
+    @RolesAllowed({"ROLE_MANAGER"})
     @PostMapping("/request-add-category")
     public String requestAddCategory(@ModelAttribute Category category, Model model) {
         Response<Category> categoryResponse = categoryService.createCategory(category.getCategoryName());
@@ -217,6 +224,7 @@ public class ApplicationController {
         return "redirect:/category";
     }
 
+    @RolesAllowed({"ROLE_MANAGER"})
     @PostMapping("/request-delete-category")
     public String removeCategory(@ModelAttribute("categoryNumber") int id, Model model) {
         Response<Category> categoryResponse = categoryService.deleteCategory(id);
@@ -238,6 +246,7 @@ public class ApplicationController {
         return "employees";
     }
 
+    @RolesAllowed({"ROLE_MANAGER"})
     @GetMapping("/edit-employee")
     public String editEmployee(@ModelAttribute("employeeId") String id, Model model) {
         Response<Employee> employeeResponse = employeeService.findEmployeeById(id);
@@ -251,6 +260,7 @@ public class ApplicationController {
         return "employee-edit";
     }
 
+    @RolesAllowed({"ROLE_MANAGER"})
     @GetMapping("/add-employee")
     public String addEmployee(Model model) {
         Employee employee = new Employee(null, null, null, null, null,
@@ -261,6 +271,7 @@ public class ApplicationController {
         return "employee-add";
     }
 
+    @RolesAllowed({"ROLE_MANAGER"})
     @PostMapping("/request-add-employee")
     public String requestAddEmployee(@ModelAttribute("employeeId") String employeeId,
                                      @ModelAttribute("surname") String surname,
@@ -286,6 +297,7 @@ public class ApplicationController {
         return "redirect:/employee";
     }
 
+    @RolesAllowed({"ROLE_MANAGER"})
     @PostMapping("/request-edit-employee")
     public String requestEditEmployee(@ModelAttribute("employeeId") String employeeId,
                                       @ModelAttribute("surname") String surname,
@@ -311,6 +323,7 @@ public class ApplicationController {
         return "redirect:/employee";
     }
 
+    @RolesAllowed({"ROLE_MANAGER"})
     @PostMapping("/request-delete-employee")
     public String removeEmployee(@ModelAttribute("employeeId") String id, Model model) {
         Response<Employee> employeeResponse = employeeService.deleteEmployee(id);
@@ -354,6 +367,7 @@ public class ApplicationController {
         return "customer-edit";
     }
 
+    @RolesAllowed({"ROLE_MANAGER"})
     @GetMapping("/add-customer")
     public String addCustomer(Model model) {
 
@@ -362,6 +376,7 @@ public class ApplicationController {
         return "customer-add";
     }
 
+    @RolesAllowed({"ROLE_MANAGER"})
     @PostMapping("/request-add-customer")
     public String requestAddCustomer(@ModelAttribute CustomerCard customerCard, Model model) {
 
@@ -373,6 +388,7 @@ public class ApplicationController {
         return "redirect:/customer";
     }
 
+    @RolesAllowed({"ROLE_MANAGER"})
     @PostMapping("/request-delete-customer")
     public String removeCustomer(@ModelAttribute("cardNumber") int id, Model model) {
         Response<CustomerCard> customerCardResponse = customerService.deleteCustomerCard(id);
@@ -418,6 +434,7 @@ public class ApplicationController {
         return "store-products";
     }
 
+    @RolesAllowed({"ROLE_MANAGER"})
     @GetMapping("/edit-store-product")
     public String editStoreProduct(@ModelAttribute("upc") String upc, Model model) {
         Response<StoreProduct> storeProductResponse = storeProductService.findStoreProductByUpc(upc);
@@ -450,6 +467,7 @@ public class ApplicationController {
         return "store-product-edit";
     }
 
+    @RolesAllowed({"ROLE_MANAGER"})
     @GetMapping("/add-store-product")
     public String addStoreProduct(Model model) {
 
@@ -478,6 +496,7 @@ public class ApplicationController {
         return "store-product-add";
     }
 
+    @RolesAllowed({"ROLE_MANAGER"})
     @PostMapping("/request-add-store-product")
     public String requestAddStoreProduct(@ModelAttribute StoreProduct product, Model model) {
         Response<StoreProduct> storeProductResponse = storeProductService.createStoreProduct(product);
@@ -488,6 +507,7 @@ public class ApplicationController {
         return "redirect:/store-product";
     }
 
+    @RolesAllowed({"ROLE_MANAGER"})
     @PostMapping("/request-edit-store-product")
     public String requestEditStoreProduct(@ModelAttribute StoreProduct product, Model model) {
         Response<StoreProduct> storeProductResponse = storeProductService.updateStoreProduct(product);
@@ -498,6 +518,7 @@ public class ApplicationController {
         return "redirect:/store-product";
     }
 
+    @RolesAllowed({"ROLE_MANAGER"})
     @PostMapping("/request-delete-store-product")
     public String removeStoreProduct(@ModelAttribute("upc") String upc, Model model) {
         Response<StoreProduct> storeProductResponse = storeProductService.deleteStoreProduct(upc);
@@ -519,6 +540,7 @@ public class ApplicationController {
         return "receipts";
     }
 
+    @RolesAllowed({"ROLE_MANAGER"})
     @PostMapping("/request-delete-receipt")
     public String removeReceipt(@ModelAttribute("receiptNumber") int receiptNumber, Model model) {
         Response<Receipt> receiptResponse = receiptService.deleteReceipt(receiptNumber);
@@ -582,6 +604,7 @@ public class ApplicationController {
         return "receipt-add";
     }
 
+    @RolesAllowed({"ROLE_MANAGER"})
     @PostMapping("/request-add-receipt")
     public String requestAddReceipt(@ModelAttribute("employeeId") String employeeId,
                                     @ModelAttribute("cardNumber") Integer cardNumber,

@@ -29,15 +29,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .disable()
                 .authorizeRequests()
                 .antMatchers("/", "/resources/**", "/h2-console/**", "/css/**",
-                        "/webjars/**").permitAll()
-                .antMatchers("/**").permitAll()
+                        "/webjars/**", "/login").permitAll()
+                .antMatchers("/сashier").hasRole("CASHIER")
+                .antMatchers("/manager", "/customer/basic", "/employee/cashiers",
+                        "/category/all", "/employee/contacts", "/product/all/from-category",
+                        "/store-products/from-product", "/receipt/detailed",
+                        "/receipt/detailed/from-employee", "/add-product", "/add-category",
+                        "/add-employee", "/add-receipt", "/add-customer",
+                        "/edit-category", "/edit-product", "/edit-store-product", "/edit-employee"
+                ).hasRole("MANAGER")
+                .antMatchers("/**").hasAnyRole("CASHIER", "MANAGER")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
                 .loginPage("/login")
                 .failureForwardUrl("/login-processing")
                 .loginProcessingUrl("/login-processing")
-                .defaultSuccessUrl("/", true)
+                .defaultSuccessUrl("/employee", true)
                 .permitAll();
 
         httpSecurity.headers().frameOptions().disable();

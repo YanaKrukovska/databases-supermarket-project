@@ -65,7 +65,7 @@ public class ReceiptService {
             statement.setNull(1, Types.NULL);
             statement.setDate(2, new Date(receipt.getPrintDate().getTime()));
             statement.setDouble(3, receipt.getSumTotal());
-            statement.setDouble(4, receipt.getVat());
+            statement.setDouble(4, (receipt.getSumTotal() * 0.2) / 1.2);
             statement.setString(5, receipt.getEmployeeId());
             statement.setInt(6, receipt.getCardNumber());
             int rows = statement.executeUpdate();
@@ -106,7 +106,7 @@ public class ReceiptService {
 
             statement.setDate(1, new Date(receipt.getPrintDate().getTime()));
             statement.setDouble(2, receipt.getSumTotal());
-            statement.setDouble(3, receipt.getVat());
+            statement.setDouble(3, (receipt.getSumTotal() * 0.2) / 1.2);
             statement.setString(4, receipt.getEmployeeId());
             statement.setInt(5, receipt.getCardNumber());
             statement.setInt(6, receipt.getReceiptNumber());
@@ -207,7 +207,7 @@ public class ReceiptService {
 
     public Response<List<Receipt>> findAll() {
 
-     String query = "SELECT * FROM receipt";
+        String query = "SELECT * FROM receipt";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             ResultSet resultSet = statement.executeQuery();
 
@@ -238,7 +238,7 @@ public class ReceiptService {
             resultSet.next();
 
             String res = resultSet.getString(1);
-            if (res == null){
+            if (res == null) {
                 return new Response<>(null, new LinkedList<>());
             }
 
@@ -325,10 +325,6 @@ public class ReceiptService {
 
         if (receipt.getSumTotal() < 0) {
             errors.add("Total sum can't be less than 0");
-        }
-
-        if (receipt.getVat() < 0) {
-            errors.add("Vat can't be less than 0");
         }
         return errors;
     }
