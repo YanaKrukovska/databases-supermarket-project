@@ -1138,11 +1138,23 @@ public class ApplicationController {
     // Yana
 
     // Знайти всі товари в магазині, що не належать певній категорії
-    @SneakyThrows
     @GetMapping("/store-product/all/except")
-    @ResponseBody
-    public Response<List<StoreProduct>> findStoreProductsNotInCategory(@RequestParam("category") String category) {
-        return storeProductService.findAllStoreProductsNotInCategory(category);
+    public String findStoreProductsNotInCategory(@ModelAttribute("categoryName") String categoryName,Model model) {
+        List<StoreProduct> products=storeProductService.findAllStoreProductsNotInCategory(categoryName).getObject();
+
+        String[] storeProductColumnNames = new String[]{"UPC", "Promo UPC", "Product ID", "Selling price",
+                "Products number","Is promotional product"};
+       List<String[]> values = new LinkedList<>();
+        for (StoreProduct product : products) {
+            String[] fields = new String[]{product.getUpc(),product.getUpcPromo(), String.valueOf(product.getProductId()),
+                    product.getSellingPrice()+"UAH", String.valueOf(product.getProductsNumber()),
+                    product.isPromotionalProductString()};
+            values.add(fields);
+        }
+        model.addAttribute("queryText", "Знайти всі товари в магазині, що не належать певній категорії: "+categoryName);
+        model.addAttribute("columnNames", storeProductColumnNames);
+        model.addAttribute("values", values);
+        return "base-table";
     }
 
     // Знайти номери працівників, їх прізвища та кількість виданих ними чеків за кожен день,
