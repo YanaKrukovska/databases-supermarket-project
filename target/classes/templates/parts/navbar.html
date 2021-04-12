@@ -31,15 +31,18 @@
                     <a class="nav-link" href="/receipt">Receipts</a>
                 </li>
                 <li>
+                    <a class="nav-link" href="/sale">Sales</a>
+                </li>
+                <li>
                     <a class="nav-link" href="/customer">Customer cards</a>
                 </li>
-                <li>
+                <li sec:authorize="hasRole('ROLE_MANAGER')">
                     <a class="nav-link" href="/customer/basic">Basic customer info</a>
                 </li>
-                <li>
+                <li sec:authorize="hasRole('ROLE_MANAGER')">
                     <a class="nav-link" href="/manager">Manager queries</a>
                 </li>
-                <li>
+                <li sec:authorize="hasRole('ROLE_CASHIER')">
                     <a class="nav-link" href="/cashier">My profile</a>
                 </li>
                 <li>

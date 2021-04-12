@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Customer cards</title>
@@ -10,7 +10,7 @@
 <div th:replace="parts/navbar.html :: navigation"></div>
 <main style="padding-top: 56px; padding-bottom: 60px;">
     <p class="text-center font-weight-bold" style="font-size: 30px">Customer cards</p>
-    <form th:action="@{/add-customer}" method="get">
+    <form th:action="@{/add-customer}" method="get" sec:authorize="hasRole('ROLE_MANAGER')">
         <button class="btn-success btn-block">Add new customer card</button>
     </form>
     <table class="table">
@@ -42,7 +42,7 @@
             <td class="align-middle"><span class="align-middle" th:text="${customer.street}"></span></td>
             <td class="align-middle"><span class="align-middle" th:text="${customer.zipcode}"></span></td>
             <td class="align-middle"><span class="align-middle" th:text="${customer.getDiscount()}"></span></td>
-            <form th:action="@{/request-delete-customer}" method="post">
+            <form th:action="@{/request-delete-customer}" method="post" sec:authorize="hasRole('ROLE_MANAGER')">
                 <td><input type="hidden" th:value="${customer.cardNumber}" name="cardNumber">
                     <button type="submit" class="font-weight-bold btn btn-danger btn-block" style="padding: 0px;"
                             onclick="return confirm('Are you sure you want to delete this customer card?')">
@@ -63,8 +63,8 @@
 </main>
 
 <div id="search-customer">
-    <div style="margin-left: 100px; margin-bottom: 100px">
-        <label for="customer-search-input" id="customer-search-input-label">Search:</label>
+    <div style="margin-left: 100px; margin-bottom: 100px" sec:authorize="hasRole('ROLE_CASHIER')">
+        <label for="customer-search-input" id="customer-search-input-label">Search customer by surname:</label>
         <input type="text" id="customer-search-input" name="customer-search" placeholder="Enter customer surname" minlength="1"
                required>
         <button type="submit" class="btn btn-primary" id="search-button">Search</button>
@@ -72,7 +72,7 @@
         </div>
     </div>
     <div style="margin-left: 100px; margin-bottom: 100px">
-        <label for="discount-search-input" id="discount-search-input-label">Search:</label>
+        <label for="discount-search-input" id="discount-search-input-label">Find customer with certain percent:</label>
         <input type="number" id="discount-search-input" name="customer-search" placeholder="Discount" min="0" max="100"
                required>
         <button type="submit" class="btn btn-primary" id="discount-search-button">Search</button>

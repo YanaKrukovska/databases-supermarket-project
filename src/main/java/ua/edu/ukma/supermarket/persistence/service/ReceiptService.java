@@ -2,6 +2,7 @@ package ua.edu.ukma.supermarket.persistence.service;
 
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
+import ua.edu.ukma.supermarket.persistence.model.CustomerCard;
 import ua.edu.ukma.supermarket.persistence.model.Receipt;
 import ua.edu.ukma.supermarket.persistence.model.ReceiptDetailed;
 import ua.edu.ukma.supermarket.persistence.model.Response;
@@ -17,11 +18,13 @@ public class ReceiptService {
     private final Connection connection;
     private final EmployeeService employeeService;
     private final CustomerService customerService;
+    private final SaleService saleService;
 
-    public ReceiptService(Connection connection, EmployeeService employeeService, CustomerService customerService) {
+    public ReceiptService(Connection connection, EmployeeService employeeService, CustomerService customerService, SaleService saleService) {
         this.connection = connection;
         this.employeeService = employeeService;
         this.customerService = customerService;
+        this.saleService = saleService;
     }
 
     public Response<Receipt> findReceiptById(Integer id) {
@@ -88,7 +91,8 @@ public class ReceiptService {
             return new Response<>(null, Collections.singletonList("Can't update a receipt for nonexistent employee"));
         }
 
-        if (customerService.findCustomerCardById(receipt.getReceiptNumber()) == null) {
+        CustomerCard customerCard = customerService.findCustomerCardById(receipt.getCardNumber()).getObject();
+        if (customerCard == null) {
             return new Response<>(null, Collections.singletonList("Can't update a receipt for nonexistent card"));
         }
 
@@ -100,6 +104,10 @@ public class ReceiptService {
         if (findReceiptById(receipt.getReceiptNumber()).getObject() == null) {
             return new Response<>(null, Collections.singletonList("Can't edit nonexistent receipt"));
         }
+
+        double sum = saleService.getReceiptSum(receipt.getReceiptNumber()).getObject();
+        double discount = sum/100 * customerCard.getPercent();
+        receipt.setSumTotal(sum - discount);
 
         String query = "UPDATE receipt SET print_date = ?, sum_total = ?, vat = ?, id_employee = ?, card_number = ? WHERE check_number = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
