@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 @Controller
 public class ApplicationController {
 
+    public static final String DATE_FORMAT = "yyyy-MM-dd";
     @Autowired
     private final CategoryService categoryService;
 
@@ -68,7 +69,7 @@ public class ApplicationController {
     public String productSort(Model model) {
         Response<List<Product>> productsResponse = productService.getAllProductsSortedByName();
         LinkedHashMap<Product, String> productsWithCategories = addCategoriesToProducts(model, productsResponse);
-        if (productsWithCategories == null){
+        if (productsWithCategories == null) {
             return "error-page";
         }
         model.addAttribute("products", productsWithCategories);
@@ -94,13 +95,13 @@ public class ApplicationController {
     @GetMapping("/edit-product")
     public String editProduct(@ModelAttribute("productId") int id, Model model) {
         Response<Product> productResponse = productService.findProductById(id);
-        if (productResponse.getErrors().size() > 0) {
+        if (!productResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", productResponse.getErrors());
             return "error-page";
         }
         Product product = productResponse.getObject();
         Response<List<Category>> categoryResponse = categoryService.findAll();
-        if (categoryResponse.getErrors().size() > 0) {
+        if (!productResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", categoryResponse.getErrors());
             return "error-page";
         }
@@ -116,7 +117,7 @@ public class ApplicationController {
 
         Product product = new Product(-1, null, null, 0);
         Response<List<Category>> categoryResponse = categoryService.findAll();
-        if (categoryResponse.getErrors().size() > 0) {
+        if (!categoryResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", categoryResponse.getErrors());
             return "error-page";
         }
@@ -130,17 +131,18 @@ public class ApplicationController {
     @PostMapping("/request-add-product")
     public String requestAddProduct(@ModelAttribute Product product, Model model) {
         Response<Product> productResponse = productService.createProduct(product);
-        if (productResponse.getErrors().size() > 0) {
+        if (!productResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", productResponse.getErrors());
             return "error-page";
         }
         return "redirect:/product";
     }
+
     @RolesAllowed({"ROLE_MANAGER"})
     @PostMapping("/request-edit-product")
     public String requestEditProduct(@ModelAttribute Product product, Model model) {
         Response<Product> productResponse = productService.updateProduct(product);
-        if (productResponse.getErrors().size() > 0) {
+        if (!productResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", productResponse.getErrors());
             return "error-page";
         }
@@ -151,7 +153,7 @@ public class ApplicationController {
     @PostMapping("/request-delete-product")
     public String removeProduct(@ModelAttribute("productId") int id, Model model) {
         Response<Product> productResponse = productService.deleteProduct(id);
-        if (productResponse.getErrors().size() > 0) {
+        if (!productResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", productResponse.getErrors());
             return "error-page";
         }
@@ -162,7 +164,7 @@ public class ApplicationController {
     @GetMapping("/category")
     public String categoriesPage(Model model) {
         Response<List<Category>> categoryResponse = categoryService.findAll();
-        if (categoryResponse.getErrors().size() > 0) {
+        if (!categoryResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", categoryResponse.getErrors());
             return "error-page";
         }
@@ -185,7 +187,7 @@ public class ApplicationController {
     @GetMapping("/edit-category")
     public String editCategory(@ModelAttribute("categoryNumber") int id, Model model) {
         Response<Category> categoryResponse = categoryService.findCategoryById(id);
-        if (categoryResponse.getErrors().size() > 0) {
+        if (!categoryResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", categoryResponse.getErrors());
             return "error-page";
         }
@@ -205,7 +207,7 @@ public class ApplicationController {
     @PostMapping("/request-edit-category")
     public String requestEditCategory(@ModelAttribute Category category, Model model) {
         Response<Category> categoryResponse = categoryService.updateCategory(category.getCategoryNumber(), category.getCategoryName());
-        if (categoryResponse.getErrors().size() > 0) {
+        if (!categoryResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", categoryResponse.getErrors());
             return "error-page";
         }
@@ -217,7 +219,7 @@ public class ApplicationController {
     @PostMapping("/request-add-category")
     public String requestAddCategory(@ModelAttribute Category category, Model model) {
         Response<Category> categoryResponse = categoryService.createCategory(category.getCategoryName());
-        if (categoryResponse.getErrors().size() > 0) {
+        if (!categoryResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", categoryResponse.getErrors());
             return "error-page";
         }
@@ -228,7 +230,7 @@ public class ApplicationController {
     @PostMapping("/request-delete-category")
     public String removeCategory(@ModelAttribute("categoryNumber") int id, Model model) {
         Response<Category> categoryResponse = categoryService.deleteCategory(id);
-        if (categoryResponse.getErrors().size() > 0) {
+        if (!categoryResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", categoryResponse.getErrors());
             return "error-page";
         }
@@ -238,7 +240,7 @@ public class ApplicationController {
     @GetMapping("/employee")
     public String employeesPage(Model model) {
         Response<List<Employee>> employeeResponse = employeeService.findAll();
-        if (employeeResponse.getErrors().size() > 0) {
+        if (!employeeResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", employeeResponse.getErrors());
             return "error-page";
         }
@@ -250,7 +252,7 @@ public class ApplicationController {
     @GetMapping("/edit-employee")
     public String editEmployee(@ModelAttribute("employeeId") String id, Model model) {
         Response<Employee> employeeResponse = employeeService.findEmployeeById(id);
-        if (employeeResponse.getErrors().size() > 0) {
+        if (!employeeResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", employeeResponse.getErrors());
             return "error-page";
         }
@@ -264,7 +266,8 @@ public class ApplicationController {
     @GetMapping("/add-employee")
     public String addEmployee(Model model) {
         Employee employee = new Employee(null, null, null, null, null,
-                null, null, null, null, null, null, null);
+                null, null, null, null, null, null,
+                null, null, null);
         String[] roles = {"Manager", "Cashier"};
         model.addAttribute("employee", employee);
         model.addAttribute("roles", roles);
@@ -284,13 +287,17 @@ public class ApplicationController {
                                      @ModelAttribute("phoneNumber") String phoneNumber,
                                      @ModelAttribute("city") String city,
                                      @ModelAttribute("street") String street,
-                                     @ModelAttribute("zipCode") String zipCode, Model model) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                                     @ModelAttribute("zipCode") String zipCode,
+                                     @ModelAttribute("username") String username,
+                                     @ModelAttribute("password") String password,
+                                     Model model) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
         Date birthDateProper = formatter.parse(birthDate);
         Date startDateProper = formatter.parse(startDate);
-        Employee employee = new Employee(employeeId, surname, name, patronymic, role, salary, birthDateProper, startDateProper, phoneNumber, city, street, zipCode);
+        Employee employee = new Employee(employeeId, surname, name, patronymic, role, salary, birthDateProper,
+                startDateProper, phoneNumber, city, street, zipCode, username, password);
         Response<Employee> employeeResponse = employeeService.createEmployee(employee);
-        if (employeeResponse.getErrors().size() > 0) {
+        if (!employeeResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", employeeResponse.getErrors());
             return "error-page";
         }
@@ -311,12 +318,12 @@ public class ApplicationController {
                                       @ModelAttribute("city") String city,
                                       @ModelAttribute("street") String street,
                                       @ModelAttribute("zipCode") String zipCode, Model model) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
         Date birthDateProper = formatter.parse(birthDate);
         Date startDateProper = formatter.parse(startDate);
         Employee employee = new Employee(employeeId, surname, name, patronymic, role, salary, birthDateProper, startDateProper, phoneNumber, city, street, zipCode);
         Response<Employee> employeeResponse = employeeService.updateEmployee(employee);
-        if (employeeResponse.getErrors().size() > 0) {
+        if (!employeeResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", employeeResponse.getErrors());
             return "error-page";
         }
@@ -327,7 +334,7 @@ public class ApplicationController {
     @PostMapping("/request-delete-employee")
     public String removeEmployee(@ModelAttribute("employeeId") String id, Model model) {
         Response<Employee> employeeResponse = employeeService.deleteEmployee(id);
-        if (employeeResponse.getErrors().size() > 0) {
+        if (!employeeResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", employeeResponse.getErrors());
             return "error-page";
         }
@@ -337,7 +344,7 @@ public class ApplicationController {
     @GetMapping("/customer")
     public String customersPage(Model model) {
         Response<List<CustomerCard>> customerCardResponse = customerService.findAll();
-        if (customerCardResponse.getErrors().size() > 0) {
+        if (!customerCardResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", customerCardResponse.getErrors());
             return "error-page";
         }
@@ -359,7 +366,7 @@ public class ApplicationController {
     @GetMapping("/edit-customer")
     public String editCustomer(@ModelAttribute("cardNumber") int id, Model model) {
         Response<CustomerCard> customerCardResponse = customerService.findCustomerCardById(id);
-        if (customerCardResponse.getErrors().size() > 0) {
+        if (!customerCardResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", customerCardResponse.getErrors());
             return "error-page";
         }
@@ -381,7 +388,7 @@ public class ApplicationController {
     public String requestAddCustomer(@ModelAttribute CustomerCard customerCard, Model model) {
 
         Response<CustomerCard> customerCardResponse = customerService.createCustomerCard(customerCard);
-        if (customerCardResponse.getErrors().size() > 0) {
+        if (!customerCardResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", customerCardResponse.getErrors());
             return "error-page";
         }
@@ -392,7 +399,7 @@ public class ApplicationController {
     @PostMapping("/request-delete-customer")
     public String removeCustomer(@ModelAttribute("cardNumber") int id, Model model) {
         Response<CustomerCard> customerCardResponse = customerService.deleteCustomerCard(id);
-        if (customerCardResponse.getErrors().size() > 0) {
+        if (!customerCardResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", customerCardResponse.getErrors());
             return "error-page";
         }
@@ -402,7 +409,7 @@ public class ApplicationController {
     @PostMapping("/request-edit-customer")
     public String requestEditCustomer(@ModelAttribute CustomerCard customerCard, Model model) {
         Response<CustomerCard> customerCardResponse = customerService.updateCustomerCard(customerCard);
-        if (customerCardResponse.getErrors().size() > 0) {
+        if (!customerCardResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", customerCardResponse.getErrors());
             return "error-page";
         }
@@ -414,16 +421,15 @@ public class ApplicationController {
         Response<List<StoreProduct>> storeProductsResponse = storeProductService.findAll();
 
 
-        if (storeProductsResponse.getErrors().size() > 0) {
+        if (!storeProductsResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", storeProductsResponse.getErrors());
             return "error-page";
         }
         List<StoreProduct> storeProducts = storeProductsResponse.getObject();
         LinkedHashMap<StoreProduct, String> storeProductsWithNames = new LinkedHashMap<>();
-        for (int i = 0; i < storeProducts.size(); i++) {
-            StoreProduct currentStoreProduct = storeProducts.get(i);
+        for (StoreProduct currentStoreProduct : storeProducts) {
             Response<Product> productResponse = productService.findProductById(currentStoreProduct.getProductId());
-            if (productResponse.getErrors().size() > 0) {
+            if (!productResponse.getErrors().isEmpty()) {
                 model.addAttribute("errors", productResponse.getErrors());
                 return "error-page";
             }
@@ -438,21 +444,21 @@ public class ApplicationController {
     @GetMapping("/edit-store-product")
     public String editStoreProduct(@ModelAttribute("upc") String upc, Model model) {
         Response<StoreProduct> storeProductResponse = storeProductService.findStoreProductByUpc(upc);
-        if (storeProductResponse.getErrors().size() > 0) {
+        if (!storeProductResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", storeProductResponse.getErrors());
             return "error-page";
         }
         StoreProduct storeProduct = storeProductResponse.getObject();
         Response<List<StoreProduct>> storeProductListResponse = storeProductService.findAll();
-        if (storeProductListResponse.getErrors().size() > 0) {
+        if (!storeProductListResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", storeProductListResponse.getErrors());
             return "error-page";
         }
         List<StoreProduct> otherStoreProducts = storeProductListResponse.getObject();
-        List<String> otherUPCs = otherStoreProducts.stream().filter(x -> !x.getUpc().equals(upc)).map(f -> f.getUpc()).collect(Collectors.toList());
+        List<String> otherUPCs = otherStoreProducts.stream().filter(x -> !x.getUpc().equals(upc)).map(StoreProduct::getUpc).collect(Collectors.toList());
         otherUPCs.add(0, null);
         Response<List<Product>> productResponse = productService.findAll();
-        if (productResponse.getErrors().size() > 0) {
+        if (!productResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", productResponse.getErrors());
             return "error-page";
         }
@@ -473,15 +479,15 @@ public class ApplicationController {
 
         StoreProduct storeProduct = new StoreProduct(null, null, 0, 0.01, 0, false);
         Response<List<StoreProduct>> storeProductListResponse = storeProductService.findAll();
-        if (storeProductListResponse.getErrors().size() > 0) {
+        if (!storeProductListResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", storeProductListResponse.getErrors());
             return "error-page";
         }
         List<StoreProduct> otherStoreProducts = storeProductListResponse.getObject();
-        List<String> otherUPCs = otherStoreProducts.stream().map(f -> f.getUpc()).collect(Collectors.toList());
+        List<String> otherUPCs = otherStoreProducts.stream().map(StoreProduct::getUpc).collect(Collectors.toList());
         otherUPCs.add(0, null);
         Response<List<Product>> productResponse = productService.findAll();
-        if (productResponse.getErrors().size() > 0) {
+        if (!productResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", productResponse.getErrors());
             return "error-page";
         }
@@ -500,7 +506,7 @@ public class ApplicationController {
     @PostMapping("/request-add-store-product")
     public String requestAddStoreProduct(@ModelAttribute StoreProduct product, Model model) {
         Response<StoreProduct> storeProductResponse = storeProductService.createStoreProduct(product);
-        if (storeProductResponse.getErrors().size() > 0) {
+        if (!storeProductResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", storeProductResponse.getErrors());
             return "error-page";
         }
@@ -511,7 +517,7 @@ public class ApplicationController {
     @PostMapping("/request-edit-store-product")
     public String requestEditStoreProduct(@ModelAttribute StoreProduct product, Model model) {
         Response<StoreProduct> storeProductResponse = storeProductService.updateStoreProduct(product);
-        if (storeProductResponse.getErrors().size() > 0) {
+        if (!storeProductResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", storeProductResponse.getErrors());
             return "error-page";
         }
@@ -522,7 +528,7 @@ public class ApplicationController {
     @PostMapping("/request-delete-store-product")
     public String removeStoreProduct(@ModelAttribute("upc") String upc, Model model) {
         Response<StoreProduct> storeProductResponse = storeProductService.deleteStoreProduct(upc);
-        if (storeProductResponse.getErrors().size() > 0) {
+        if (!storeProductResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", storeProductResponse.getErrors());
             return "error-page";
         }
@@ -532,7 +538,7 @@ public class ApplicationController {
     @GetMapping("receipt")
     public String receiptsPage(Model model) {
         Response<List<Receipt>> receiptsResponse = receiptService.findAll();
-        if (receiptsResponse.getErrors().size() > 0) {
+        if (!receiptsResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", receiptsResponse.getErrors());
             return "error-page";
         }
@@ -544,7 +550,7 @@ public class ApplicationController {
     @PostMapping("/request-delete-receipt")
     public String removeReceipt(@ModelAttribute("receiptNumber") int receiptNumber, Model model) {
         Response<Receipt> receiptResponse = receiptService.deleteReceipt(receiptNumber);
-        if (receiptResponse.getErrors().size() > 0) {
+        if (!receiptResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", receiptResponse.getErrors());
             return "error-page";
         }
@@ -554,24 +560,24 @@ public class ApplicationController {
     @GetMapping("edit-receipt")
     public String editReceipt(@ModelAttribute("receiptNumber") int receiptNumber, Model model) {
         Response<Receipt> receiptResponse = receiptService.findReceiptById(receiptNumber);
-        if (receiptResponse.getErrors().size() > 0) {
+        if (!receiptResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", receiptResponse.getErrors());
             return "error-page";
         }
         Response<List<CustomerCard>> customerCardResponse = customerService.findAll();
-        if (customerCardResponse.getErrors().size() > 0) {
+        if (!customerCardResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", customerCardResponse.getErrors());
             return "error-page";
         }
         Response<List<Employee>> employeeResponse = employeeService.findAll();
-        if (employeeResponse.getErrors().size() > 0) {
+        if (!employeeResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", employeeResponse.getErrors());
             return "error-page";
         }
         List<Employee> employees = employeeResponse.getObject();
         List<CustomerCard> customerCards = customerCardResponse.getObject();
-        List<String> employeeIds = employees.stream().map(f -> f.getEmployeeId()).collect(Collectors.toList());
-        List<Integer> cardNumbers = customerCards.stream().map(f -> f.getCardNumber()).collect(Collectors.toList());
+        List<String> employeeIds = employees.stream().map(Employee::getEmployeeId).collect(Collectors.toList());
+        List<Integer> cardNumbers = customerCards.stream().map(CustomerCard::getCardNumber).collect(Collectors.toList());
         model.addAttribute("employeeIds", employeeIds);
         model.addAttribute("cardNumbers", cardNumbers);
         model.addAttribute("receipt", receiptResponse.getObject());
@@ -583,12 +589,12 @@ public class ApplicationController {
     public String addReceipt(Model model) {
 
         Response<List<CustomerCard>> customerCardResponse = customerService.findAll();
-        if (customerCardResponse.getErrors().size() > 0) {
+        if (!customerCardResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", customerCardResponse.getErrors());
             return "error-page";
         }
         Response<List<Employee>> employeeResponse = employeeService.findAll();
-        if (employeeResponse.getErrors().size() > 0) {
+        if (!employeeResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", employeeResponse.getErrors());
             return "error-page";
         }
@@ -596,8 +602,8 @@ public class ApplicationController {
         Receipt receipt = new Receipt(null, null, null, null, 0.05, 0.01);
         List<Employee> employees = employeeResponse.getObject();
         List<CustomerCard> customerCards = customerCardResponse.getObject();
-        List<String> employeeIds = employees.stream().map(f -> f.getEmployeeId()).collect(Collectors.toList());
-        List<Integer> cardNumbers = customerCards.stream().map(f -> f.getCardNumber()).collect(Collectors.toList());
+        List<String> employeeIds = employees.stream().map(Employee::getEmployeeId).collect(Collectors.toList());
+        List<Integer> cardNumbers = customerCards.stream().map(CustomerCard::getCardNumber).collect(Collectors.toList());
         model.addAttribute("employeeIds", employeeIds);
         model.addAttribute("cardNumbers", cardNumbers);
         model.addAttribute("receipt", receipt);
@@ -612,11 +618,11 @@ public class ApplicationController {
                                     @ModelAttribute("sumTotal") Double sumTotal,
                                     @ModelAttribute("vat") Double vat,
                                     Model model) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
         Date dateProper = formatter.parse(printDate);
         Receipt receipt = new Receipt(null, employeeId, cardNumber, dateProper, sumTotal, vat);
         Response<Receipt> receiptResponse = receiptService.createReceipt(receipt);
-        if (receiptResponse.getErrors().size() > 0) {
+        if (!receiptResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", receiptResponse.getErrors());
             return "error-page";
         }
@@ -631,11 +637,11 @@ public class ApplicationController {
                                      @ModelAttribute("sumTotal") Double sumTotal,
                                      @ModelAttribute("vat") Double vat,
                                      Model model) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT);
         Date dateProper = formatter.parse(printDate);
         Receipt receipt = new Receipt(receiptNumber, employeeId, cardNumber, dateProper, sumTotal, vat);
         Response<Receipt> receiptResponse = receiptService.updateReceipt(receipt);
-        if (receiptResponse.getErrors().size() > 0) {
+        if (!receiptResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", receiptResponse.getErrors());
             return "error-page";
         }
@@ -690,7 +696,7 @@ public class ApplicationController {
     public String getAllCategoriesSorted(Model model) {
         String[] categoryColumnNames = new String[]{"ID", "Name"};
         Response<List<Category>> categoryResponse = categoryService.getCategoriesSortedByName();
-        if (categoryResponse.getErrors().size() > 0) {
+        if (!categoryResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", categoryResponse.getErrors());
             return "error-page";
         }
@@ -742,7 +748,7 @@ public class ApplicationController {
         String[] employeeColumnNames = new String[]{"ID", "Surname", "Name", "Patronymic", "Role", "Salary",
                 "Birth date", "Start date", "Phone number", "City", "Street", "Zip code"};
         Response<List<Employee>> employeeResponse = employeeService.getCashiersSortedBySurname();
-        if (employeeResponse.getErrors().size() > 0) {
+        if (!employeeResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", employeeResponse.getErrors());
             return "error-page";
         }
@@ -767,7 +773,7 @@ public class ApplicationController {
     public String findEmployeeNumberAddressBySurname(@ModelAttribute("surname") String surname, Model model) {
         String[] employeeColumnNames = new String[]{"Phone number", "City", "Street", "Zip code"};
         Response<List<Employee>> employeeResponse = employeeService.findPhoneNumberAndAddressBySurname(surname);
-        if (employeeResponse.getErrors().size() > 0) {
+        if (!employeeResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", employeeResponse.getErrors());
             return "error-page";
         }
@@ -817,7 +823,7 @@ public class ApplicationController {
     public String getAllProductsInCategorySorted(@ModelAttribute("categoryNumber") int categoryNumber, Model model) {
         String[] productColumnNames = new String[]{"ID", "Name", "Characteristics", "Category number"};
         Response<List<Product>> productResponse = productService.getAllProductsFromCategorySortedByName(categoryNumber);
-        if (productResponse.getErrors().size() > 0) {
+        if (!productResponse.getErrors().isEmpty()) {
             model.addAttribute("errors", productResponse.getErrors());
             return "error-page";
         }
@@ -971,9 +977,9 @@ public class ApplicationController {
     //Скласти список чеків, видрукуваних певним касиром за певний період часу
     @GetMapping("/receipt/detailed/from-employee")
     public String findDetailedReceiptsOfEmployeeFromPeriod(@ModelAttribute("employeeId") String employeeId,
-                                                                                    @ModelAttribute("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-                                                                                    @ModelAttribute("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,Model model) {
-        List<ReceiptDetailed> receipts=receiptService.detailedReceiptsFromEmployeeFromPeriod(employeeId, startDate, endDate).getObject();
+                                                           @ModelAttribute("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+                                                           @ModelAttribute("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate, Model model) {
+        List<ReceiptDetailed> receipts = receiptService.detailedReceiptsFromEmployeeFromPeriod(employeeId, startDate, endDate).getObject();
 //Integer receiptNumber, String employeeId, Integer cardNumber, Date printDate, double sumTotal,
 //                           double vat, List<ProductDetails> productDetailsList
 
@@ -981,19 +987,19 @@ public class ApplicationController {
         //        private int productAmount;
         //        private double productPrice;
         String[] receiptColumnNames = new String[]{"Receipt ID", "Employee ID", "Card number", "Print date",
-                "Total sum","VAT","Product name","Product amount","Product price"};
+                "Total sum", "VAT", "Product name", "Product amount", "Product price"};
         List<String[]> values = new LinkedList<>();
         for (ReceiptDetailed receipt : receipts) {
-            for (ReceiptDetailed.ProductDetails detail: receipt.getProductDetailsList()){
-                String[] fields = new String[]{String.valueOf(receipt.getReceiptNumber()),receipt.getEmployeeId(),receipt.getCardNumber().toString(),
+            for (ReceiptDetailed.ProductDetails detail : receipt.getProductDetailsList()) {
+                String[] fields = new String[]{String.valueOf(receipt.getReceiptNumber()), receipt.getEmployeeId(), receipt.getCardNumber().toString(),
                         receipt.getPrintDate().toString(), String.valueOf(receipt.getSumTotal()), String.valueOf(receipt.getVat()),
                         detail.getProductName(), String.valueOf(detail.getProductAmount()), String.valueOf(detail.getProductPrice())};
                 values.add(fields);
             }
 
         }
-        model.addAttribute("queryText", "Скласти список чеків, видрукуваних певним касиром за певний період часу: "+employeeService.findEmployeeById(employeeId).getObject().getName()+
-                "   "+employeeService.findEmployeeById(employeeId).getObject().getSurname()+"  "+startDate.toString()+" - "+endDate.toString());
+        model.addAttribute("queryText", "Скласти список чеків, видрукуваних певним касиром за певний період часу: " + employeeService.findEmployeeById(employeeId).getObject().getName() +
+                "   " + employeeService.findEmployeeById(employeeId).getObject().getSurname() + "  " + startDate.toString() + " - " + endDate.toString());
         model.addAttribute("columnNames", receiptColumnNames);
         model.addAttribute("values", values);
         return "base-table";
@@ -1004,9 +1010,9 @@ public class ApplicationController {
     @GetMapping("/receipt/detailed")
     public String findAllDetailedReceiptsFromPeriod(
             @ModelAttribute("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-            @ModelAttribute("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate,Model model) {
+            @ModelAttribute("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate, Model model) {
 
-       List<ReceiptDetailed> receipts=receiptService.findAllDetailedReceiptsFromPeriod(startDate, endDate).getObject();
+        List<ReceiptDetailed> receipts = receiptService.findAllDetailedReceiptsFromPeriod(startDate, endDate).getObject();
 //Integer receiptNumber, String employeeId, Integer cardNumber, Date printDate, double sumTotal,
 //                           double vat, List<ProductDetails> productDetailsList
 
@@ -1014,18 +1020,18 @@ public class ApplicationController {
         //        private int productAmount;
         //        private double productPrice;
         String[] receiptColumnNames = new String[]{"Receipt ID", "Employee ID", "Card number", "Print date",
-                "Total sum","VAT","Product name","Product amount","Product price"};
+                "Total sum", "VAT", "Product name", "Product amount", "Product price"};
         List<String[]> values = new LinkedList<>();
         for (ReceiptDetailed receipt : receipts) {
-            for (ReceiptDetailed.ProductDetails detail: receipt.getProductDetailsList()){
-                String[] fields = new String[]{String.valueOf(receipt.getReceiptNumber()),receipt.getEmployeeId(),receipt.getCardNumber().toString(),
-                receipt.getPrintDate().toString(), String.valueOf(receipt.getSumTotal()), String.valueOf(receipt.getVat()),
-                detail.getProductName(), String.valueOf(detail.getProductAmount()), String.valueOf(detail.getProductPrice())};
+            for (ReceiptDetailed.ProductDetails detail : receipt.getProductDetailsList()) {
+                String[] fields = new String[]{String.valueOf(receipt.getReceiptNumber()), receipt.getEmployeeId(), receipt.getCardNumber().toString(),
+                        receipt.getPrintDate().toString(), String.valueOf(receipt.getSumTotal()), String.valueOf(receipt.getVat()),
+                        detail.getProductName(), String.valueOf(detail.getProductAmount()), String.valueOf(detail.getProductPrice())};
                 values.add(fields);
             }
 
         }
-        model.addAttribute("queryText", "Скласти список чеків, видрукуваних усіма касирами за певний період часу: "+startDate.toString()+" - "+endDate.toString());
+        model.addAttribute("queryText", "Скласти список чеків, видрукуваних усіма касирами за певний період часу: " + startDate.toString() + " - " + endDate.toString());
         model.addAttribute("columnNames", receiptColumnNames);
         model.addAttribute("values", values);
         return "base-table";
@@ -1162,19 +1168,19 @@ public class ApplicationController {
 
     // Знайти всі товари в магазині, що не належать певній категорії
     @GetMapping("/store-product/all/except")
-    public String findStoreProductsNotInCategory(@ModelAttribute("categoryName") String categoryName,Model model) {
-        List<StoreProduct> products=storeProductService.findAllStoreProductsNotInCategory(categoryName).getObject();
+    public String findStoreProductsNotInCategory(@ModelAttribute("categoryName") String categoryName, Model model) {
+        List<StoreProduct> products = storeProductService.findAllStoreProductsNotInCategory(categoryName).getObject();
 
         String[] storeProductColumnNames = new String[]{"UPC", "Promo UPC", "Product ID", "Selling price",
-                "Products number","Is promotional product"};
-       List<String[]> values = new LinkedList<>();
+                "Products number", "Is promotional product"};
+        List<String[]> values = new LinkedList<>();
         for (StoreProduct product : products) {
-            String[] fields = new String[]{product.getUpc(),product.getUpcPromo(), String.valueOf(product.getProductId()),
-                    product.getSellingPrice()+"UAH", String.valueOf(product.getProductsNumber()),
+            String[] fields = new String[]{product.getUpc(), product.getUpcPromo(), String.valueOf(product.getProductId()),
+                    product.getSellingPrice() + "UAH", String.valueOf(product.getProductsNumber()),
                     product.isPromotionalProductString()};
             values.add(fields);
         }
-        model.addAttribute("queryText", "Знайти всі товари в магазині, що не належать певній категорії: "+categoryName);
+        model.addAttribute("queryText", "Знайти всі товари в магазині, що не належать певній категорії: " + categoryName);
         model.addAttribute("columnNames", storeProductColumnNames);
         model.addAttribute("values", values);
         return "base-table";
@@ -1215,60 +1221,60 @@ public class ApplicationController {
 
     // Скласти список товарів у магазині, що належать певному товару
     @GetMapping("/store-products/from-product")
-    public String storeProductsFromProduct(@ModelAttribute("productId") int productId,Model model){
-        List<StoreProduct> products=storeProductService.findAll().getObject();
+    public String storeProductsFromProduct(@ModelAttribute("productId") int productId, Model model) {
+        List<StoreProduct> products = storeProductService.findAll().getObject();
 
         String[] storeProductColumnNames = new String[]{"UPC", "Promo UPC", "Product ID", "Selling price",
-        "Products number","Is promotional product"};
-products=products.stream().filter(x->x.getProductId()==productId).collect(Collectors.toList());
+                "Products number", "Is promotional product"};
+        products = products.stream().filter(x -> x.getProductId() == productId).collect(Collectors.toList());
         List<String[]> values = new LinkedList<>();
         for (StoreProduct product : products) {
-            String[] fields = new String[]{product.getUpc(),product.getUpcPromo(), String.valueOf(product.getProductId()),
-            product.getSellingPrice()+"UAH", String.valueOf(product.getProductsNumber()),
-            product.isPromotionalProductString()};
+            String[] fields = new String[]{product.getUpc(), product.getUpcPromo(), String.valueOf(product.getProductId()),
+                    product.getSellingPrice() + "UAH", String.valueOf(product.getProductsNumber()),
+                    product.isPromotionalProductString()};
             values.add(fields);
         }
-        model.addAttribute("queryText", "Скласти список товарів у магазині, що належать певному товару: "+productService.findProductById(productId).getObject().getProductName());
+        model.addAttribute("queryText", "Скласти список товарів у магазині, що належать певному товару: " + productService.findProductById(productId).getObject().getProductName());
         model.addAttribute("columnNames", storeProductColumnNames);
         model.addAttribute("values", values);
         return "base-table";
     }
 
-@GetMapping("/print-check")
-    public String printCheck(@ModelAttribute("receiptNumber") int receiptNumber,Model model){
-        Receipt receipt=receiptService.findReceiptById(receiptNumber).getObject();
-     List<ReceiptDetailed.ProductDetails> details=receiptService.findProductDetails(receipt);
-        String check1="+-------------------------------------+\n" +
+    @GetMapping("/print-check")
+    public String printCheck(@ModelAttribute("receiptNumber") int receiptNumber, Model model) {
+        Receipt receipt = receiptService.findReceiptById(receiptNumber).getObject();
+        List<ReceiptDetailed.ProductDetails> details = receiptService.findProductDetails(receipt);
+        String check1 = "+-------------------------------------+\n" +
                 "|                                     |\n" +
                 "|            FIESTA MARKET            |\n" +
                 "|                                     |\n" +
                 "|          3015 Adams Avenue          |\n" +
-                "|          "+receipt.getPrintDate().toString()+"          |\n" +
+                "|          " + receipt.getPrintDate().toString() + "          |\n" +
                 "|         San Diego, CA 92116         |\n" +
-                "|           00000000000"+receiptNumber+"            |\n" +
-                "|                                     |\n" ;
+                "|           00000000000" + receiptNumber + "            |\n" +
+                "|                                     |\n";
 
              /*   "|  Family PK Pork Chops       2.94 F  |\n" +
                 "|  Beef Chuck Steadk          3.73 F  |\n" +
                 "|  Rosarita Refried 40.5 OZ   1.79 F  |\n" +
                 "|  Rosarita Refried 40.5 OZ   1.79 F  |\n" +
                 "|  Durkey Party Taco Season   1.79 F  |\n" +*/
-int sum=0;
-        for (ReceiptDetailed.ProductDetails item: details){
-            check1+="|  "+item.getProductName()+"       "+item.getProductAmount()+"*"+item.getProductPrice()+" UAH  |\n";
-        sum+=item.getProductAmount()*item.getProductPrice();
+        int sum = 0;
+        for (ReceiptDetailed.ProductDetails item : details) {
+            check1 += "|  " + item.getProductName() + "       " + item.getProductAmount() + "*" + item.getProductPrice() + " UAH  |\n";
+            sum += item.getProductAmount() * item.getProductPrice();
         }
-    String check2=   "|                                     |\n" +
-            "|  Subtotal                  "+sum+" UAH    |\n" +
-            "|                                     |\n" +
-            "|  TOTAL                     "+sum+" UAH    |\n" +
-            "|                                     |\n" +
-            "|             THANK YOU!         :F_P:|\n" +
-            "+-------------------------------------+";
-        String finalCheck=check1+check2;
-        model.addAttribute("check",finalCheck);
+        String check2 = "|                                     |\n" +
+                "|  Subtotal                  " + sum + " UAH    |\n" +
+                "|                                     |\n" +
+                "|  TOTAL                     " + sum + " UAH    |\n" +
+                "|                                     |\n" +
+                "|             THANK YOU!         :F_P:|\n" +
+                "+-------------------------------------+";
+        String finalCheck = check1 + check2;
+        model.addAttribute("check", finalCheck);
         return "check-print";
-}
+    }
 
     @GetMapping("/cashier")
     public String cashierPage(Model model) {
@@ -1281,7 +1287,7 @@ int sum=0;
     @GetMapping("/cashier/receipts")
     public String cashierReceiptsPage(@ModelAttribute("start") String start, @ModelAttribute("end") String end,
                                       Model model) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+        SimpleDateFormat formatter = new SimpleDateFormat(DATE_FORMAT, Locale.ENGLISH);
 
         Employee employee = (Employee) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<Receipt> receipts = receiptService.findReceiptsOfEmployeeFromPeriod(employee.getEmployeeId(),

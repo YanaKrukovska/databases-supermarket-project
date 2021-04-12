@@ -20,27 +20,4 @@ public class Receipt {
     private double sumTotal;
     private double vat;
 
-    public Integer getReceiptNumber() {
-        return receiptNumber;
-    }
-
-    public String getEmployeeId() {
-        return employeeId;
-    }
-
-    public Integer getCardNumber() {
-        return cardNumber;
-    }
-
-    public Date getPrintDate() {
-        return printDate;
-    }
-
-    public double getSumTotal() {
-        return sumTotal;
-    }
-
-    public double getVat() {
-        return vat;
-    }
 }

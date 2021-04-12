@@ -40,6 +40,12 @@ public class EmployeeService implements UserDetailsService {
 
         employee.setPassword(passwordService.encodePassword(employee.getPassword()));
 
+        if (employee.getRole().equals("Manager")) {
+            employee.setAuthority(new Role(1L, "ROLE_MANAGER"));
+        } else {
+            employee.setAuthority(new Role(2L, "ROLE_CASHIER"));
+        }
+
         String query = "INSERT INTO employee (id_employee, empl_surname, empl_name, empl_patronymic, " +
                 "empl_role, salary, date_of_birth, date_of_start, phone_number, city, street, zip_code, username, " +
                 "password, id_role) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?, ?)";

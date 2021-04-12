@@ -66,6 +66,13 @@
             <input class="fields" type="text" id="zipCode" name="zipCode" th:value="${employee.zipCode}"
                    placeholder="Zip code" required>
 
+            <span class="title">Mail</span>
+            <input class="fields" type="text" id="username" name="username" th:value="${employee.username}"
+                   placeholder="Mail" required>
+
+            <span class="title">Password</span>
+            <input class="fields" type="password" id="password" name="password" th:value="${employee.password}"
+                   placeholder="Password" required>
             <button class="btn btn-lg btn-primary btn-block" type="submit">Save</button>
         </div>
     </form>

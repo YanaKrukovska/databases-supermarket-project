@@ -16,19 +16,4 @@ public class Sale {
     private int productNumber;
     private double sellingPrice;
 
-    public String getUpc() {
-        return upc;
-    }
-
-    public String getReceiptNumber() {
-        return receiptNumber;
-    }
-
-    public int getProductNumber() {
-        return productNumber;
-    }
-
-    public double getSellingPrice() {
-        return sellingPrice;
-    }
 }

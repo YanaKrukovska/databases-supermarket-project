@@ -49,8 +49,9 @@ public class Employee implements UserDetails {
         this.zipCode = zipCode;
     }
 
-    public Employee(String employeeId, String surname, String name, String patronymic, String role, Double salary, Date
-            birthDate, Date startDate, String phoneNumber, String city, String street, String zipCode, String username, Role authority) {
+    public Employee(String employeeId, String surname, String name, String patronymic,
+                    String role, Double salary, Date birthDate, Date startDate, String phoneNumber, String city,
+                    String street, String zipCode, String username, String password) {
         this.employeeId = employeeId;
         this.surname = surname;
         this.name = name;
@@ -64,56 +65,10 @@ public class Employee implements UserDetails {
         this.street = street;
         this.zipCode = zipCode;
         this.username = username;
-        this.authority = authority;
+        this.password = password;
+        this.authority = null;
     }
 
-    public String getEmployeeId() {
-        return employeeId;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getPatronymic() {
-        return patronymic;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public Double getSalary() {
-        return salary;
-    }
-
-    public Date getBirthDate() {
-        return birthDate;
-    }
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public String getStreet() {
-        return street;
-    }
-
-    public String getZipCode() {
-        return zipCode;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

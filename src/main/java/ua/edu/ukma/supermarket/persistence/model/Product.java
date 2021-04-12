@@ -16,19 +16,4 @@ public class Product {
     private String characteristics;
     private int categoryNumber;
 
-    public int getProductId() {
-        return productId;
-    }
-
-    public String getProductName() {
-        return productName;
-    }
-
-    public String getCharacteristics() {
-        return characteristics;
-    }
-
-    public int getCategoryNumber() {
-        return categoryNumber;
-    }
 }

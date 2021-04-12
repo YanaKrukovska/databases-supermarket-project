@@ -35,17 +35,6 @@ public class ReceiptDetailed extends Receipt {
             this.productPrice = productPrice;
         }
 
-        public String getProductName() {
-            return productName;
-        }
-
-        public int getProductAmount() {
-            return productAmount;
-        }
-
-        public double getProductPrice() {
-            return productPrice;
-        }
     }
 
 }
