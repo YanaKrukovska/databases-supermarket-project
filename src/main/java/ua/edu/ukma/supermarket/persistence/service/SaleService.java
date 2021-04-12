@@ -2,6 +2,7 @@ package ua.edu.ukma.supermarket.persistence.service;
 
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
+import ua.edu.ukma.supermarket.persistence.model.Receipt;
 import ua.edu.ukma.supermarket.persistence.model.Response;
 import ua.edu.ukma.supermarket.persistence.model.Sale;
 
@@ -43,6 +44,27 @@ public class SaleService {
             }
 
             return new Response<>(sale, new LinkedList<>());
+        } catch (SQLException e) {
+            return new Response<>(null, Collections.singletonList(e.getMessage()));
+        }
+    }
+
+    public Response<List<Sale>> findAll() {
+
+
+
+        String query = "SELECT * FROM sale";
+
+        try (PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+
+
+            ResultSet resultSet = statement.executeQuery();
+
+            List<Sale> saleList = new LinkedList<>();
+            while (resultSet.next()) {
+                saleList.add(extractSale(resultSet));
+            }
+            return new Response<>(saleList, new LinkedList<>());
         } catch (SQLException e) {
             return new Response<>(null, Collections.singletonList(e.getMessage()));
         }

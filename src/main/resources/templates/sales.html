@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Sales</title>
+    <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.6.0/css/bootstrap.min.css} "/>
+
+</head>
+<body>
+
+<div th:replace="parts/navbar.html :: navigation"></div>
+<main style="padding-top: 56px; padding-bottom: 60px;">
+    <p class="text-center font-weight-bold" style="font-size: 30px">Sales</p>
+    <form th:action="@{/add-sale}" method="get" >
+        <button class="btn-success btn-block">Add new sale</button>
+    </form>
+    <table class="table">
+        <thead class="thead-dark">
+        <tr>
+
+            <th scope="col">UPC</th>
+            <th scope="col">Receipt number</th>
+            <th scope="col">Product amount</th>
+            <th scope="col">Selling price</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="sale : ${sales}">
+
+
+            <td class="align-middle"><span class="align-middle" th:text="${sale.upc}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${sale.receiptNumber}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${sale.productNumber}"></span></td>
+            <td class="align-middle"><span class="align-middle" th:text="${sale.sellingPrice}"></span></td>
+
+
+        </tbody>
+    </table>
+</main>
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+</body>
+</html>

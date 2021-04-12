@@ -38,13 +38,17 @@ public class ApplicationController {
     @Autowired
     private final ReceiptService receiptService;
 
-    public ApplicationController(CategoryService categoryService, EmployeeService employeeService, CustomerService customerService, ProductService productService, StoreProductService storeProductService, ReceiptService receiptService) {
+    @Autowired
+    private final SaleService saleService;
+
+    public ApplicationController(CategoryService categoryService, EmployeeService employeeService, CustomerService customerService, ProductService productService, StoreProductService storeProductService, ReceiptService receiptService, SaleService saleService) {
         this.categoryService = categoryService;
         this.employeeService = employeeService;
         this.customerService = customerService;
         this.productService = productService;
         this.storeProductService = storeProductService;
         this.receiptService = receiptService;
+        this.saleService = saleService;
     }
 
     @GetMapping("/")
@@ -1310,6 +1314,19 @@ public class ApplicationController {
 
         model.addAttribute("products", productsResponse.getObject());
         return "products-sorted";
+    }
+
+    @GetMapping("/sale")
+    public String salesPage(Model model){
+        Response<List<Sale>> salesResponse=saleService.findAll();
+        if (!salesResponse.getErrors().isEmpty()) {
+            model.addAttribute("errors", salesResponse.getErrors());
+            return "error-page";
+        }
+        model.addAttribute("sales",salesResponse.getObject());
+        model.addAttribute("storeProducts",storeProductService.findAll().getObject());
+        model.addAttribute("receipts",receiptService.findAll().getObject());
+        return "sales";
     }
 
 }
