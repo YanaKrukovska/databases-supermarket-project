@@ -56,10 +56,21 @@
         </tbody>
     </table>
 </main>
+<div id="detailed-store-product">
+    <div style="margin-left: 100px; margin-bottom: 100px">
+        <label for="store-product-search-input" id="detailed-search-input-label">Search detailed product:</label>
+        <input type="text" id="detailed-search-input" name="detailed-store-product-search" placeholder="Enter UPC"
+               minlength="0"
+               required>
+        <button type="submit" class="btn btn-primary" id="detailed-search-button">Search</button>
 
+        <div id="detailed-search-results" style="margin-top: 10px">
+        </div>
+    </div>
+</div>
 <div id="search-store-product">
     <div style="margin-left: 100px; margin-bottom: 100px">
-        <label for="store-product-search-input" id="store-product-search-input-label">Search:</label>
+        <label for="store-product-search-input" id="store-product-search-input-label">Search amount and price of product:</label>
         <input type="text" id="store-product-search-input" name="store-product-search" placeholder="Enter UPC"
                minlength="0"
                required>
@@ -71,6 +82,33 @@
 </div>
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script>
+    $('#detailed-search-button').click(function () {
+        let $searchResult = $('#detailed-search-results');
+        $searchResult.empty();
+
+        let upc = ($("#detailed-search-input")).val();
+        $.ajax({
+            type: 'GET',
+            url: '/store-product-advanced/' + upc,
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Content-Type', 'application/json');
+            },
+            success: function (response) {
+                $('[id="detailed-search-results"]').show();
+
+                if (response.errors.length > 0) {
+                    $searchResult.append('<p> No store product </p>');
+                } else {
+                    let product = response.object;
+                    console.log(product)
+                    $searchResult.append('<p> Upc: ' + upc + '. Name: ' + product.productName +'. Price: ' + product.sellingPrice +
+                        '. Amount: ' + product.productsNumber + '. Characteristics: ' + product.characteristics + '</p>');
+                }
+                $("#detailed-search-input").val('');
+            }
+        });
+    });
+
     $('#search-button').click(function () {
         let $searchResult = $('#search-results');
         $searchResult.empty();
@@ -89,7 +127,6 @@
                     $searchResult.append('<p> No store product </p>');
                 } else {
                     let product = response.object;
-                    console.log(product)
                     $searchResult.append('<p> Upc: ' + upc + '. Price: ' + product.sellingPrice +
                         '. Amount: ' + product.productsNumber + '</p>');
                 }

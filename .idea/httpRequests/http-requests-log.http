@@ -1,3 +1,27 @@
+GET http://localhost:8080/receipt/sum?startDate=2020-04-02&endDate=2020-04-05
+
+<> 2021-04-12T093412.200.json
+
+###
+
+GET http://localhost:8080/amount_of_sales_by_period?id=8&startDate=2020-04-01&endDate=2020-05-06
+
+<> 2021-04-12T091554.200.json
+
+###
+
+GET http://localhost:8080/customer/all/basic
+
+<> 2021-04-12T090246.200.json
+
+###
+
+GET http://localhost:8080/store-product-advanced/761303463013
+
+<> 2021-04-12T085944.200.json
+
+###
+
 GET http://localhost:8080/store-product/761303463013
 
 <> 2021-04-12T013001.200.json
@@ -461,51 +485,6 @@ GET http://localhost:8080/store-product/promo/by-amount
 DELETE http://localhost:8080/receipt/23
 
 <> 2021-04-08T182558.200.json
-
-###
-
-POST http://localhost:8080/receipt/update
-Content-Type: application/json
-
-{
-  "receiptNumber": 223,
-  "upc": "123456789123",
-  "printDate": "2021-04-01T10:02:43.000+0000",
-  "sumTotal": 43.5,
-  "vat": 8.7,
-  "employeeId": "0000000002",
-  "cardNumber": 2
-}
-
-<> 2021-04-08T182555.200.json
-
-###
-
-POST http://localhost:8080/receipt
-Content-Type: application/json
-
-{
-  "upc": "123456789123",
-  "printDate": "2021-04-01T10:02:43.000+0000",
-  "sumTotal": 37.5,
-  "vat": 7.5,
-  "employeeId": "0000000002",
-  "cardNumber": 2
-}
-
-<> 2021-04-08T182553.200.json
-
-###
-
-GET http://localhost:8080/store-product/all/4
-
-<> 2021-04-08T182552.200.json
-
-###
-
-DELETE http://localhost:8080/store-product/123456789123
-
-<> 2021-04-08T182551.200.json
 
 ###
 

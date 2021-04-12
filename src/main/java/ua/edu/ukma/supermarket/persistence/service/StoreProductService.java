@@ -172,7 +172,7 @@ public class StoreProductService {
         }
     }
 
-    public Response<List<AdvancedStoreProduct>> getAdvancedStoredProductInfo(String upc) {
+    public Response<AdvancedStoreProduct> getAdvancedStoredProductInfo(String upc) {
 
         if (upc.isBlank()) {
             return new Response<>(null, Collections.singletonList("Category can't be null"));
@@ -186,12 +186,8 @@ public class StoreProductService {
             statement = connection.prepareStatement(query);
             statement.setString(1, upc);
             ResultSet resultSet = statement.executeQuery();
-            List<AdvancedStoreProduct> storeProducts = new LinkedList<>();
-            while (resultSet.next()) {
-                storeProducts.add(new AdvancedStoreProduct(resultSet.getString("product_name"), resultSet.getString("characteristics"), resultSet.getDouble("selling_price"), resultSet.getInt("products_number")));
-            }
-
-            return new Response<>(storeProducts, new LinkedList<>());
+            resultSet.next();
+            return new Response<>(new AdvancedStoreProduct(resultSet.getString("product_name"), resultSet.getString("characteristics"), resultSet.getDouble("selling_price"), resultSet.getInt("products_number")), new LinkedList<>());
         } catch (SQLException e) {
             return new Response<>(null, Collections.singletonList(e.getMessage()));
         }
